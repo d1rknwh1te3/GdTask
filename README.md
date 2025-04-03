@@ -1,17 +1,43 @@
-# GDTask ✅
+# GdTasks
 
-![Deploy](https://github.com/Fractural/GDTask/actions/workflows/deploy.yml/badge.svg)
+## Disclaimer
 
 > [!Note] 
 > 
-> This branch is for the Godot 4.4 version of the addon. 
-> You can download the Godot 3.x version from the 3.x branch.
+> This is a fork of [Fractural's original GDTask](https://github.com/Fractural/GDTask), created because I wasn't comfortable keeping a third-party project together all the time, so I wanted to wrap it in a NuGet package, but unfortunately I made a lot of weird changes
+
+## Breaking changes
+
+1. Namespaces:
+	- Fractural.GDTask => GdTasks
+2. File Structure: 
+	- Splitting multi-class files into single-class files, 
+	- Organizing files into folders according to their logical meaning
+3. Changed the style and project
+	- Primary constructors
+	- Replace throw Exception("name") to ThrowIfNull(nameof(name))
+	- Rename
+4. Added a test project to the repository
+
+## Description
 
 Adds async/await features in Godot for easier async coding.
 Based on code from [Cysharp's UniTask library for Unity](https://github.com/Cysharp/UniTask).
 
+## Installation
+
 ```CSharp
-using Fractural.Tasks;
+
+```
+
+```CSharp
+
+```
+
+## Examples
+
+```CSharp
+using GdTasks;
 
 public Test : Node 
 {
@@ -24,24 +50,24 @@ public Test : Node
 		Run().Forget();
 	}
 
-	public async GDTaskVoid Run() 
+	public async GdTaskVoid Run() 
 	{
-		await GDTask.DelayFrame(100);
+		await GdTask.DelayFrame(100);
 
 		// Waiting some amount of time
 		// Note that these delays are paused when the game is paused
-		await GDTask.Delay(TimeSpan.FromSeconds(10));
-		await GDTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.Process);
-		await GDTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.PhysicsProcess);
+		await GdTask.Delay(TimeSpan.FromSeconds(10));
+		await GdTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.Process);
+		await GdTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.PhysicsProcess);
 		// Waiting some amount of milliseconds
-		await GDTask.Delay(1000);
+		await GdTask.Delay(1000);
 		// Waiting some amount of milliseconds, regardless of whether the game is paused
-		await GDTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.PauseProcess);
-		await GDTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.PausePhysicsProcess);
+		await GdTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.PauseProcess);
+		await GdTask.Delay(TimeSpan.FromSeconds(10), PlayerLoopTiming.PausePhysicsProcess);
 
 		// Awaiting for a signal
 		WaitAndEmitMySignal(TimeSpan.FromSeconds(2)).Forget();
-		var signalResults = await GDTask.ToSignal(this, nameof(MySignal));
+		var signalResults = await GdTask.ToSignal(this, nameof(MySignal));
 		// signalResults = [10, true]
 
 		// Cancellable awaiting a signal
@@ -50,7 +76,7 @@ public Test : Node
 		WaitAndCancelToken(TimeSpan.FromSeconds(1), cts).Forget();
 		try 
 		{
-			var signalResults = await GDTask.ToSignal(this, nameof(MySignal), cts.Token);
+			var signalResults = await GdTask.ToSignal(this, nameof(MySignal), cts.Token);
 		}
 		catch (OperationCanceledException _)
 		{
@@ -58,65 +84,47 @@ public Test : Node
 		}
 
 		// Waiting a single frame
-		await GDTask.Yield();
-		await GDTask.NextFrame();
-		await GDTask.WaitForEndOfFrame();
+		await GdTask.Yield();
+		await GdTask.NextFrame();
+		await GdTask.WaitForEndOfFrame();
 
 		// Waiting for specific lifetime call
-		await GDTask.WaitForPhysicsProcess();
+		await GdTask.WaitForPhysicsProcess();
 
-		// Cancellation of a GDTask
+		// Cancellation of a GdTask
 		var cts = new CancellationTokenSource();
 		CancellableReallyLongTask(cts.Token).Forget();
-		await GDTask.Delay(TimeSpan.FromSeconds(3));
+		await GdTask.Delay(TimeSpan.FromSeconds(3));
 		cts.Cancel();
 
-		// Returning a value from a GDTask
+		// Returning a value from a GdTask
 		string result = await RunWithResult();
 		return result + " with additional text";
 	}
 
-	public async GDTask<string> RunWithResult()
+	public async GdTask<string> RunWithResult()
 	{
-		await GDTask.Delay(TimeSpan.FromSeconds(3));
+		await GdTask.Delay(TimeSpan.FromSeconds(3));
 		return "A result string";
 	}
 
-	public async GDTaskVoid ReallyLongTask(CancellationToken cancellationToken)
+	public async GdTaskVoid ReallyLongTask(CancellationToken cancellationToken)
 	{
 		GD.Print("Starting long task.");
-		await GDTask.Delay(TimeSpan.FromSeconds(1000000), cancellationToken: cancellationToken);
+		await GdTask.Delay(TimeSpan.FromSeconds(1000000), cancellationToken: cancellationToken);
 		GD.Print("Finished long task.");
 	}
 	
-	public async GDTaskVoid WaitAndEmitMySignal(TimeSpan delay)
+	public async GdTaskVoid WaitAndEmitMySignal(TimeSpan delay)
 	{
-		await GDTask.Delay(delay);
+		await GdTask.Delay(delay);
 		EmitSignal(nameof(MySignal), 10, true);
 	}
 
-	public async GDTaskVoid WaitAndCancelToken(TimeSpan delay, CancellationTokenSource cts)
+	public async GdTaskVoid WaitAndCancelToken(TimeSpan delay, CancellationTokenSource cts)
 	{
-		await GDTask.Delay(delay);
+		await GdTask.Delay(delay);
 		cts.Cancel();
 	}
 }
 ```
-
-## Installation
-
-Manual
-
-1. Download the repository
-2. Move the `addons/GDTask` folder into `addons/GDTask`
-
-Git Submodules
-
-1. Make sure your project has a git repo initialized
-2. Run
-   
-``` bash
-git submodule add -b release https://github.com/fractural/GDTask.git addons/GDTask
-```
-
-3. Add `addons/GDTask/Autoload/GDTaskPlayerLoopAutoload` as an autoload
