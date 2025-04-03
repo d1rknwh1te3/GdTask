@@ -1,0 +1,17 @@
+mode: ContinuousDeployment
+branches:
+  main:
+    regex: ^main$
+    increment: Minor
+    tag: ''
+  release:
+    regex: ^release$
+    increment: Patch
+    tag: beta
+  feature:
+    regex: ^feature[/-]
+    increment: Patch
+    tag: alpha
+next-version: 1.0.0
+assembly-versioning-scheme: MajorMinorPatch
+commit-message-incrementing: Enabled
