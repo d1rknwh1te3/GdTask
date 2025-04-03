@@ -7,15 +7,15 @@ namespace Fractural.Tasks.Triggers;
 
 public interface IAsyncPhysicsProcessHandler
 {
-	GDTask PhysicsProcessAsync();
+	GdTask PhysicsProcessAsync();
 }
 
 public partial class AsyncTriggerHandler<T> : IAsyncPhysicsProcessHandler
 {
-	GDTask IAsyncPhysicsProcessHandler.PhysicsProcessAsync()
+	GdTask IAsyncPhysicsProcessHandler.PhysicsProcessAsync()
 	{
-		core.Reset();
-		return new GDTask((IGDTaskSource)(object)this, core.Version);
+		_core.Reset();
+		return new GdTask((IGdTaskSource)(object)this, _core.Version);
 	}
 }
 
@@ -44,12 +44,12 @@ public sealed partial class AsyncPhysicsProcessTrigger : AsyncTriggerBase<AsyncU
 		return new AsyncTriggerHandler<AsyncUnit>(this, cancellationToken, false);
 	}
 
-	public GDTask PhysicsProcessAsync()
+	public GdTask PhysicsProcessAsync()
 	{
 		return ((IAsyncPhysicsProcessHandler)new AsyncTriggerHandler<AsyncUnit>(this, true)).PhysicsProcessAsync();
 	}
 
-	public GDTask PhysicsProcessAsync(CancellationToken cancellationToken)
+	public GdTask PhysicsProcessAsync(CancellationToken cancellationToken)
 	{
 		return ((IAsyncPhysicsProcessHandler)new AsyncTriggerHandler<AsyncUnit>(this, cancellationToken, true)).PhysicsProcessAsync();
 	}
@@ -60,15 +60,15 @@ public sealed partial class AsyncPhysicsProcessTrigger : AsyncTriggerBase<AsyncU
 
 public interface IAsyncProcessHandler
 {
-	GDTask ProcessAsync();
+	GdTask ProcessAsync();
 }
 
 public partial class AsyncTriggerHandler<T> : IAsyncProcessHandler
 {
-	GDTask IAsyncProcessHandler.ProcessAsync()
+	GdTask IAsyncProcessHandler.ProcessAsync()
 	{
-		core.Reset();
-		return new GDTask((IGDTaskSource)(object)this, core.Version);
+		_core.Reset();
+		return new GdTask((IGdTaskSource)(object)this, _core.Version);
 	}
 }
 
@@ -97,12 +97,12 @@ public sealed partial class AsyncProcessTrigger : AsyncTriggerBase<AsyncUnit>
 		return new AsyncTriggerHandler<AsyncUnit>(this, cancellationToken, false);
 	}
 
-	public GDTask ProcessAsync()
+	public GdTask ProcessAsync()
 	{
 		return ((IAsyncProcessHandler)new AsyncTriggerHandler<AsyncUnit>(this, true)).ProcessAsync();
 	}
 
-	public GDTask ProcessAsync(CancellationToken cancellationToken)
+	public GdTask ProcessAsync(CancellationToken cancellationToken)
 	{
 		return ((IAsyncProcessHandler)new AsyncTriggerHandler<AsyncUnit>(this, cancellationToken, true)).ProcessAsync();
 	}

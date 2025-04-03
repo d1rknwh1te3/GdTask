@@ -18,9 +18,9 @@ public sealed partial class AsyncEnterTreeTrigger : AsyncTriggerBase<AsyncUnit>
 		RaiseEvent(AsyncUnit.Default);
 	}
 
-	public GDTask EnterTreeAsync()
+	public GdTask EnterTreeAsync()
 	{
-		if (calledEnterTree) return GDTask.CompletedTask;
+		if (CalledEnterTree) return GdTask.CompletedTask;
 
 		return ((IAsyncOneShotTrigger)new AsyncTriggerHandler<AsyncUnit>(this, true)).OneShotAsync();
 	}

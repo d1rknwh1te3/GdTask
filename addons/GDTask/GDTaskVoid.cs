@@ -8,8 +8,8 @@ using Fractural.Tasks.CompilerServices;
 
 namespace Fractural.Tasks;
 
-[AsyncMethodBuilder(typeof(AsyncGDTaskVoidMethodBuilder))]
-public readonly struct GDTaskVoid
+[AsyncMethodBuilder(typeof(AsyncGdTaskVoidMethodBuilder))]
+public readonly struct GdTaskVoid
 {
 	public void Forget()
 	{

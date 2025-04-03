@@ -13,26 +13,26 @@ public static partial class AsyncTriggerExtensions
 
 public sealed partial class AsyncDestroyTrigger : Node
 {
-	private bool enterTreeCalled = false;
-	private bool called = false;
-	private CancellationTokenSource cancellationTokenSource;
+	private bool _enterTreeCalled = false;
+	private bool _called = false;
+	private CancellationTokenSource _cancellationTokenSource;
 
 	public CancellationToken CancellationToken
 	{
 		get
 		{
-			if (cancellationTokenSource == null)
+			if (_cancellationTokenSource == null)
 			{
-				cancellationTokenSource = new CancellationTokenSource();
+				_cancellationTokenSource = new CancellationTokenSource();
 			}
 
-			return cancellationTokenSource.Token;
+			return _cancellationTokenSource.Token;
 		}
 	}
 
 	public override void _EnterTree()
 	{
-		enterTreeCalled = true;
+		_enterTreeCalled = true;
 	}
 
 	public override void _Notification(int what)
@@ -43,22 +43,22 @@ public sealed partial class AsyncDestroyTrigger : Node
 
 	private void OnDestroy()
 	{
-		called = true;
+		_called = true;
 
-		cancellationTokenSource?.Cancel();
-		cancellationTokenSource?.Dispose();
+		_cancellationTokenSource?.Cancel();
+		_cancellationTokenSource?.Dispose();
 	}
 
-	public GDTask OnDestroyAsync()
+	public GdTask OnDestroyAsync()
 	{
-		if (called) return GDTask.CompletedTask;
+		if (_called) return GdTask.CompletedTask;
 
-		var tcs = new GDTaskCompletionSource();
+		var tcs = new GdTaskCompletionSource();
 
 		// OnDestroy = Called Cancel.
 		CancellationToken.RegisterWithoutCaptureExecutionContext(state =>
 		{
-			var tcs2 = (GDTaskCompletionSource)state;
+			var tcs2 = (GdTaskCompletionSource)state;
 			tcs2.TrySetResult();
 		}, tcs);
 

@@ -7,7 +7,7 @@ using System.Security;
 namespace Fractural.Tasks.CompilerServices;
 
 [StructLayout(LayoutKind.Auto)]
-public struct AsyncGDTaskMethodBuilder
+public struct AsyncGdTaskMethodBuilder
 {
 	private IStateMachineRunnerPromise runnerPromise;
 	private Exception ex;
@@ -15,13 +15,13 @@ public struct AsyncGDTaskMethodBuilder
 	// 1. Static Create method.
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static AsyncGDTaskMethodBuilder Create()
+	public static AsyncGdTaskMethodBuilder Create()
 	{
 		return default;
 	}
 
 	// 2. TaskLike Task property.
-	public GDTask Task
+	public GdTask Task
 	{
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -33,11 +33,11 @@ public struct AsyncGDTaskMethodBuilder
 			}
 			else if (ex != null)
 			{
-				return GDTask.FromException(ex);
+				return GdTask.FromException(ex);
 			}
 			else
 			{
-				return GDTask.CompletedTask;
+				return GdTask.CompletedTask;
 			}
 		}
 	}
@@ -77,7 +77,7 @@ public struct AsyncGDTaskMethodBuilder
 	{
 		if (runnerPromise == null)
 		{
-			AsyncGDTask<TStateMachine>.SetStateMachine(ref stateMachine, ref runnerPromise);
+			AsyncGdTask<TStateMachine>.SetStateMachine(ref stateMachine, ref runnerPromise);
 		}
 
 		awaiter.OnCompleted(runnerPromise.MoveNext);
@@ -93,7 +93,7 @@ public struct AsyncGDTaskMethodBuilder
 	{
 		if (runnerPromise == null)
 		{
-			AsyncGDTask<TStateMachine>.SetStateMachine(ref stateMachine, ref runnerPromise);
+			AsyncGdTask<TStateMachine>.SetStateMachine(ref stateMachine, ref runnerPromise);
 		}
 
 		awaiter.UnsafeOnCompleted(runnerPromise.MoveNext);
@@ -133,7 +133,7 @@ public struct AsyncGDTaskMethodBuilder
 }
 
 [StructLayout(LayoutKind.Auto)]
-public struct AsyncGDTaskMethodBuilder<T>
+public struct AsyncGdTaskMethodBuilder<T>
 {
 	private IStateMachineRunnerPromise<T> runnerPromise;
 	private Exception ex;
@@ -142,13 +142,13 @@ public struct AsyncGDTaskMethodBuilder<T>
 	// 1. Static Create method.
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static AsyncGDTaskMethodBuilder<T> Create()
+	public static AsyncGdTaskMethodBuilder<T> Create()
 	{
 		return default;
 	}
 
 	// 2. TaskLike Task property.
-	public GDTask<T> Task
+	public GdTask<T> Task
 	{
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -160,11 +160,11 @@ public struct AsyncGDTaskMethodBuilder<T>
 			}
 			else if (ex != null)
 			{
-				return GDTask.FromException<T>(ex);
+				return GdTask.FromException<T>(ex);
 			}
 			else
 			{
-				return GDTask.FromResult(result);
+				return GdTask.FromResult(result);
 			}
 		}
 	}
@@ -208,7 +208,7 @@ public struct AsyncGDTaskMethodBuilder<T>
 	{
 		if (runnerPromise == null)
 		{
-			AsyncGDTask<TStateMachine, T>.SetStateMachine(ref stateMachine, ref runnerPromise);
+			AsyncGdTask<TStateMachine, T>.SetStateMachine(ref stateMachine, ref runnerPromise);
 		}
 
 		awaiter.OnCompleted(runnerPromise.MoveNext);
@@ -224,7 +224,7 @@ public struct AsyncGDTaskMethodBuilder<T>
 	{
 		if (runnerPromise == null)
 		{
-			AsyncGDTask<TStateMachine, T>.SetStateMachine(ref stateMachine, ref runnerPromise);
+			AsyncGdTask<TStateMachine, T>.SetStateMachine(ref stateMachine, ref runnerPromise);
 		}
 
 		awaiter.UnsafeOnCompleted(runnerPromise.MoveNext);

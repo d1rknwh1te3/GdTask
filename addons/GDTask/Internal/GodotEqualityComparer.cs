@@ -10,15 +10,15 @@ internal static class GodotEqualityComparer
 	public static readonly IEqualityComparer<Vector3> Vector3 = new Vector3EqualityComparer();
 	public static readonly IEqualityComparer<Color> Color = new ColorEqualityComparer();
 	public static readonly IEqualityComparer<Rect2> Rect2 = new Rect2EqualityComparer();
-	public static readonly IEqualityComparer<Aabb> AABB = new AABBEqualityComparer();
+	public static readonly IEqualityComparer<Aabb> Aabb = new AabbEqualityComparer();
 	public static readonly IEqualityComparer<Quaternion> Quaternion = new QuatEqualityComparer();
 
-	private static readonly RuntimeTypeHandle vector2Type = typeof(Vector2).TypeHandle;
-	private static readonly RuntimeTypeHandle vector3Type = typeof(Vector3).TypeHandle;
-	private static readonly RuntimeTypeHandle colorType = typeof(Color).TypeHandle;
-	private static readonly RuntimeTypeHandle rectType = typeof(Rect2).TypeHandle;
-	private static readonly RuntimeTypeHandle AABBType = typeof(Aabb).TypeHandle;
-	private static readonly RuntimeTypeHandle quaternionType = typeof(Quaternion).TypeHandle;
+	private static readonly RuntimeTypeHandle Vector2Type = typeof(Vector2).TypeHandle;
+	private static readonly RuntimeTypeHandle Vector3Type = typeof(Vector3).TypeHandle;
+	private static readonly RuntimeTypeHandle ColorType = typeof(Color).TypeHandle;
+	private static readonly RuntimeTypeHandle RectType = typeof(Rect2).TypeHandle;
+	private static readonly RuntimeTypeHandle AabbType = typeof(Aabb).TypeHandle;
+	private static readonly RuntimeTypeHandle QuaternionType = typeof(Quaternion).TypeHandle;
 
 	private static class Cache<T>
 	{
@@ -47,12 +47,12 @@ internal static class GodotEqualityComparer
 	{
 		var t = type.TypeHandle;
 
-		if (t.Equals(vector2Type)) return (object)GodotEqualityComparer.Vector2;
-		if (t.Equals(vector3Type)) return (object)GodotEqualityComparer.Vector3;
-		if (t.Equals(colorType)) return (object)GodotEqualityComparer.Color;
-		if (t.Equals(rectType)) return (object)GodotEqualityComparer.Rect2;
-		if (t.Equals(AABBType)) return (object)GodotEqualityComparer.AABB;
-		if (t.Equals(quaternionType)) return (object)GodotEqualityComparer.Quaternion;
+		if (t.Equals(Vector2Type)) return (object)GodotEqualityComparer.Vector2;
+		if (t.Equals(Vector3Type)) return (object)GodotEqualityComparer.Vector3;
+		if (t.Equals(ColorType)) return (object)GodotEqualityComparer.Color;
+		if (t.Equals(RectType)) return (object)GodotEqualityComparer.Rect2;
+		if (t.Equals(AabbType)) return (object)GodotEqualityComparer.Aabb;
+		if (t.Equals(QuaternionType)) return (object)GodotEqualityComparer.Quaternion;
 
 		return null;
 	}
@@ -109,7 +109,7 @@ internal static class GodotEqualityComparer
 		}
 	}
 
-	private sealed class AABBEqualityComparer : IEqualityComparer<Aabb>
+	private sealed class AabbEqualityComparer : IEqualityComparer<Aabb>
 	{
 		public bool Equals(Aabb self, Aabb vector)
 		{

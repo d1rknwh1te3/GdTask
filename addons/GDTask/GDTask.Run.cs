@@ -3,54 +3,54 @@ using System.Threading;
 
 namespace Fractural.Tasks;
 
-public partial struct GDTask
+public partial struct GdTask
 {
 	#region OBSOLETE_RUN
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask Run(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(action, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask Run(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask Run(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(action, state, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask Run(Func<GDTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask Run(Func<GdTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(action, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask Run(Func<object, GDTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask Run(Func<object, GdTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(action, state, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask<T> Run<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask<T> Run<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(func, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask<T> Run<T>(Func<GDTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask<T> Run<T>(Func<GdTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(func, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask<T> Run<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask<T> Run<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(func, state, configureAwait, cancellationToken);
 	}
 
 	[Obsolete("GDTask.Run is similar as Task.Run, it uses ThreadPool. For equivalent behaviour, use GDTask.RunOnThreadPool instead. If you don't want to use ThreadPool, you can use GDTask.Void(async void) or GDTask.Create(async GDTask) too.")]
-	public static GDTask<T> Run<T>(Func<object, GDTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static GdTask<T> Run<T>(Func<object, GdTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		return RunOnThreadPool(func, state, configureAwait, cancellationToken);
 	}
@@ -58,11 +58,11 @@ public partial struct GDTask
 	#endregion
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask RunOnThreadPool(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask RunOnThreadPool(Action action, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -74,7 +74,7 @@ public partial struct GDTask
 			}
 			finally
 			{
-				await GDTask.Yield();
+				await GdTask.Yield();
 			}
 		}
 		else
@@ -86,11 +86,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask RunOnThreadPool(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask RunOnThreadPool(Action<object> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -102,7 +102,7 @@ public partial struct GDTask
 			}
 			finally
 			{
-				await GDTask.Yield();
+				await GdTask.Yield();
 			}
 		}
 		else
@@ -114,11 +114,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask RunOnThreadPool(Func<GDTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask RunOnThreadPool(Func<GdTask> action, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -130,7 +130,7 @@ public partial struct GDTask
 			}
 			finally
 			{
-				await GDTask.Yield();
+				await GdTask.Yield();
 			}
 		}
 		else
@@ -142,11 +142,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask RunOnThreadPool(Func<object, GDTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask RunOnThreadPool(Func<object, GdTask> action, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -158,7 +158,7 @@ public partial struct GDTask
 			}
 			finally
 			{
-				await GDTask.Yield();
+				await GdTask.Yield();
 			}
 		}
 		else
@@ -170,11 +170,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask<T> RunOnThreadPool<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask<T> RunOnThreadPool<T>(Func<T> func, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -186,7 +186,7 @@ public partial struct GDTask
 			}
 			finally
 			{
-				await GDTask.Yield();
+				await GdTask.Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}
@@ -197,11 +197,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask<T> RunOnThreadPool<T>(Func<GDTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask<T> RunOnThreadPool<T>(Func<GdTask<T>> func, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -214,7 +214,7 @@ public partial struct GDTask
 			finally
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				await GDTask.Yield();
+				await GdTask.Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}
@@ -227,11 +227,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask<T> RunOnThreadPool<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask<T> RunOnThreadPool<T>(Func<object, T> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -243,7 +243,7 @@ public partial struct GDTask
 			}
 			finally
 			{
-				await GDTask.Yield();
+				await GdTask.Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}
@@ -254,11 +254,11 @@ public partial struct GDTask
 	}
 
 	/// <summary>Run action on the threadPool and return to main thread if configureAwait = true.</summary>
-	public static async GDTask<T> RunOnThreadPool<T>(Func<object, GDTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
+	public static async GdTask<T> RunOnThreadPool<T>(Func<object, GdTask<T>> func, object state, bool configureAwait = true, CancellationToken cancellationToken = default)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GDTask.SwitchToThreadPool();
+		await GdTask.SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -271,7 +271,7 @@ public partial struct GDTask
 			finally
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				await GDTask.Yield();
+				await GdTask.Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}

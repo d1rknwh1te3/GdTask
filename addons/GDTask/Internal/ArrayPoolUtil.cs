@@ -80,13 +80,13 @@ internal static class ArrayPoolUtil
 	{
 		public readonly T[] Array;
 		public readonly int Length;
-		private ArrayPool<T> pool;
+		private ArrayPool<T> _pool;
 
 		public RentArray(T[] array, int length, ArrayPool<T> pool)
 		{
 			this.Array = array;
 			this.Length = length;
-			this.pool = pool;
+			this._pool = pool;
 		}
 
 		public void Dispose()
@@ -96,15 +96,15 @@ internal static class ArrayPoolUtil
 
 		public void DisposeManually(bool clearArray)
 		{
-			if (pool != null)
+			if (_pool != null)
 			{
 				if (clearArray)
 				{
 					System.Array.Clear(Array, 0, Length);
 				}
 
-				pool.Return(Array, clearArray: false);
-				pool = null;
+				_pool.Return(Array, clearArray: false);
+				_pool = null;
 			}
 		}
 	}

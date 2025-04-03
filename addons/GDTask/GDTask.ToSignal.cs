@@ -3,16 +3,16 @@ using System.Threading;
 
 namespace Fractural.Tasks;
 
-public partial struct GDTask
+public partial struct GdTask
 {
-	public static async GDTask<Variant[]> ToSignal(GodotObject self, StringName signal)
+	public static async GdTask<Variant[]> ToSignal(GodotObject self, StringName signal)
 	{
 		return await self.ToSignal(self, signal);
 	}
 
-	public static async GDTask<Variant[]> ToSignal(GodotObject self, StringName signal, CancellationToken ct)
+	public static async GdTask<Variant[]> ToSignal(GodotObject self, StringName signal, CancellationToken ct)
 	{
-		var tcs = new GDTaskCompletionSource<Variant[]>();
+		var tcs = new GdTaskCompletionSource<Variant[]>();
 		ct.Register(() => tcs.TrySetCanceled(ct));
 		Create(async () =>
 		{

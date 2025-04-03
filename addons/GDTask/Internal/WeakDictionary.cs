@@ -8,20 +8,20 @@ namespace Fractural.Tasks.Internal;
 internal class WeakDictionary<TKey, TValue>
 	where TKey : class
 {
-	private Entry[] buckets;
-	private int size;
-	private SpinLock gate; // mutable struct(not readonly)
+	private Entry[] _buckets;
+	private int _size;
+	private SpinLock _gate; // mutable struct(not readonly)
 
-	private readonly float loadFactor;
-	private readonly IEqualityComparer<TKey> keyEqualityComparer;
+	private readonly float _loadFactor;
+	private readonly IEqualityComparer<TKey> _keyEqualityComparer;
 
 	public WeakDictionary(int capacity = 4, float loadFactor = 0.75f, IEqualityComparer<TKey> keyComparer = null)
 	{
 		var tableSize = CalculateCapacity(capacity, loadFactor);
-		this.buckets = new Entry[tableSize];
-		this.loadFactor = loadFactor;
-		this.gate = new SpinLock(false);
-		this.keyEqualityComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+		this._buckets = new Entry[tableSize];
+		this._loadFactor = loadFactor;
+		this._gate = new SpinLock(false);
+		this._keyEqualityComparer = keyComparer ?? EqualityComparer<TKey>.Default;
 	}
 
 	public bool TryAdd(TKey key, TValue value)
@@ -29,12 +29,12 @@ internal class WeakDictionary<TKey, TValue>
 		bool lockTaken = false;
 		try
 		{
-			gate.Enter(ref lockTaken);
+			_gate.Enter(ref lockTaken);
 			return TryAddInternal(key, value);
 		}
 		finally
 		{
-			if (lockTaken) gate.Exit(false);
+			if (lockTaken) _gate.Exit(false);
 		}
 	}
 
@@ -43,7 +43,7 @@ internal class WeakDictionary<TKey, TValue>
 		bool lockTaken = false;
 		try
 		{
-			gate.Enter(ref lockTaken);
+			_gate.Enter(ref lockTaken);
 			if (TryGetEntry(key, out _, out var entry))
 			{
 				value = entry.Value;
@@ -55,7 +55,7 @@ internal class WeakDictionary<TKey, TValue>
 		}
 		finally
 		{
-			if (lockTaken) gate.Exit(false);
+			if (lockTaken) _gate.Exit(false);
 		}
 	}
 
@@ -64,7 +64,7 @@ internal class WeakDictionary<TKey, TValue>
 		bool lockTaken = false;
 		try
 		{
-			gate.Enter(ref lockTaken);
+			_gate.Enter(ref lockTaken);
 			if (TryGetEntry(key, out var hashIndex, out var entry))
 			{
 				Remove(hashIndex, entry);
@@ -75,22 +75,22 @@ internal class WeakDictionary<TKey, TValue>
 		}
 		finally
 		{
-			if (lockTaken) gate.Exit(false);
+			if (lockTaken) _gate.Exit(false);
 		}
 	}
 
 	private bool TryAddInternal(TKey key, TValue value)
 	{
-		var nextCapacity = CalculateCapacity(size + 1, loadFactor);
+		var nextCapacity = CalculateCapacity(_size + 1, _loadFactor);
 
 		TRY_ADD_AGAIN:
-		if (buckets.Length < nextCapacity)
+		if (_buckets.Length < nextCapacity)
 		{
 			// rehash
 			var nextBucket = new Entry[nextCapacity];
-			for (int i = 0; i < buckets.Length; i++)
+			for (int i = 0; i < _buckets.Length; i++)
 			{
-				var e = buckets[i];
+				var e = _buckets[i];
 				while (e != null)
 				{
 					AddToBuckets(nextBucket, key, e.Value, e.Hash);
@@ -98,14 +98,14 @@ internal class WeakDictionary<TKey, TValue>
 				}
 			}
 
-			buckets = nextBucket;
+			_buckets = nextBucket;
 			goto TRY_ADD_AGAIN;
 		}
 		else
 		{
 			// add entry
-			var successAdd = AddToBuckets(buckets, key, value, keyEqualityComparer.GetHashCode(key));
-			if (successAdd) size++;
+			var successAdd = AddToBuckets(_buckets, key, value, _keyEqualityComparer.GetHashCode(key));
+			if (successAdd) _size++;
 			return successAdd;
 		}
 	}
@@ -135,7 +135,7 @@ internal class WeakDictionary<TKey, TValue>
 			{
 				if (entry.Key.TryGetTarget(out var target))
 				{
-					if (keyEqualityComparer.Equals(newKey, target))
+					if (_keyEqualityComparer.Equals(newKey, target))
 					{
 						return false; // duplicate
 					}
@@ -169,8 +169,8 @@ internal class WeakDictionary<TKey, TValue>
 
 	private bool TryGetEntry(TKey key, out int hashIndex, out Entry entry)
 	{
-		var table = buckets;
-		var hash = keyEqualityComparer.GetHashCode(key);
+		var table = _buckets;
+		var hash = _keyEqualityComparer.GetHashCode(key);
 		hashIndex = hash & table.Length - 1;
 		entry = table[hashIndex];
 
@@ -178,7 +178,7 @@ internal class WeakDictionary<TKey, TValue>
 		{
 			if (entry.Key.TryGetTarget(out var target))
 			{
-				if (keyEqualityComparer.Equals(key, target))
+				if (_keyEqualityComparer.Equals(key, target))
 				{
 					return true;
 				}
@@ -199,13 +199,13 @@ internal class WeakDictionary<TKey, TValue>
 	{
 		if (entry.Prev == null && entry.Next == null)
 		{
-			buckets[hashIndex] = null;
+			_buckets[hashIndex] = null;
 		}
 		else
 		{
 			if (entry.Prev == null)
 			{
-				buckets[hashIndex] = entry.Next;
+				_buckets[hashIndex] = entry.Next;
 			}
 			if (entry.Prev != null)
 			{
@@ -216,12 +216,12 @@ internal class WeakDictionary<TKey, TValue>
 				entry.Next.Prev = entry.Prev;
 			}
 		}
-		size--;
+		_size--;
 	}
 
 	public List<KeyValuePair<TKey, TValue>> ToList()
 	{
-		var list = new List<KeyValuePair<TKey, TValue>>(size);
+		var list = new List<KeyValuePair<TKey, TValue>>(_size);
 		ToList(ref list, false);
 		return list;
 	}
@@ -239,9 +239,9 @@ internal class WeakDictionary<TKey, TValue>
 		bool lockTaken = false;
 		try
 		{
-			for (int i = 0; i < buckets.Length; i++)
+			for (int i = 0; i < _buckets.Length; i++)
 			{
-				var entry = buckets[i];
+				var entry = _buckets[i];
 				while (entry != null)
 				{
 					if (entry.Key.TryGetTarget(out var target))
@@ -269,7 +269,7 @@ internal class WeakDictionary<TKey, TValue>
 		}
 		finally
 		{
-			if (lockTaken) gate.Exit(false);
+			if (lockTaken) _gate.Exit(false);
 		}
 
 		return listIndex;

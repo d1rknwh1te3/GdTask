@@ -7,18 +7,18 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks;
 
-public static partial class GDTaskExtensions
+public static partial class GdTaskExtensions
 {
 	/// <summary>
 	/// Convert Task[T] -> GDTask[T].
 	/// </summary>
-	public static GDTask<T> AsGDTask<T>(this Task<T> task, bool useCurrentSynchronizationContext = true)
+	public static GdTask<T> AsGdTask<T>(this Task<T> task, bool useCurrentSynchronizationContext = true)
 	{
-		var promise = new GDTaskCompletionSource<T>();
+		var promise = new GdTaskCompletionSource<T>();
 
 		task.ContinueWith((x, state) =>
 		{
-			var p = (GDTaskCompletionSource<T>)state;
+			var p = (GdTaskCompletionSource<T>)state;
 
 			switch (x.Status)
 			{
@@ -42,13 +42,13 @@ public static partial class GDTaskExtensions
 	/// <summary>
 	/// Convert Task -> GDTask.
 	/// </summary>
-	public static GDTask AsGDTask(this Task task, bool useCurrentSynchronizationContext = true)
+	public static GdTask AsGdTask(this Task task, bool useCurrentSynchronizationContext = true)
 	{
-		var promise = new GDTaskCompletionSource();
+		var promise = new GdTaskCompletionSource();
 
 		task.ContinueWith((x, state) =>
 		{
-			var p = (GDTaskCompletionSource)state;
+			var p = (GdTaskCompletionSource)state;
 
 			switch (x.Status)
 			{
@@ -69,11 +69,11 @@ public static partial class GDTaskExtensions
 		return promise.Task;
 	}
 
-	public static Task<T> AsTask<T>(this GDTask<T> task)
+	public static Task<T> AsTask<T>(this GdTask<T> task)
 	{
 		try
 		{
-			GDTask<T>.Awaiter awaiter;
+			GdTask<T>.Awaiter awaiter;
 			try
 			{
 				awaiter = task.GetAwaiter();
@@ -100,7 +100,7 @@ public static partial class GDTaskExtensions
 
 			awaiter.SourceOnCompleted(state =>
 			{
-				using (var tuple = (StateTuple<TaskCompletionSource<T>, GDTask<T>.Awaiter>)state)
+				using (var tuple = (StateTuple<TaskCompletionSource<T>, GdTask<T>.Awaiter>)state)
 				{
 					var (inTcs, inAwaiter) = tuple;
 					try
@@ -123,11 +123,11 @@ public static partial class GDTaskExtensions
 		}
 	}
 
-	public static Task AsTask(this GDTask task)
+	public static Task AsTask(this GdTask task)
 	{
 		try
 		{
-			GDTask.Awaiter awaiter;
+			GdTask.Awaiter awaiter;
 			try
 			{
 				awaiter = task.GetAwaiter();
@@ -154,7 +154,7 @@ public static partial class GDTaskExtensions
 
 			awaiter.SourceOnCompleted(state =>
 			{
-				using (var tuple = (StateTuple<TaskCompletionSource<object>, GDTask.Awaiter>)state)
+				using (var tuple = (StateTuple<TaskCompletionSource<object>, GdTask.Awaiter>)state)
 				{
 					var (inTcs, inAwaiter) = tuple;
 					try
@@ -177,12 +177,12 @@ public static partial class GDTaskExtensions
 		}
 	}
 
-	public static AsyncLazy ToAsyncLazy(this GDTask task)
+	public static AsyncLazy ToAsyncLazy(this GdTask task)
 	{
 		return new AsyncLazy(task);
 	}
 
-	public static AsyncLazy<T> ToAsyncLazy<T>(this GDTask<T> task)
+	public static AsyncLazy<T> ToAsyncLazy<T>(this GdTask<T> task)
 	{
 		return new AsyncLazy<T>(task);
 	}
@@ -190,7 +190,7 @@ public static partial class GDTaskExtensions
 	/// <summary>
 	/// Ignore task result when cancel raised first.
 	/// </summary>
-	public static GDTask AttachExternalCancellation(this GDTask task, CancellationToken cancellationToken)
+	public static GdTask AttachExternalCancellation(this GdTask task, CancellationToken cancellationToken)
 	{
 		if (!cancellationToken.CanBeCanceled)
 		{
@@ -199,7 +199,7 @@ public static partial class GDTaskExtensions
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			return GDTask.FromCanceled(cancellationToken);
+			return GdTask.FromCanceled(cancellationToken);
 		}
 
 		if (task.Status.IsCompleted())
@@ -207,13 +207,13 @@ public static partial class GDTaskExtensions
 			return task;
 		}
 
-		return new GDTask(new AttachExternalCancellationSource(task, cancellationToken), 0);
+		return new GdTask(new AttachExternalCancellationSource(task, cancellationToken), 0);
 	}
 
 	/// <summary>
 	/// Ignore task result when cancel raised first.
 	/// </summary>
-	public static GDTask<T> AttachExternalCancellation<T>(this GDTask<T> task, CancellationToken cancellationToken)
+	public static GdTask<T> AttachExternalCancellation<T>(this GdTask<T> task, CancellationToken cancellationToken)
 	{
 		if (!cancellationToken.CanBeCanceled)
 		{
@@ -222,7 +222,7 @@ public static partial class GDTaskExtensions
 
 		if (cancellationToken.IsCancellationRequested)
 		{
-			return GDTask.FromCanceled<T>(cancellationToken);
+			return GdTask.FromCanceled<T>(cancellationToken);
 		}
 
 		if (task.Status.IsCompleted())
@@ -230,141 +230,141 @@ public static partial class GDTaskExtensions
 			return task;
 		}
 
-		return new GDTask<T>(new AttachExternalCancellationSource<T>(task, cancellationToken), 0);
+		return new GdTask<T>(new AttachExternalCancellationSource<T>(task, cancellationToken), 0);
 	}
 
-	private sealed class AttachExternalCancellationSource : IGDTaskSource
+	private sealed class AttachExternalCancellationSource : IGdTaskSource
 	{
-		private static readonly Action<object> cancellationCallbackDelegate = CancellationCallback;
+		private static readonly Action<object> CancellationCallbackDelegate = CancellationCallback;
 
-		private CancellationToken cancellationToken;
-		private CancellationTokenRegistration tokenRegistration;
-		private GDTaskCompletionSourceCore<AsyncUnit> core;
+		private CancellationToken _cancellationToken;
+		private CancellationTokenRegistration _tokenRegistration;
+		private GdTaskCompletionSourceCore<AsyncUnit> _core;
 
-		public AttachExternalCancellationSource(GDTask task, CancellationToken cancellationToken)
+		public AttachExternalCancellationSource(GdTask task, CancellationToken cancellationToken)
 		{
-			this.cancellationToken = cancellationToken;
-			this.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallbackDelegate, this);
+			this._cancellationToken = cancellationToken;
+			this._tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallbackDelegate, this);
 			RunTask(task).Forget();
 		}
 
-		private async GDTaskVoid RunTask(GDTask task)
+		private async GdTaskVoid RunTask(GdTask task)
 		{
 			try
 			{
 				await task;
-				core.TrySetResult(AsyncUnit.Default);
+				_core.TrySetResult(AsyncUnit.Default);
 			}
 			catch (Exception ex)
 			{
-				core.TrySetException(ex);
+				_core.TrySetException(ex);
 			}
 			finally
 			{
-				tokenRegistration.Dispose();
+				_tokenRegistration.Dispose();
 			}
 		}
 
 		private static void CancellationCallback(object state)
 		{
 			var self = (AttachExternalCancellationSource)state;
-			self.core.TrySetCanceled(self.cancellationToken);
+			self._core.TrySetCanceled(self._cancellationToken);
 		}
 
 		public void GetResult(short token)
 		{
-			core.GetResult(token);
+			_core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 	}
 
-	private sealed class AttachExternalCancellationSource<T> : IGDTaskSource<T>
+	private sealed class AttachExternalCancellationSource<T> : IGdTaskSource<T>
 	{
-		private static readonly Action<object> cancellationCallbackDelegate = CancellationCallback;
+		private static readonly Action<object> CancellationCallbackDelegate = CancellationCallback;
 
-		private CancellationToken cancellationToken;
-		private CancellationTokenRegistration tokenRegistration;
-		private GDTaskCompletionSourceCore<T> core;
+		private CancellationToken _cancellationToken;
+		private CancellationTokenRegistration _tokenRegistration;
+		private GdTaskCompletionSourceCore<T> _core;
 
-		public AttachExternalCancellationSource(GDTask<T> task, CancellationToken cancellationToken)
+		public AttachExternalCancellationSource(GdTask<T> task, CancellationToken cancellationToken)
 		{
-			this.cancellationToken = cancellationToken;
-			this.tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallbackDelegate, this);
+			this._cancellationToken = cancellationToken;
+			this._tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallbackDelegate, this);
 			RunTask(task).Forget();
 		}
 
-		private async GDTaskVoid RunTask(GDTask<T> task)
+		private async GdTaskVoid RunTask(GdTask<T> task)
 		{
 			try
 			{
-				core.TrySetResult(await task);
+				_core.TrySetResult(await task);
 			}
 			catch (Exception ex)
 			{
-				core.TrySetException(ex);
+				_core.TrySetException(ex);
 			}
 			finally
 			{
-				tokenRegistration.Dispose();
+				_tokenRegistration.Dispose();
 			}
 		}
 
 		private static void CancellationCallback(object state)
 		{
 			var self = (AttachExternalCancellationSource<T>)state;
-			self.core.TrySetCanceled(self.cancellationToken);
+			self._core.TrySetCanceled(self._cancellationToken);
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
-			core.GetResult(token);
+			_core.GetResult(token);
 		}
 
 		public T GetResult(short token)
 		{
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 	}
 
-	public static async GDTask Timeout(this GDTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
+	public static async GdTask Timeout(this GdTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
 	{
 		var delayCancellationTokenSource = new CancellationTokenSource();
-		var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+		var timeoutTask = GdTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
 		int winArgIndex;
 		bool taskResultIsCanceled;
 		try
 		{
-			(winArgIndex, taskResultIsCanceled, _) = await GDTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
+			(winArgIndex, taskResultIsCanceled, _) = await GdTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
 		}
 		catch
 		{
@@ -396,16 +396,16 @@ public static partial class GDTaskExtensions
 		}
 	}
 
-	public static async GDTask<T> Timeout<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
+	public static async GdTask<T> Timeout<T>(this GdTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
 	{
 		var delayCancellationTokenSource = new CancellationTokenSource();
-		var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+		var timeoutTask = GdTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
 		int winArgIndex;
 		(bool IsCanceled, T Result) taskResult;
 		try
 		{
-			(winArgIndex, taskResult, _) = await GDTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
+			(winArgIndex, taskResult, _) = await GdTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
 		}
 		catch
 		{
@@ -442,16 +442,16 @@ public static partial class GDTaskExtensions
 	/// <summary>
 	/// Timeout with suppress OperationCanceledException. Returns (bool, IsCacneled).
 	/// </summary>
-	public static async GDTask<bool> TimeoutWithoutException(this GDTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
+	public static async GdTask<bool> TimeoutWithoutException(this GdTask task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
 	{
 		var delayCancellationTokenSource = new CancellationTokenSource();
-		var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+		var timeoutTask = GdTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
 		int winArgIndex;
 		bool taskResultIsCanceled;
 		try
 		{
-			(winArgIndex, taskResultIsCanceled, _) = await GDTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
+			(winArgIndex, taskResultIsCanceled, _) = await GdTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
 		}
 		catch
 		{
@@ -488,16 +488,16 @@ public static partial class GDTaskExtensions
 	/// <summary>
 	/// Timeout with suppress OperationCanceledException. Returns (bool IsTimeout, T Result).
 	/// </summary>
-	public static async GDTask<(bool IsTimeout, T Result)> TimeoutWithoutException<T>(this GDTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
+	public static async GdTask<(bool IsTimeout, T Result)> TimeoutWithoutException<T>(this GdTask<T> task, TimeSpan timeout, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming timeoutCheckTiming = PlayerLoopTiming.Process, CancellationTokenSource taskCancellationTokenSource = null)
 	{
 		var delayCancellationTokenSource = new CancellationTokenSource();
-		var timeoutTask = GDTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
+		var timeoutTask = GdTask.Delay(timeout, delayType, timeoutCheckTiming, delayCancellationTokenSource.Token).SuppressCancellationThrow();
 
 		int winArgIndex;
 		(bool IsCanceled, T Result) taskResult;
 		try
 		{
-			(winArgIndex, taskResult, _) = await GDTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
+			(winArgIndex, taskResult, _) = await GdTask.WhenAny(task.SuppressCancellationThrow(), timeoutTask);
 		}
 		catch
 		{
@@ -531,7 +531,7 @@ public static partial class GDTaskExtensions
 		return (false, taskResult.Result);
 	}
 
-	public static void Forget(this GDTask task)
+	public static void Forget(this GdTask task)
 	{
 		var awaiter = task.GetAwaiter();
 		if (awaiter.IsCompleted)
@@ -542,14 +542,14 @@ public static partial class GDTaskExtensions
 			}
 			catch (Exception ex)
 			{
-				GDTaskScheduler.PublishUnobservedTaskException(ex);
+				GdTaskScheduler.PublishUnobservedTaskException(ex);
 			}
 		}
 		else
 		{
 			awaiter.SourceOnCompleted(state =>
 			{
-				using (var t = (StateTuple<GDTask.Awaiter>)state)
+				using (var t = (StateTuple<GdTask.Awaiter>)state)
 				{
 					try
 					{
@@ -557,14 +557,14 @@ public static partial class GDTaskExtensions
 					}
 					catch (Exception ex)
 					{
-						GDTaskScheduler.PublishUnobservedTaskException(ex);
+						GdTaskScheduler.PublishUnobservedTaskException(ex);
 					}
 				}
 			}, StateTuple.Create(awaiter));
 		}
 	}
 
-	public static void Forget(this GDTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
+	public static void Forget(this GdTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
 	{
 		if (exceptionHandler == null)
 		{
@@ -576,7 +576,7 @@ public static partial class GDTaskExtensions
 		}
 	}
 
-	private static async GDTaskVoid ForgetCoreWithCatch(GDTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
+	private static async GdTaskVoid ForgetCoreWithCatch(GdTask task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
 	{
 		try
 		{
@@ -588,18 +588,18 @@ public static partial class GDTaskExtensions
 			{
 				if (handleExceptionOnMainThread)
 				{
-					await GDTask.SwitchToMainThread();
+					await GdTask.SwitchToMainThread();
 				}
 				exceptionHandler(ex);
 			}
 			catch (Exception ex2)
 			{
-				GDTaskScheduler.PublishUnobservedTaskException(ex2);
+				GdTaskScheduler.PublishUnobservedTaskException(ex2);
 			}
 		}
 	}
 
-	public static void Forget<T>(this GDTask<T> task)
+	public static void Forget<T>(this GdTask<T> task)
 	{
 		var awaiter = task.GetAwaiter();
 		if (awaiter.IsCompleted)
@@ -610,14 +610,14 @@ public static partial class GDTaskExtensions
 			}
 			catch (Exception ex)
 			{
-				GDTaskScheduler.PublishUnobservedTaskException(ex);
+				GdTaskScheduler.PublishUnobservedTaskException(ex);
 			}
 		}
 		else
 		{
 			awaiter.SourceOnCompleted(state =>
 			{
-				using (var t = (StateTuple<GDTask<T>.Awaiter>)state)
+				using (var t = (StateTuple<GdTask<T>.Awaiter>)state)
 				{
 					try
 					{
@@ -625,14 +625,14 @@ public static partial class GDTaskExtensions
 					}
 					catch (Exception ex)
 					{
-						GDTaskScheduler.PublishUnobservedTaskException(ex);
+						GdTaskScheduler.PublishUnobservedTaskException(ex);
 					}
 				}
 			}, StateTuple.Create(awaiter));
 		}
 	}
 
-	public static void Forget<T>(this GDTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
+	public static void Forget<T>(this GdTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread = true)
 	{
 		if (exceptionHandler == null)
 		{
@@ -644,7 +644,7 @@ public static partial class GDTaskExtensions
 		}
 	}
 
-	private static async GDTaskVoid ForgetCoreWithCatch<T>(GDTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
+	private static async GdTaskVoid ForgetCoreWithCatch<T>(GdTask<T> task, Action<Exception> exceptionHandler, bool handleExceptionOnMainThread)
 	{
 		try
 		{
@@ -656,107 +656,107 @@ public static partial class GDTaskExtensions
 			{
 				if (handleExceptionOnMainThread)
 				{
-					await GDTask.SwitchToMainThread();
+					await GdTask.SwitchToMainThread();
 				}
 				exceptionHandler(ex);
 			}
 			catch (Exception ex2)
 			{
-				GDTaskScheduler.PublishUnobservedTaskException(ex2);
+				GdTaskScheduler.PublishUnobservedTaskException(ex2);
 			}
 		}
 	}
 
-	public static async GDTask ContinueWith<T>(this GDTask<T> task, Action<T> continuationFunction)
+	public static async GdTask ContinueWith<T>(this GdTask<T> task, Action<T> continuationFunction)
 	{
 		continuationFunction(await task);
 	}
 
-	public static async GDTask ContinueWith<T>(this GDTask<T> task, Func<T, GDTask> continuationFunction)
+	public static async GdTask ContinueWith<T>(this GdTask<T> task, Func<T, GdTask> continuationFunction)
 	{
 		await continuationFunction(await task);
 	}
 
-	public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<T, TR> continuationFunction)
+	public static async GdTask<TR> ContinueWith<T, TR>(this GdTask<T> task, Func<T, TR> continuationFunction)
 	{
 		return continuationFunction(await task);
 	}
 
-	public static async GDTask<TR> ContinueWith<T, TR>(this GDTask<T> task, Func<T, GDTask<TR>> continuationFunction)
+	public static async GdTask<TR> ContinueWith<T, TR>(this GdTask<T> task, Func<T, GdTask<TR>> continuationFunction)
 	{
 		return await continuationFunction(await task);
 	}
 
-	public static async GDTask ContinueWith(this GDTask task, Action continuationFunction)
+	public static async GdTask ContinueWith(this GdTask task, Action continuationFunction)
 	{
 		await task;
 		continuationFunction();
 	}
 
-	public static async GDTask ContinueWith(this GDTask task, Func<GDTask> continuationFunction)
+	public static async GdTask ContinueWith(this GdTask task, Func<GdTask> continuationFunction)
 	{
 		await task;
 		await continuationFunction();
 	}
 
-	public static async GDTask<T> ContinueWith<T>(this GDTask task, Func<T> continuationFunction)
+	public static async GdTask<T> ContinueWith<T>(this GdTask task, Func<T> continuationFunction)
 	{
 		await task;
 		return continuationFunction();
 	}
 
-	public static async GDTask<T> ContinueWith<T>(this GDTask task, Func<GDTask<T>> continuationFunction)
+	public static async GdTask<T> ContinueWith<T>(this GdTask task, Func<GdTask<T>> continuationFunction)
 	{
 		await task;
 		return await continuationFunction();
 	}
 
-	public static async GDTask<T> Unwrap<T>(this GDTask<GDTask<T>> task)
+	public static async GdTask<T> Unwrap<T>(this GdTask<GdTask<T>> task)
 	{
 		return await await task;
 	}
 
-	public static async GDTask Unwrap(this GDTask<GDTask> task)
+	public static async GdTask Unwrap(this GdTask<GdTask> task)
 	{
 		await await task;
 	}
 
-	public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task)
+	public static async GdTask<T> Unwrap<T>(this Task<GdTask<T>> task)
 	{
 		return await await task;
 	}
 
-	public static async GDTask<T> Unwrap<T>(this Task<GDTask<T>> task, bool continueOnCapturedContext)
+	public static async GdTask<T> Unwrap<T>(this Task<GdTask<T>> task, bool continueOnCapturedContext)
 	{
 		return await await task.ConfigureAwait(continueOnCapturedContext);
 	}
 
-	public static async GDTask Unwrap(this Task<GDTask> task)
+	public static async GdTask Unwrap(this Task<GdTask> task)
 	{
 		await await task;
 	}
 
-	public static async GDTask Unwrap(this Task<GDTask> task, bool continueOnCapturedContext)
+	public static async GdTask Unwrap(this Task<GdTask> task, bool continueOnCapturedContext)
 	{
 		await await task.ConfigureAwait(continueOnCapturedContext);
 	}
 
-	public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task)
+	public static async GdTask<T> Unwrap<T>(this GdTask<Task<T>> task)
 	{
 		return await await task;
 	}
 
-	public static async GDTask<T> Unwrap<T>(this GDTask<Task<T>> task, bool continueOnCapturedContext)
+	public static async GdTask<T> Unwrap<T>(this GdTask<Task<T>> task, bool continueOnCapturedContext)
 	{
 		return await (await task).ConfigureAwait(continueOnCapturedContext);
 	}
 
-	public static async GDTask Unwrap(this GDTask<Task> task)
+	public static async GdTask Unwrap(this GdTask<Task> task)
 	{
 		await await task;
 	}
 
-	public static async GDTask Unwrap(this GDTask<Task> task, bool continueOnCapturedContext)
+	public static async GdTask Unwrap(this GdTask<Task> task, bool continueOnCapturedContext)
 	{
 		await (await task).ConfigureAwait(continueOnCapturedContext);
 	}

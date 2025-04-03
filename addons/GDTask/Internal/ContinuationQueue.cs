@@ -9,20 +9,20 @@ internal sealed class ContinuationQueue
 	private const int MaxArrayLength = 0X7FEFFFFF;
 	private const int InitialSize = 16;
 
-	private readonly PlayerLoopTiming timing;
+	private readonly PlayerLoopTiming _timing;
 
-	private SpinLock gate = new SpinLock(false);
-	private bool dequing = false;
+	private SpinLock _gate = new SpinLock(false);
+	private bool _dequing = false;
 
-	private int actionListCount = 0;
-	private Action[] actionList = new Action[InitialSize];
+	private int _actionListCount = 0;
+	private Action[] _actionList = new Action[InitialSize];
 
-	private int waitingListCount = 0;
-	private Action[] waitingList = new Action[InitialSize];
+	private int _waitingListCount = 0;
+	private Action[] _waitingList = new Action[InitialSize];
 
 	public ContinuationQueue(PlayerLoopTiming timing)
 	{
-		this.timing = timing;
+		this._timing = timing;
 	}
 
 	public void Enqueue(Action continuation)
@@ -30,54 +30,54 @@ internal sealed class ContinuationQueue
 		bool lockTaken = false;
 		try
 		{
-			gate.Enter(ref lockTaken);
+			_gate.Enter(ref lockTaken);
 
-			if (dequing)
+			if (_dequing)
 			{
 				// Ensure Capacity
-				if (waitingList.Length == waitingListCount)
+				if (_waitingList.Length == _waitingListCount)
 				{
-					var newLength = waitingListCount * 2;
+					var newLength = _waitingListCount * 2;
 					if ((uint)newLength > MaxArrayLength) newLength = MaxArrayLength;
 
 					var newArray = new Action[newLength];
-					Array.Copy(waitingList, newArray, waitingListCount);
-					waitingList = newArray;
+					Array.Copy(_waitingList, newArray, _waitingListCount);
+					_waitingList = newArray;
 				}
-				waitingList[waitingListCount] = continuation;
-				waitingListCount++;
+				_waitingList[_waitingListCount] = continuation;
+				_waitingListCount++;
 			}
 			else
 			{
 				// Ensure Capacity
-				if (actionList.Length == actionListCount)
+				if (_actionList.Length == _actionListCount)
 				{
-					var newLength = actionListCount * 2;
+					var newLength = _actionListCount * 2;
 					if ((uint)newLength > MaxArrayLength) newLength = MaxArrayLength;
 
 					var newArray = new Action[newLength];
-					Array.Copy(actionList, newArray, actionListCount);
-					actionList = newArray;
+					Array.Copy(_actionList, newArray, _actionListCount);
+					_actionList = newArray;
 				}
-				actionList[actionListCount] = continuation;
-				actionListCount++;
+				_actionList[_actionListCount] = continuation;
+				_actionListCount++;
 			}
 		}
 		finally
 		{
-			if (lockTaken) gate.Exit(false);
+			if (lockTaken) _gate.Exit(false);
 		}
 	}
 
 	public int Clear()
 	{
-		var rest = actionListCount + waitingListCount;
+		var rest = _actionListCount + _waitingListCount;
 
-		actionListCount = 0;
-		actionList = new Action[InitialSize];
+		_actionListCount = 0;
+		_actionList = new Action[InitialSize];
 
-		waitingListCount = 0;
-		waitingList = new Action[InitialSize];
+		_waitingListCount = 0;
+		_waitingList = new Action[InitialSize];
 
 		return rest;
 	}
@@ -87,7 +87,7 @@ internal sealed class ContinuationQueue
 	{
 		// for debugging, create named stacktrace.
 #if DEBUG
-		switch (timing)
+		switch (_timing)
 		{
 			case PlayerLoopTiming.PhysicsProcess:
 				PhysicsProcess();
@@ -119,21 +119,21 @@ internal sealed class ContinuationQueue
 			bool lockTaken = false;
 			try
 			{
-				gate.Enter(ref lockTaken);
-				if (actionListCount == 0) return;
-				dequing = true;
+				_gate.Enter(ref lockTaken);
+				if (_actionListCount == 0) return;
+				_dequing = true;
 			}
 			finally
 			{
-				if (lockTaken) gate.Exit(false);
+				if (lockTaken) _gate.Exit(false);
 			}
 		}
 
-		for (int i = 0; i < actionListCount; i++)
+		for (int i = 0; i < _actionListCount; i++)
 		{
 
-			var action = actionList[i];
-			actionList[i] = null;
+			var action = _actionList[i];
+			_actionList[i] = null;
 			try
 			{
 				action();
@@ -148,20 +148,20 @@ internal sealed class ContinuationQueue
 			bool lockTaken = false;
 			try
 			{
-				gate.Enter(ref lockTaken);
-				dequing = false;
+				_gate.Enter(ref lockTaken);
+				_dequing = false;
 
-				var swapTempActionList = actionList;
+				var swapTempActionList = _actionList;
 
-				actionListCount = waitingListCount;
-				actionList = waitingList;
+				_actionListCount = _waitingListCount;
+				_actionList = _waitingList;
 
-				waitingListCount = 0;
-				waitingList = swapTempActionList;
+				_waitingListCount = 0;
+				_waitingList = swapTempActionList;
 			}
 			finally
 			{
-				if (lockTaken) gate.Exit(false);
+				if (lockTaken) _gate.Exit(false);
 			}
 		}
 	}

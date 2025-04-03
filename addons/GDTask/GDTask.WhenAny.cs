@@ -5,59 +5,59 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks;
 
-public partial struct GDTask
+public partial struct GdTask
 {
-	public static GDTask<(bool hasResultLeft, T result)> WhenAny<T>(GDTask<T> leftTask, GDTask rightTask)
+	public static GdTask<(bool hasResultLeft, T result)> WhenAny<T>(GdTask<T> leftTask, GdTask rightTask)
 	{
-		return new GDTask<(bool, T)>(new WhenAnyLRPromise<T>(leftTask, rightTask), 0);
+		return new GdTask<(bool, T)>(new WhenAnyLrPromise<T>(leftTask, rightTask), 0);
 	}
 
-	public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(params GDTask<T>[] tasks)
+	public static GdTask<(int winArgumentIndex, T result)> WhenAny<T>(params GdTask<T>[] tasks)
 	{
-		return new GDTask<(int, T)>(new WhenAnyPromise<T>(tasks, tasks.Length), 0);
+		return new GdTask<(int, T)>(new WhenAnyPromise<T>(tasks, tasks.Length), 0);
 	}
 
-	public static GDTask<(int winArgumentIndex, T result)> WhenAny<T>(IEnumerable<GDTask<T>> tasks)
+	public static GdTask<(int winArgumentIndex, T result)> WhenAny<T>(IEnumerable<GdTask<T>> tasks)
 	{
 		using (var span = ArrayPoolUtil.Materialize(tasks))
 		{
-			return new GDTask<(int, T)>(new WhenAnyPromise<T>(span.Array, span.Length), 0);
+			return new GdTask<(int, T)>(new WhenAnyPromise<T>(span.Array, span.Length), 0);
 		}
 	}
 
 	/// <summary>Return value is winArgumentIndex</summary>
-	public static GDTask<int> WhenAny(params GDTask[] tasks)
+	public static GdTask<int> WhenAny(params GdTask[] tasks)
 	{
-		return new GDTask<int>(new WhenAnyPromise(tasks, tasks.Length), 0);
+		return new GdTask<int>(new WhenAnyPromise(tasks, tasks.Length), 0);
 	}
 
 	/// <summary>Return value is winArgumentIndex</summary>
-	public static GDTask<int> WhenAny(IEnumerable<GDTask> tasks)
+	public static GdTask<int> WhenAny(IEnumerable<GdTask> tasks)
 	{
 		using (var span = ArrayPoolUtil.Materialize(tasks))
 		{
-			return new GDTask<int>(new WhenAnyPromise(span.Array, span.Length), 0);
+			return new GdTask<int>(new WhenAnyPromise(span.Array, span.Length), 0);
 		}
 	}
 
-	private sealed class WhenAnyLRPromise<T> : IGDTaskSource<(bool, T)>
+	private sealed class WhenAnyLrPromise<T> : IGdTaskSource<(bool, T)>
 	{
-		private int completedCount;
-		private GDTaskCompletionSourceCore<(bool, T)> core;
+		private int _completedCount;
+		private GdTaskCompletionSourceCore<(bool, T)> _core;
 
-		public WhenAnyLRPromise(GDTask<T> leftTask, GDTask rightTask)
+		public WhenAnyLrPromise(GdTask<T> leftTask, GdTask rightTask)
 		{
 			TaskTracker.TrackActiveTask(this, 3);
 
 			{
-				GDTask<T>.Awaiter awaiter;
+				GdTask<T>.Awaiter awaiter;
 				try
 				{
 					awaiter = leftTask.GetAwaiter();
 				}
 				catch (Exception ex)
 				{
-					core.TrySetException(ex);
+					_core.TrySetException(ex);
 					goto RIGHT;
 				}
 
@@ -69,7 +69,7 @@ public partial struct GDTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAnyLRPromise<T>, GDTask<T>.Awaiter>)state)
+						using (var t = (StateTuple<WhenAnyLrPromise<T>, GdTask<T>.Awaiter>)state)
 						{
 							TryLeftInvokeContinuation(t.Item1, t.Item2);
 						}
@@ -78,14 +78,14 @@ public partial struct GDTask
 			}
 			RIGHT:
 			{
-				GDTask.Awaiter awaiter;
+				GdTask.Awaiter awaiter;
 				try
 				{
 					awaiter = rightTask.GetAwaiter();
 				}
 				catch (Exception ex)
 				{
-					core.TrySetException(ex);
+					_core.TrySetException(ex);
 					return;
 				}
 
@@ -97,7 +97,7 @@ public partial struct GDTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAnyLRPromise<T>, GDTask.Awaiter>)state)
+						using (var t = (StateTuple<WhenAnyLrPromise<T>, GdTask.Awaiter>)state)
 						{
 							TryRightInvokeContinuation(t.Item1, t.Item2);
 						}
@@ -106,7 +106,7 @@ public partial struct GDTask
 			}
 		}
 
-		private static void TryLeftInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask<T>.Awaiter awaiter)
+		private static void TryLeftInvokeContinuation(WhenAnyLrPromise<T> self, in GdTask<T>.Awaiter awaiter)
 		{
 			T result;
 			try
@@ -115,17 +115,17 @@ public partial struct GDTask
 			}
 			catch (Exception ex)
 			{
-				self.core.TrySetException(ex);
+				self._core.TrySetException(ex);
 				return;
 			}
 
-			if (Interlocked.Increment(ref self.completedCount) == 1)
+			if (Interlocked.Increment(ref self._completedCount) == 1)
 			{
-				self.core.TrySetResult((true, result));
+				self._core.TrySetResult((true, result));
 			}
 		}
 
-		private static void TryRightInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask.Awaiter awaiter)
+		private static void TryRightInvokeContinuation(WhenAnyLrPromise<T> self, in GdTask.Awaiter awaiter)
 		{
 			try
 			{
@@ -133,13 +133,13 @@ public partial struct GDTask
 			}
 			catch (Exception ex)
 			{
-				self.core.TrySetException(ex);
+				self._core.TrySetException(ex);
 				return;
 			}
 
-			if (Interlocked.Increment(ref self.completedCount) == 1)
+			if (Interlocked.Increment(ref self._completedCount) == 1)
 			{
-				self.core.TrySetResult((false, default));
+				self._core.TrySetResult((false, default));
 			}
 		}
 
@@ -147,37 +147,37 @@ public partial struct GDTask
 		{
 			TaskTracker.RemoveTracking(this);
 			GC.SuppressFinalize(this);
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 	}
 
 
-	private sealed class WhenAnyPromise<T> : IGDTaskSource<(int, T)>
+	private sealed class WhenAnyPromise<T> : IGdTaskSource<(int, T)>
 	{
-		private int completedCount;
-		private GDTaskCompletionSourceCore<(int, T)> core;
+		private int _completedCount;
+		private GdTaskCompletionSourceCore<(int, T)> _core;
 
-		public WhenAnyPromise(GDTask<T>[] tasks, int tasksLength)
+		public WhenAnyPromise(GdTask<T>[] tasks, int tasksLength)
 		{
 			if (tasksLength == 0)
 			{
@@ -188,14 +188,14 @@ public partial struct GDTask
 
 			for (int i = 0; i < tasksLength; i++)
 			{
-				GDTask<T>.Awaiter awaiter;
+				GdTask<T>.Awaiter awaiter;
 				try
 				{
 					awaiter = tasks[i].GetAwaiter();
 				}
 				catch (Exception ex)
 				{
-					core.TrySetException(ex);
+					_core.TrySetException(ex);
 					continue; // consume others.
 				}
 
@@ -207,7 +207,7 @@ public partial struct GDTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAnyPromise<T>, GDTask<T>.Awaiter, int>)state)
+						using (var t = (StateTuple<WhenAnyPromise<T>, GdTask<T>.Awaiter, int>)state)
 						{
 							TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
 						}
@@ -216,7 +216,7 @@ public partial struct GDTask
 			}
 		}
 
-		private static void TryInvokeContinuation(WhenAnyPromise<T> self, in GDTask<T>.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAnyPromise<T> self, in GdTask<T>.Awaiter awaiter, int i)
 		{
 			T result;
 			try
@@ -225,13 +225,13 @@ public partial struct GDTask
 			}
 			catch (Exception ex)
 			{
-				self.core.TrySetException(ex);
+				self._core.TrySetException(ex);
 				return;
 			}
 
-			if (Interlocked.Increment(ref self.completedCount) == 1)
+			if (Interlocked.Increment(ref self._completedCount) == 1)
 			{
-				self.core.TrySetResult((i, result));
+				self._core.TrySetResult((i, result));
 			}
 		}
 
@@ -239,36 +239,36 @@ public partial struct GDTask
 		{
 			TaskTracker.RemoveTracking(this);
 			GC.SuppressFinalize(this);
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 	}
 
-	private sealed class WhenAnyPromise : IGDTaskSource<int>
+	private sealed class WhenAnyPromise : IGdTaskSource<int>
 	{
-		private int completedCount;
-		private GDTaskCompletionSourceCore<int> core;
+		private int _completedCount;
+		private GdTaskCompletionSourceCore<int> _core;
 
-		public WhenAnyPromise(GDTask[] tasks, int tasksLength)
+		public WhenAnyPromise(GdTask[] tasks, int tasksLength)
 		{
 			if (tasksLength == 0)
 			{
@@ -279,14 +279,14 @@ public partial struct GDTask
 
 			for (int i = 0; i < tasksLength; i++)
 			{
-				GDTask.Awaiter awaiter;
+				GdTask.Awaiter awaiter;
 				try
 				{
 					awaiter = tasks[i].GetAwaiter();
 				}
 				catch (Exception ex)
 				{
-					core.TrySetException(ex);
+					_core.TrySetException(ex);
 					continue; // consume others.
 				}
 
@@ -298,7 +298,7 @@ public partial struct GDTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAnyPromise, GDTask.Awaiter, int>)state)
+						using (var t = (StateTuple<WhenAnyPromise, GdTask.Awaiter, int>)state)
 						{
 							TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
 						}
@@ -307,7 +307,7 @@ public partial struct GDTask
 			}
 		}
 
-		private static void TryInvokeContinuation(WhenAnyPromise self, in GDTask.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAnyPromise self, in GdTask.Awaiter awaiter, int i)
 		{
 			try
 			{
@@ -315,13 +315,13 @@ public partial struct GDTask
 			}
 			catch (Exception ex)
 			{
-				self.core.TrySetException(ex);
+				self._core.TrySetException(ex);
 				return;
 			}
 
-			if (Interlocked.Increment(ref self.completedCount) == 1)
+			if (Interlocked.Increment(ref self._completedCount) == 1)
 			{
-				self.core.TrySetResult(i);
+				self._core.TrySetResult(i);
 			}
 		}
 
@@ -329,25 +329,25 @@ public partial struct GDTask
 		{
 			TaskTracker.RemoveTracking(this);
 			GC.SuppressFinalize(this);
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}

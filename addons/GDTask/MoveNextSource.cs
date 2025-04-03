@@ -2,36 +2,36 @@
 
 namespace Fractural.Tasks;
 
-public abstract class MoveNextSource : IGDTaskSource<bool>
+public abstract class MoveNextSource : IGdTaskSource<bool>
 {
-	protected GDTaskCompletionSourceCore<bool> completionSource;
+	protected GdTaskCompletionSourceCore<bool> CompletionSource;
 
 	public bool GetResult(short token)
 	{
-		return completionSource.GetResult(token);
+		return CompletionSource.GetResult(token);
 	}
 
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return completionSource.GetStatus(token);
+		return CompletionSource.GetStatus(token);
 	}
 
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		completionSource.OnCompleted(continuation, state, token);
+		CompletionSource.OnCompleted(continuation, state, token);
 	}
 
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return completionSource.UnsafeGetStatus();
+		return CompletionSource.UnsafeGetStatus();
 	}
 
-	void IGDTaskSource.GetResult(short token)
+	void IGdTaskSource.GetResult(short token)
 	{
-		completionSource.GetResult(token);
+		CompletionSource.GetResult(token);
 	}
 
-	protected bool TryGetResult<T>(GDTask<T>.Awaiter awaiter, out T result)
+	protected bool TryGetResult<T>(GdTask<T>.Awaiter awaiter, out T result)
 	{
 		try
 		{
@@ -40,13 +40,13 @@ public abstract class MoveNextSource : IGDTaskSource<bool>
 		}
 		catch (Exception ex)
 		{
-			completionSource.TrySetException(ex);
+			CompletionSource.TrySetException(ex);
 			result = default;
 			return false;
 		}
 	}
 
-	protected bool TryGetResult(GDTask.Awaiter awaiter)
+	protected bool TryGetResult(GdTask.Awaiter awaiter)
 	{
 		try
 		{
@@ -55,7 +55,7 @@ public abstract class MoveNextSource : IGDTaskSource<bool>
 		}
 		catch (Exception ex)
 		{
-			completionSource.TrySetException(ex);
+			CompletionSource.TrySetException(ex);
 			return false;
 		}
 	}

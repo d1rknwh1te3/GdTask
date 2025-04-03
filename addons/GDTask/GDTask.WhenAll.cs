@@ -5,77 +5,77 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks;
 
-public partial struct GDTask
+public partial struct GdTask
 {
-	public static GDTask<T[]> WhenAll<T>(params GDTask<T>[] tasks)
+	public static GdTask<T[]> WhenAll<T>(params GdTask<T>[] tasks)
 	{
 		if (tasks.Length == 0)
 		{
-			return GDTask.FromResult(Array.Empty<T>());
+			return GdTask.FromResult(Array.Empty<T>());
 		}
 
-		return new GDTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
+		return new GdTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
 	}
 
-	public static GDTask<T[]> WhenAll<T>(IEnumerable<GDTask<T>> tasks)
+	public static GdTask<T[]> WhenAll<T>(IEnumerable<GdTask<T>> tasks)
 	{
 		using (var span = ArrayPoolUtil.Materialize(tasks))
 		{
 			var promise = new WhenAllPromise<T>(span.Array, span.Length); // consumed array in constructor.
-			return new GDTask<T[]>(promise, 0);
+			return new GdTask<T[]>(promise, 0);
 		}
 	}
 
-	public static GDTask WhenAll(params GDTask[] tasks)
+	public static GdTask WhenAll(params GdTask[] tasks)
 	{
 		if (tasks.Length == 0)
 		{
-			return GDTask.CompletedTask;
+			return GdTask.CompletedTask;
 		}
 
-		return new GDTask(new WhenAllPromise(tasks, tasks.Length), 0);
+		return new GdTask(new WhenAllPromise(tasks, tasks.Length), 0);
 	}
 
-	public static GDTask WhenAll(IEnumerable<GDTask> tasks)
+	public static GdTask WhenAll(IEnumerable<GdTask> tasks)
 	{
 		using (var span = ArrayPoolUtil.Materialize(tasks))
 		{
 			var promise = new WhenAllPromise(span.Array, span.Length); // consumed array in constructor.
-			return new GDTask(promise, 0);
+			return new GdTask(promise, 0);
 		}
 	}
 
-	private sealed class WhenAllPromise<T> : IGDTaskSource<T[]>
+	private sealed class WhenAllPromise<T> : IGdTaskSource<T[]>
 	{
-		private T[] result;
-		private int completeCount;
-		private GDTaskCompletionSourceCore<T[]> core; // don't reset(called after GetResult, will invoke TrySetException.)
+		private T[] _result;
+		private int _completeCount;
+		private GdTaskCompletionSourceCore<T[]> _core; // don't reset(called after GetResult, will invoke TrySetException.)
 
-		public WhenAllPromise(GDTask<T>[] tasks, int tasksLength)
+		public WhenAllPromise(GdTask<T>[] tasks, int tasksLength)
 		{
 			TaskTracker.TrackActiveTask(this, 3);
 
-			this.completeCount = 0;
+			this._completeCount = 0;
 
 			if (tasksLength == 0)
 			{
-				this.result = Array.Empty<T>();
-				core.TrySetResult(result);
+				this._result = Array.Empty<T>();
+				_core.TrySetResult(_result);
 				return;
 			}
 
-			this.result = new T[tasksLength];
+			this._result = new T[tasksLength];
 
 			for (int i = 0; i < tasksLength; i++)
 			{
-				GDTask<T>.Awaiter awaiter;
+				GdTask<T>.Awaiter awaiter;
 				try
 				{
 					awaiter = tasks[i].GetAwaiter();
 				}
 				catch (Exception ex)
 				{
-					core.TrySetException(ex);
+					_core.TrySetException(ex);
 					continue;
 				}
 
@@ -87,7 +87,7 @@ public partial struct GDTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAllPromise<T>, GDTask<T>.Awaiter, int>)state)
+						using (var t = (StateTuple<WhenAllPromise<T>, GdTask<T>.Awaiter, int>)state)
 						{
 							TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
 						}
@@ -96,21 +96,21 @@ public partial struct GDTask
 			}
 		}
 
-		private static void TryInvokeContinuation(WhenAllPromise<T> self, in GDTask<T>.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAllPromise<T> self, in GdTask<T>.Awaiter awaiter, int i)
 		{
 			try
 			{
-				self.result[i] = awaiter.GetResult();
+				self._result[i] = awaiter.GetResult();
 			}
 			catch (Exception ex)
 			{
-				self.core.TrySetException(ex);
+				self._core.TrySetException(ex);
 				return;
 			}
 
-			if (Interlocked.Increment(ref self.completeCount) == self.result.Length)
+			if (Interlocked.Increment(ref self._completeCount) == self._result.Length)
 			{
-				self.core.TrySetResult(self.result);
+				self._core.TrySetResult(self._result);
 			}
 		}
 
@@ -118,59 +118,59 @@ public partial struct GDTask
 		{
 			TaskTracker.RemoveTracking(this);
 			GC.SuppressFinalize(this);
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 	}
 
-	private sealed class WhenAllPromise : IGDTaskSource
+	private sealed class WhenAllPromise : IGdTaskSource
 	{
-		private int completeCount;
-		private int tasksLength;
-		private GDTaskCompletionSourceCore<AsyncUnit> core; // don't reset(called after GetResult, will invoke TrySetException.)
+		private int _completeCount;
+		private int _tasksLength;
+		private GdTaskCompletionSourceCore<AsyncUnit> _core; // don't reset(called after GetResult, will invoke TrySetException.)
 
-		public WhenAllPromise(GDTask[] tasks, int tasksLength)
+		public WhenAllPromise(GdTask[] tasks, int tasksLength)
 		{
 			TaskTracker.TrackActiveTask(this, 3);
 
-			this.tasksLength = tasksLength;
-			this.completeCount = 0;
+			this._tasksLength = tasksLength;
+			this._completeCount = 0;
 
 			if (tasksLength == 0)
 			{
-				core.TrySetResult(AsyncUnit.Default);
+				_core.TrySetResult(AsyncUnit.Default);
 				return;
 			}
 
 			for (int i = 0; i < tasksLength; i++)
 			{
-				GDTask.Awaiter awaiter;
+				GdTask.Awaiter awaiter;
 				try
 				{
 					awaiter = tasks[i].GetAwaiter();
 				}
 				catch (Exception ex)
 				{
-					core.TrySetException(ex);
+					_core.TrySetException(ex);
 					continue;
 				}
 
@@ -182,7 +182,7 @@ public partial struct GDTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAllPromise, GDTask.Awaiter>)state)
+						using (var t = (StateTuple<WhenAllPromise, GdTask.Awaiter>)state)
 						{
 							TryInvokeContinuation(t.Item1, t.Item2);
 						}
@@ -191,7 +191,7 @@ public partial struct GDTask
 			}
 		}
 
-		private static void TryInvokeContinuation(WhenAllPromise self, in GDTask.Awaiter awaiter)
+		private static void TryInvokeContinuation(WhenAllPromise self, in GdTask.Awaiter awaiter)
 		{
 			try
 			{
@@ -199,13 +199,13 @@ public partial struct GDTask
 			}
 			catch (Exception ex)
 			{
-				self.core.TrySetException(ex);
+				self._core.TrySetException(ex);
 				return;
 			}
 
-			if (Interlocked.Increment(ref self.completeCount) == self.tasksLength)
+			if (Interlocked.Increment(ref self._completeCount) == self._tasksLength)
 			{
-				self.core.TrySetResult(AsyncUnit.Default);
+				self._core.TrySetResult(AsyncUnit.Default);
 			}
 		}
 
@@ -213,22 +213,22 @@ public partial struct GDTask
 		{
 			TaskTracker.RemoveTracking(this);
 			GC.SuppressFinalize(this);
-			core.GetResult(token);
+			_core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 	}
 }

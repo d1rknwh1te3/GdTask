@@ -7,30 +7,30 @@ namespace Fractural.Tasks;
 
 public abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
 {
-	private readonly CancellationToken cancellationToken;
-	private readonly Action<object> timerCallback;
-	private readonly object state;
-	private readonly PlayerLoopTiming playerLoopTiming;
-	private readonly bool periodic;
+	private readonly CancellationToken _cancellationToken;
+	private readonly Action<object> _timerCallback;
+	private readonly object _state;
+	private readonly PlayerLoopTiming _playerLoopTiming;
+	private readonly bool _periodic;
 
-	private bool isRunning;
-	private bool tryStop;
-	private bool isDisposed;
+	private bool _isRunning;
+	private bool _tryStop;
+	private bool _isDisposed;
 
 	protected PlayerLoopTimer(bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
 	{
-		this.periodic = periodic;
-		this.playerLoopTiming = playerLoopTiming;
-		this.cancellationToken = cancellationToken;
-		this.timerCallback = timerCallback;
-		this.state = state;
+		this._periodic = periodic;
+		this._playerLoopTiming = playerLoopTiming;
+		this._cancellationToken = cancellationToken;
+		this._timerCallback = timerCallback;
+		this._state = state;
 	}
 
 	public static PlayerLoopTimer Create(TimeSpan interval, bool periodic, DelayType delayType, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
 	{
 #if DEBUG
 		// force use Realtime.
-		if (GDTaskPlayerLoopAutoload.IsMainThread && Engine.IsEditorHint())
+		if (GdTaskPlayerLoopAutoload.IsMainThread && Engine.IsEditorHint())
 		{
 			delayType = DelayType.Realtime;
 		}
@@ -58,15 +58,15 @@ public abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
 	/// </summary>
 	public void Restart()
 	{
-		if (isDisposed) throw new ObjectDisposedException(null);
+		if (_isDisposed) throw new ObjectDisposedException(null);
 
 		ResetCore(null); // init state
-		if (!isRunning)
+		if (!_isRunning)
 		{
-			isRunning = true;
-			GDTaskPlayerLoopAutoload.AddAction(playerLoopTiming, this);
+			_isRunning = true;
+			GdTaskPlayerLoopAutoload.AddAction(_playerLoopTiming, this);
 		}
-		tryStop = false;
+		_tryStop = false;
 	}
 
 	/// <summary>
@@ -74,15 +74,15 @@ public abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
 	/// </summary>
 	public void Restart(TimeSpan interval)
 	{
-		if (isDisposed) throw new ObjectDisposedException(null);
+		if (_isDisposed) throw new ObjectDisposedException(null);
 
 		ResetCore(interval); // init state
-		if (!isRunning)
+		if (!_isRunning)
 		{
-			isRunning = true;
-			GDTaskPlayerLoopAutoload.AddAction(playerLoopTiming, this);
+			_isRunning = true;
+			GdTaskPlayerLoopAutoload.AddAction(_playerLoopTiming, this);
 		}
-		tryStop = false;
+		_tryStop = false;
 	}
 
 	/// <summary>
@@ -90,46 +90,46 @@ public abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
 	/// </summary>
 	public void Stop()
 	{
-		tryStop = true;
+		_tryStop = true;
 	}
 
 	protected abstract void ResetCore(TimeSpan? newInterval);
 
 	public void Dispose()
 	{
-		isDisposed = true;
+		_isDisposed = true;
 	}
 
 	bool IPlayerLoopItem.MoveNext()
 	{
-		if (isDisposed)
+		if (_isDisposed)
 		{
-			isRunning = false;
+			_isRunning = false;
 			return false;
 		}
-		if (tryStop)
+		if (_tryStop)
 		{
-			isRunning = false;
+			_isRunning = false;
 			return false;
 		}
-		if (cancellationToken.IsCancellationRequested)
+		if (_cancellationToken.IsCancellationRequested)
 		{
-			isRunning = false;
+			_isRunning = false;
 			return false;
 		}
 
 		if (!MoveNextCore())
 		{
-			timerCallback(state);
+			_timerCallback(_state);
 
-			if (periodic)
+			if (_periodic)
 			{
 				ResetCore(null);
 				return true;
 			}
 			else
 			{
-				isRunning = false;
+				_isRunning = false;
 				return false;
 			}
 		}
@@ -142,10 +142,10 @@ public abstract class PlayerLoopTimer : IDisposable, IPlayerLoopItem
 
 internal sealed class DeltaTimePlayerLoopTimer : PlayerLoopTimer
 {
-	private bool isMainThread;
-	private ulong initialFrame;
-	private double elapsed;
-	private double interval;
+	private bool _isMainThread;
+	private ulong _initialFrame;
+	private double _elapsed;
+	private double _interval;
 
 	public DeltaTimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
 		: base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
@@ -155,16 +155,16 @@ internal sealed class DeltaTimePlayerLoopTimer : PlayerLoopTimer
 
 	protected override bool MoveNextCore()
 	{
-		if (elapsed == 0.0)
+		if (_elapsed == 0.0)
 		{
-			if (isMainThread && initialFrame == Engine.GetProcessFrames())
+			if (_isMainThread && _initialFrame == Engine.GetProcessFrames())
 			{
 				return true;
 			}
 		}
 
-		elapsed += GDTaskPlayerLoopAutoload.Global.DeltaTime;
-		if (elapsed >= interval)
+		_elapsed += GdTaskPlayerLoopAutoload.Global.DeltaTime;
+		if (_elapsed >= _interval)
 		{
 			return false;
 		}
@@ -174,21 +174,21 @@ internal sealed class DeltaTimePlayerLoopTimer : PlayerLoopTimer
 
 	protected override void ResetCore(TimeSpan? interval)
 	{
-		this.elapsed = 0.0;
-		this.isMainThread = GDTaskPlayerLoopAutoload.IsMainThread;
-		if (this.isMainThread)
-			this.initialFrame = Engine.GetProcessFrames();
+		this._elapsed = 0.0;
+		this._isMainThread = GdTaskPlayerLoopAutoload.IsMainThread;
+		if (this._isMainThread)
+			this._initialFrame = Engine.GetProcessFrames();
 		if (interval != null)
 		{
-			this.interval = (float)interval.Value.TotalSeconds;
+			this._interval = (float)interval.Value.TotalSeconds;
 		}
 	}
 }
 
 internal sealed class RealtimePlayerLoopTimer : PlayerLoopTimer
 {
-	private ValueStopwatch stopwatch;
-	private long intervalTicks;
+	private ValueStopwatch _stopwatch;
+	private long _intervalTicks;
 
 	public RealtimePlayerLoopTimer(TimeSpan interval, bool periodic, PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken, Action<object> timerCallback, object state)
 		: base(periodic, playerLoopTiming, cancellationToken, timerCallback, state)
@@ -198,7 +198,7 @@ internal sealed class RealtimePlayerLoopTimer : PlayerLoopTimer
 
 	protected override bool MoveNextCore()
 	{
-		if (stopwatch.ElapsedTicks >= intervalTicks)
+		if (_stopwatch.ElapsedTicks >= _intervalTicks)
 		{
 			return false;
 		}
@@ -208,10 +208,10 @@ internal sealed class RealtimePlayerLoopTimer : PlayerLoopTimer
 
 	protected override void ResetCore(TimeSpan? interval)
 	{
-		this.stopwatch = ValueStopwatch.StartNew();
+		this._stopwatch = ValueStopwatch.StartNew();
 		if (interval != null)
 		{
-			this.intervalTicks = interval.Value.Ticks;
+			this._intervalTicks = interval.Value.Ticks;
 		}
 	}
 }

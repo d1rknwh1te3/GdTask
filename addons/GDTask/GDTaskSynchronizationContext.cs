@@ -5,21 +5,21 @@ using System.Threading;
 
 namespace Fractural.Tasks;
 
-public partial class GDTaskSynchronizationContext : SynchronizationContext
+public partial class GdTaskSynchronizationContext : SynchronizationContext
 {
 	private const int MaxArrayLength = 0X7FEFFFFF;
 	private const int InitialSize = 16;
 
-	private static SpinLock gate = new SpinLock(false);
-	private static bool dequing = false;
+	private static SpinLock _gate = new SpinLock(false);
+	private static bool _dequing = false;
 
-	private static int actionListCount = 0;
-	private static Callback[] actionList = new Callback[InitialSize];
+	private static int _actionListCount = 0;
+	private static Callback[] _actionList = new Callback[InitialSize];
 
-	private static int waitingListCount = 0;
-	private static Callback[] waitingList = new Callback[InitialSize];
+	private static int _waitingListCount = 0;
+	private static Callback[] _waitingList = new Callback[InitialSize];
 
-	private static int opCount;
+	private static int _opCount;
 
 	public override void Send(SendOrPostCallback d, object state)
 	{
@@ -31,53 +31,53 @@ public partial class GDTaskSynchronizationContext : SynchronizationContext
 		bool lockTaken = false;
 		try
 		{
-			gate.Enter(ref lockTaken);
+			_gate.Enter(ref lockTaken);
 
-			if (dequing)
+			if (_dequing)
 			{
 				// Ensure Capacity
-				if (waitingList.Length == waitingListCount)
+				if (_waitingList.Length == _waitingListCount)
 				{
-					var newLength = waitingListCount * 2;
+					var newLength = _waitingListCount * 2;
 					if ((uint)newLength > MaxArrayLength) newLength = MaxArrayLength;
 
 					var newArray = new Callback[newLength];
-					Array.Copy(waitingList, newArray, waitingListCount);
-					waitingList = newArray;
+					Array.Copy(_waitingList, newArray, _waitingListCount);
+					_waitingList = newArray;
 				}
-				waitingList[waitingListCount] = new Callback(d, state);
-				waitingListCount++;
+				_waitingList[_waitingListCount] = new Callback(d, state);
+				_waitingListCount++;
 			}
 			else
 			{
 				// Ensure Capacity
-				if (actionList.Length == actionListCount)
+				if (_actionList.Length == _actionListCount)
 				{
-					var newLength = actionListCount * 2;
+					var newLength = _actionListCount * 2;
 					if ((uint)newLength > MaxArrayLength) newLength = MaxArrayLength;
 
 					var newArray = new Callback[newLength];
-					Array.Copy(actionList, newArray, actionListCount);
-					actionList = newArray;
+					Array.Copy(_actionList, newArray, _actionListCount);
+					_actionList = newArray;
 				}
-				actionList[actionListCount] = new Callback(d, state);
-				actionListCount++;
+				_actionList[_actionListCount] = new Callback(d, state);
+				_actionListCount++;
 			}
 		}
 		finally
 		{
-			if (lockTaken) gate.Exit(false);
+			if (lockTaken) _gate.Exit(false);
 		}
 	}
 
 	public override void OperationStarted()
 	{
-		Interlocked.Increment(ref opCount);
+		Interlocked.Increment(ref _opCount);
 	}
 
 	public override void OperationCompleted()
 	{
-		Interlocked.Decrement(ref opCount);
+		Interlocked.Decrement(ref _opCount);
 	}
 
 	public override SynchronizationContext CreateCopy()
@@ -92,20 +92,20 @@ public partial class GDTaskSynchronizationContext : SynchronizationContext
 			bool lockTaken = false;
 			try
 			{
-				gate.Enter(ref lockTaken);
-				if (actionListCount == 0) return;
-				dequing = true;
+				_gate.Enter(ref lockTaken);
+				if (_actionListCount == 0) return;
+				_dequing = true;
 			}
 			finally
 			{
-				if (lockTaken) gate.Exit(false);
+				if (lockTaken) _gate.Exit(false);
 			}
 		}
 
-		for (int i = 0; i < actionListCount; i++)
+		for (int i = 0; i < _actionListCount; i++)
 		{
-			var action = actionList[i];
-			actionList[i] = default;
+			var action = _actionList[i];
+			_actionList[i] = default;
 			action.Invoke();
 		}
 
@@ -113,20 +113,20 @@ public partial class GDTaskSynchronizationContext : SynchronizationContext
 			bool lockTaken = false;
 			try
 			{
-				gate.Enter(ref lockTaken);
-				dequing = false;
+				_gate.Enter(ref lockTaken);
+				_dequing = false;
 
-				var swapTempActionList = actionList;
+				var swapTempActionList = _actionList;
 
-				actionListCount = waitingListCount;
-				actionList = waitingList;
+				_actionListCount = _waitingListCount;
+				_actionList = _waitingList;
 
-				waitingListCount = 0;
-				waitingList = swapTempActionList;
+				_waitingListCount = 0;
+				_waitingList = swapTempActionList;
 			}
 			finally
 			{
-				if (lockTaken) gate.Exit(false);
+				if (lockTaken) _gate.Exit(false);
 			}
 		}
 	}

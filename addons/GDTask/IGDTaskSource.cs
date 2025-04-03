@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Fractural.Tasks;
 
-public enum GDTaskStatus
+public enum GdTaskStatus
 {
 	/// <summary>The operation has not yet completed.</summary>
 	Pending = 0,
@@ -25,53 +25,53 @@ public enum GDTaskStatus
 /// <summary>
 /// GDTaskSource that has a void return (returns nothing).
 /// </summary>
-public interface IGDTaskSource
+public interface IGdTaskSource
 {
-	GDTaskStatus GetStatus(short token);
+	GdTaskStatus GetStatus(short token);
 	void OnCompleted(Action<object> continuation, object state, short token);
 	void GetResult(short token);
 
-	GDTaskStatus UnsafeGetStatus(); // only for debug use.
+	GdTaskStatus UnsafeGetStatus(); // only for debug use.
 }
 
 /// <summary>
 /// GDTaskSource that has a return value of <see cref="T"/>
 /// </summary>
 /// <typeparam name="T">Return value of the task source</typeparam>
-public interface IGDTaskSource<out T> : IGDTaskSource
+public interface IGdTaskSource<out T> : IGdTaskSource
 {
 	// Hide the original void GetResult method
 	new T GetResult(short token);
 }
 
 // Extensions are all aggressive inlined so all calls are substituted with raw code for greatest performance.
-public static class GDTaskStatusExtensions
+public static class GdTaskStatusExtensions
 {
 	/// <summary>status != Pending.</summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool IsCompleted(this GDTaskStatus status)
+	public static bool IsCompleted(this GdTaskStatus status)
 	{
-		return status != GDTaskStatus.Pending;
+		return status != GdTaskStatus.Pending;
 	}
 
 	/// <summary>status == Succeeded.</summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool IsCompletedSuccessfully(this GDTaskStatus status)
+	public static bool IsCompletedSuccessfully(this GdTaskStatus status)
 	{
-		return status == GDTaskStatus.Succeeded;
+		return status == GdTaskStatus.Succeeded;
 	}
 
 	/// <summary>status == Canceled.</summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool IsCanceled(this GDTaskStatus status)
+	public static bool IsCanceled(this GdTaskStatus status)
 	{
-		return status == GDTaskStatus.Canceled;
+		return status == GdTaskStatus.Canceled;
 	}
 
 	/// <summary>status == Faulted.</summary>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static bool IsFaulted(this GDTaskStatus status)
+	public static bool IsFaulted(this GdTaskStatus status)
 	{
-		return status == GDTaskStatus.Faulted;
+		return status == GdTaskStatus.Faulted;
 	}
 }

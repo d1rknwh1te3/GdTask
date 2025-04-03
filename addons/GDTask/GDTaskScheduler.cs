@@ -6,20 +6,20 @@ namespace Fractural.Tasks;
 // GDTask has no scheduler like TaskScheduler.
 // Only handle unobserved exception.
 
-public static class GDTaskScheduler
+public static class GdTaskScheduler
 {
 	public static event Action<Exception> UnobservedTaskException;
 
 	/// <summary>
 	/// Propagate OperationCanceledException to UnobservedTaskException when true. Default is false.
 	/// </summary>
-	public static bool PropagateOperationCanceledException = false;
+	public static bool propagateOperationCanceledException = false;
 
 	internal static void PublishUnobservedTaskException(Exception ex)
 	{
 		if (ex != null)
 		{
-			if (!PropagateOperationCanceledException && ex is OperationCanceledException)
+			if (!propagateOperationCanceledException && ex is OperationCanceledException)
 			{
 				return;
 			}

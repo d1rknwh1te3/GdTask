@@ -6,19 +6,19 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks
 {
-    public partial struct GDTask
+    public partial struct GdTask
     {
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2)> WhenAny<T1, T2>(GDTask<T1> task1, GDTask<T2> task2)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2)> WhenAny<T1, T2>(GdTask<T1> task1, GdTask<T2> task2)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2)>(new WhenAnyPromise<T1, T2>(task1, task2), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2)>(new WhenAnyPromise<T1, T2>(task1, task2), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2> : IGDTaskSource<(int, T1 result1, T2 result2)>
+        sealed class WhenAnyPromise<T1, T2> : IGdTaskSource<(int, T1 result1, T2 result2)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -34,7 +34,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -52,7 +52,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -61,7 +61,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -80,7 +80,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -107,7 +107,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -117,28 +117,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3)> WhenAny<T1, T2, T3>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3)> WhenAny<T1, T2, T3>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3)>(new WhenAnyPromise<T1, T2, T3>(task1, task2, task3), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3)>(new WhenAnyPromise<T1, T2, T3>(task1, task2, task3), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3)>
+        sealed class WhenAnyPromise<T1, T2, T3> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -154,7 +154,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -172,7 +172,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -190,7 +190,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -199,7 +199,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -218,7 +218,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -237,7 +237,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -264,7 +264,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -274,28 +274,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4)> WhenAny<T1, T2, T3, T4>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4)> WhenAny<T1, T2, T3, T4>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4)>(new WhenAnyPromise<T1, T2, T3, T4>(task1, task2, task3, task4), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4)>(new WhenAnyPromise<T1, T2, T3, T4>(task1, task2, task3, task4), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -311,7 +311,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -329,7 +329,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -347,7 +347,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -365,7 +365,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -374,7 +374,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -393,7 +393,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -412,7 +412,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -431,7 +431,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -458,7 +458,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -468,28 +468,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)> WhenAny<T1, T2, T3, T4, T5>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)> WhenAny<T1, T2, T3, T4, T5>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)>(new WhenAnyPromise<T1, T2, T3, T4, T5>(task1, task2, task3, task4, task5), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)>(new WhenAnyPromise<T1, T2, T3, T4, T5>(task1, task2, task3, task4, task5), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -505,7 +505,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -523,7 +523,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -541,7 +541,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -559,7 +559,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -577,7 +577,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -586,7 +586,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -605,7 +605,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -624,7 +624,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -643,7 +643,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -662,7 +662,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -689,7 +689,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -699,28 +699,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)> WhenAny<T1, T2, T3, T4, T5, T6>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)> WhenAny<T1, T2, T3, T4, T5, T6>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6>(task1, task2, task3, task4, task5, task6), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6>(task1, task2, task3, task4, task5, task6), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -736,7 +736,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -754,7 +754,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -772,7 +772,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -790,7 +790,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -808,7 +808,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -826,7 +826,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -835,7 +835,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -854,7 +854,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -873,7 +873,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -892,7 +892,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -911,7 +911,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -930,7 +930,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -957,7 +957,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -967,28 +967,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)> WhenAny<T1, T2, T3, T4, T5, T6, T7>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)> WhenAny<T1, T2, T3, T4, T5, T6, T7>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>(task1, task2, task3, task4, task5, task6, task7), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>(task1, task2, task3, task4, task5, task6, task7), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -1004,7 +1004,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -1022,7 +1022,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -1040,7 +1040,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -1058,7 +1058,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -1076,7 +1076,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -1094,7 +1094,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -1112,7 +1112,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -1121,7 +1121,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -1140,7 +1140,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -1159,7 +1159,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -1178,7 +1178,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -1197,7 +1197,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -1216,7 +1216,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -1235,7 +1235,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -1262,7 +1262,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -1272,28 +1272,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>(task1, task2, task3, task4, task5, task6, task7, task8), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>(task1, task2, task3, task4, task5, task6, task7, task8), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -1309,7 +1309,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -1327,7 +1327,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -1345,7 +1345,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -1363,7 +1363,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -1381,7 +1381,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -1399,7 +1399,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -1417,7 +1417,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -1435,7 +1435,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -1444,7 +1444,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -1463,7 +1463,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -1482,7 +1482,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -1501,7 +1501,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -1520,7 +1520,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -1539,7 +1539,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -1558,7 +1558,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -1577,7 +1577,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -1604,7 +1604,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -1614,28 +1614,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>(task1, task2, task3, task4, task5, task6, task7, task8, task9), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>(task1, task2, task3, task4, task5, task6, task7, task8, task9), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -1651,7 +1651,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -1669,7 +1669,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -1687,7 +1687,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -1705,7 +1705,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -1723,7 +1723,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -1741,7 +1741,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -1759,7 +1759,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -1777,7 +1777,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -1795,7 +1795,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -1804,7 +1804,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -1823,7 +1823,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -1842,7 +1842,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -1861,7 +1861,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -1880,7 +1880,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -1899,7 +1899,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -1918,7 +1918,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -1937,7 +1937,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -1956,7 +1956,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -1983,7 +1983,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -1993,28 +1993,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -2030,7 +2030,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -2048,7 +2048,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -2066,7 +2066,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -2084,7 +2084,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -2102,7 +2102,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -2120,7 +2120,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -2138,7 +2138,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -2156,7 +2156,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -2174,7 +2174,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -2192,7 +2192,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GDTask<T10>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>, GdTask<T10>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT10(t.Item1, t.Item2);
                             }
@@ -2201,7 +2201,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -2220,7 +2220,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -2239,7 +2239,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -2258,7 +2258,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -2277,7 +2277,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -2296,7 +2296,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -2315,7 +2315,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -2334,7 +2334,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -2353,7 +2353,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -2372,7 +2372,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GDTask<T10>.Awaiter awaiter)
+            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> self, in GdTask<T10>.Awaiter awaiter)
             {
                 T10 result;
                 try
@@ -2399,7 +2399,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -2409,28 +2409,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -2446,7 +2446,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -2464,7 +2464,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -2482,7 +2482,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -2500,7 +2500,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -2518,7 +2518,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -2536,7 +2536,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -2554,7 +2554,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -2572,7 +2572,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -2590,7 +2590,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -2608,7 +2608,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T10>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T10>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT10(t.Item1, t.Item2);
                             }
@@ -2626,7 +2626,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GDTask<T11>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>, GdTask<T11>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT11(t.Item1, t.Item2);
                             }
@@ -2635,7 +2635,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -2654,7 +2654,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -2673,7 +2673,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -2692,7 +2692,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -2711,7 +2711,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -2730,7 +2730,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -2749,7 +2749,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -2768,7 +2768,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -2787,7 +2787,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -2806,7 +2806,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T10>.Awaiter awaiter)
+            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T10>.Awaiter awaiter)
             {
                 T10 result;
                 try
@@ -2825,7 +2825,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GDTask<T11>.Awaiter awaiter)
+            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11> self, in GdTask<T11>.Awaiter awaiter)
             {
                 T11 result;
                 try
@@ -2852,7 +2852,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -2862,28 +2862,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -2899,7 +2899,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -2917,7 +2917,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -2935,7 +2935,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -2953,7 +2953,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -2971,7 +2971,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -2989,7 +2989,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -3007,7 +3007,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -3025,7 +3025,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -3043,7 +3043,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -3061,7 +3061,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T10>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T10>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT10(t.Item1, t.Item2);
                             }
@@ -3079,7 +3079,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T11>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T11>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT11(t.Item1, t.Item2);
                             }
@@ -3097,7 +3097,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GDTask<T12>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>, GdTask<T12>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT12(t.Item1, t.Item2);
                             }
@@ -3106,7 +3106,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -3125,7 +3125,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -3144,7 +3144,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -3163,7 +3163,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -3182,7 +3182,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -3201,7 +3201,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -3220,7 +3220,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -3239,7 +3239,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -3258,7 +3258,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -3277,7 +3277,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T10>.Awaiter awaiter)
+            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T10>.Awaiter awaiter)
             {
                 T10 result;
                 try
@@ -3296,7 +3296,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T11>.Awaiter awaiter)
+            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T11>.Awaiter awaiter)
             {
                 T11 result;
                 try
@@ -3315,7 +3315,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GDTask<T12>.Awaiter awaiter)
+            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12> self, in GdTask<T12>.Awaiter awaiter)
             {
                 T12 result;
                 try
@@ -3342,7 +3342,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -3352,28 +3352,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12, GdTask<T13> task13)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12, GdTask<T13> task13)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -3389,7 +3389,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -3407,7 +3407,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -3425,7 +3425,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -3443,7 +3443,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -3461,7 +3461,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -3479,7 +3479,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -3497,7 +3497,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -3515,7 +3515,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -3533,7 +3533,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -3551,7 +3551,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T10>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T10>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT10(t.Item1, t.Item2);
                             }
@@ -3569,7 +3569,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T11>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T11>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT11(t.Item1, t.Item2);
                             }
@@ -3587,7 +3587,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T12>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T12>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT12(t.Item1, t.Item2);
                             }
@@ -3605,7 +3605,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GDTask<T13>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>, GdTask<T13>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT13(t.Item1, t.Item2);
                             }
@@ -3614,7 +3614,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -3633,7 +3633,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -3652,7 +3652,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -3671,7 +3671,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -3690,7 +3690,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -3709,7 +3709,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -3728,7 +3728,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -3747,7 +3747,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -3766,7 +3766,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -3785,7 +3785,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T10>.Awaiter awaiter)
+            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T10>.Awaiter awaiter)
             {
                 T10 result;
                 try
@@ -3804,7 +3804,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T11>.Awaiter awaiter)
+            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T11>.Awaiter awaiter)
             {
                 T11 result;
                 try
@@ -3823,7 +3823,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T12>.Awaiter awaiter)
+            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T12>.Awaiter awaiter)
             {
                 T12 result;
                 try
@@ -3842,7 +3842,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT13(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GDTask<T13>.Awaiter awaiter)
+            static void TryInvokeContinuationT13(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13> self, in GdTask<T13>.Awaiter awaiter)
             {
                 T13 result;
                 try
@@ -3869,7 +3869,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -3879,28 +3879,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13, GDTask<T14> task14)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12, GdTask<T13> task13, GdTask<T14> task14)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13, task14), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13, task14), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13, GDTask<T14> task14)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12, GdTask<T13> task13, GdTask<T14> task14)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -3916,7 +3916,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -3934,7 +3934,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -3952,7 +3952,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -3970,7 +3970,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -3988,7 +3988,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -4006,7 +4006,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -4024,7 +4024,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -4042,7 +4042,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -4060,7 +4060,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -4078,7 +4078,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T10>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T10>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT10(t.Item1, t.Item2);
                             }
@@ -4096,7 +4096,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T11>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T11>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT11(t.Item1, t.Item2);
                             }
@@ -4114,7 +4114,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T12>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T12>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT12(t.Item1, t.Item2);
                             }
@@ -4132,7 +4132,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T13>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T13>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT13(t.Item1, t.Item2);
                             }
@@ -4150,7 +4150,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GDTask<T14>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>, GdTask<T14>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT14(t.Item1, t.Item2);
                             }
@@ -4159,7 +4159,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -4178,7 +4178,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -4197,7 +4197,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -4216,7 +4216,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -4235,7 +4235,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -4254,7 +4254,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -4273,7 +4273,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -4292,7 +4292,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -4311,7 +4311,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -4330,7 +4330,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T10>.Awaiter awaiter)
+            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T10>.Awaiter awaiter)
             {
                 T10 result;
                 try
@@ -4349,7 +4349,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T11>.Awaiter awaiter)
+            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T11>.Awaiter awaiter)
             {
                 T11 result;
                 try
@@ -4368,7 +4368,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T12>.Awaiter awaiter)
+            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T12>.Awaiter awaiter)
             {
                 T12 result;
                 try
@@ -4387,7 +4387,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT13(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T13>.Awaiter awaiter)
+            static void TryInvokeContinuationT13(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T13>.Awaiter awaiter)
             {
                 T13 result;
                 try
@@ -4406,7 +4406,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT14(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GDTask<T14>.Awaiter awaiter)
+            static void TryInvokeContinuationT14(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14> self, in GdTask<T14>.Awaiter awaiter)
             {
                 T14 result;
                 try
@@ -4433,7 +4433,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -4443,28 +4443,28 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }
         }
 
-        public static GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13, GDTask<T14> task14, GDTask<T15> task15)
+        public static GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)> WhenAny<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12, GdTask<T13> task13, GdTask<T14> task14, GdTask<T15> task15)
         {
-            return new GDTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13, task14, task15), 0);
+            return new GdTask<(int winArgumentIndex, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)>(new WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>(task1, task2, task3, task4, task5, task6, task7, task8, task9, task10, task11, task12, task13, task14, task15), 0);
         }
 
-        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : IGDTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)>
+        sealed class WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> : IGdTaskSource<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)>
         {
             int completedCount;
-            GDTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)> core;
+            GdTaskCompletionSourceCore<(int, T1 result1, T2 result2, T3 result3, T4 result4, T5 result5, T6 result6, T7 result7, T8 result8, T9 result9, T10 result10, T11 result11, T12 result12, T13 result13, T14 result14, T15 result15)> core;
 
-            public WhenAnyPromise(GDTask<T1> task1, GDTask<T2> task2, GDTask<T3> task3, GDTask<T4> task4, GDTask<T5> task5, GDTask<T6> task6, GDTask<T7> task7, GDTask<T8> task8, GDTask<T9> task9, GDTask<T10> task10, GDTask<T11> task11, GDTask<T12> task12, GDTask<T13> task13, GDTask<T14> task14, GDTask<T15> task15)
+            public WhenAnyPromise(GdTask<T1> task1, GdTask<T2> task2, GdTask<T3> task3, GdTask<T4> task4, GdTask<T5> task5, GdTask<T6> task6, GdTask<T7> task7, GdTask<T8> task8, GdTask<T9> task9, GdTask<T10> task10, GdTask<T11> task11, GdTask<T12> task12, GdTask<T13> task13, GdTask<T14> task14, GdTask<T15> task15)
             {
                 TaskTracker.TrackActiveTask(this, 3);
 
@@ -4480,7 +4480,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T1>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T1>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT1(t.Item1, t.Item2);
                             }
@@ -4498,7 +4498,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T2>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T2>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT2(t.Item1, t.Item2);
                             }
@@ -4516,7 +4516,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T3>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T3>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT3(t.Item1, t.Item2);
                             }
@@ -4534,7 +4534,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T4>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T4>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT4(t.Item1, t.Item2);
                             }
@@ -4552,7 +4552,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T5>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T5>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT5(t.Item1, t.Item2);
                             }
@@ -4570,7 +4570,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T6>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T6>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT6(t.Item1, t.Item2);
                             }
@@ -4588,7 +4588,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T7>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T7>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT7(t.Item1, t.Item2);
                             }
@@ -4606,7 +4606,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T8>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T8>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT8(t.Item1, t.Item2);
                             }
@@ -4624,7 +4624,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T9>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T9>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT9(t.Item1, t.Item2);
                             }
@@ -4642,7 +4642,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T10>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T10>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT10(t.Item1, t.Item2);
                             }
@@ -4660,7 +4660,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T11>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T11>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT11(t.Item1, t.Item2);
                             }
@@ -4678,7 +4678,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T12>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T12>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT12(t.Item1, t.Item2);
                             }
@@ -4696,7 +4696,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T13>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T13>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT13(t.Item1, t.Item2);
                             }
@@ -4714,7 +4714,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T14>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T14>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT14(t.Item1, t.Item2);
                             }
@@ -4732,7 +4732,7 @@ namespace Fractural.Tasks
                     {
                         awaiter.SourceOnCompleted(state =>
                         {
-                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GDTask<T15>.Awaiter>)state)
+                            using (var t = (StateTuple<WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>, GdTask<T15>.Awaiter>)state)
                             {
                                 TryInvokeContinuationT15(t.Item1, t.Item2);
                             }
@@ -4741,7 +4741,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T1>.Awaiter awaiter)
+            static void TryInvokeContinuationT1(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T1>.Awaiter awaiter)
             {
                 T1 result;
                 try
@@ -4760,7 +4760,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T2>.Awaiter awaiter)
+            static void TryInvokeContinuationT2(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T2>.Awaiter awaiter)
             {
                 T2 result;
                 try
@@ -4779,7 +4779,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T3>.Awaiter awaiter)
+            static void TryInvokeContinuationT3(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T3>.Awaiter awaiter)
             {
                 T3 result;
                 try
@@ -4798,7 +4798,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T4>.Awaiter awaiter)
+            static void TryInvokeContinuationT4(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T4>.Awaiter awaiter)
             {
                 T4 result;
                 try
@@ -4817,7 +4817,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T5>.Awaiter awaiter)
+            static void TryInvokeContinuationT5(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T5>.Awaiter awaiter)
             {
                 T5 result;
                 try
@@ -4836,7 +4836,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T6>.Awaiter awaiter)
+            static void TryInvokeContinuationT6(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T6>.Awaiter awaiter)
             {
                 T6 result;
                 try
@@ -4855,7 +4855,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T7>.Awaiter awaiter)
+            static void TryInvokeContinuationT7(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T7>.Awaiter awaiter)
             {
                 T7 result;
                 try
@@ -4874,7 +4874,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T8>.Awaiter awaiter)
+            static void TryInvokeContinuationT8(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T8>.Awaiter awaiter)
             {
                 T8 result;
                 try
@@ -4893,7 +4893,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T9>.Awaiter awaiter)
+            static void TryInvokeContinuationT9(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T9>.Awaiter awaiter)
             {
                 T9 result;
                 try
@@ -4912,7 +4912,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T10>.Awaiter awaiter)
+            static void TryInvokeContinuationT10(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T10>.Awaiter awaiter)
             {
                 T10 result;
                 try
@@ -4931,7 +4931,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T11>.Awaiter awaiter)
+            static void TryInvokeContinuationT11(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T11>.Awaiter awaiter)
             {
                 T11 result;
                 try
@@ -4950,7 +4950,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T12>.Awaiter awaiter)
+            static void TryInvokeContinuationT12(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T12>.Awaiter awaiter)
             {
                 T12 result;
                 try
@@ -4969,7 +4969,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT13(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T13>.Awaiter awaiter)
+            static void TryInvokeContinuationT13(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T13>.Awaiter awaiter)
             {
                 T13 result;
                 try
@@ -4988,7 +4988,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT14(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T14>.Awaiter awaiter)
+            static void TryInvokeContinuationT14(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T14>.Awaiter awaiter)
             {
                 T14 result;
                 try
@@ -5007,7 +5007,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void TryInvokeContinuationT15(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GDTask<T15>.Awaiter awaiter)
+            static void TryInvokeContinuationT15(WhenAnyPromise<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15> self, in GdTask<T15>.Awaiter awaiter)
             {
                 T15 result;
                 try
@@ -5034,7 +5034,7 @@ namespace Fractural.Tasks
                 return core.GetResult(token);
             }
 
-            public GDTaskStatus GetStatus(short token)
+            public GdTaskStatus GetStatus(short token)
             {
                 return core.GetStatus(token);
             }
@@ -5044,12 +5044,12 @@ namespace Fractural.Tasks
                 core.OnCompleted(continuation, state, token);
             }
 
-            public GDTaskStatus UnsafeGetStatus()
+            public GdTaskStatus UnsafeGetStatus()
             {
                 return core.UnsafeGetStatus();
             }
 
-            void IGDTaskSource.GetResult(short token)
+            void IGdTaskSource.GetResult(short token)
             {
                 GetResult(token);
             }

@@ -39,35 +39,35 @@ public interface IPromise : IResolvePromise, IRejectPromise, ICancelPromise
 
 internal class ExceptionHolder
 {
-	private ExceptionDispatchInfo exception;
-	private bool calledGet = false;
+	private ExceptionDispatchInfo _exception;
+	private bool _calledGet = false;
 
 	public ExceptionHolder(ExceptionDispatchInfo exception)
 	{
-		this.exception = exception;
+		this._exception = exception;
 	}
 
 	public ExceptionDispatchInfo GetException()
 	{
-		if (!calledGet)
+		if (!_calledGet)
 		{
-			calledGet = true;
+			_calledGet = true;
 			GC.SuppressFinalize(this);
 		}
-		return exception;
+		return _exception;
 	}
 
 	~ExceptionHolder()
 	{
-		if (!calledGet)
+		if (!_calledGet)
 		{
-			GDTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
+			GdTaskScheduler.PublishUnobservedTaskException(_exception.SourceException);
 		}
 	}
 }
 
 [StructLayout(LayoutKind.Auto)]
-public struct GDTaskCompletionSourceCore<TResult>
+public struct GdTaskCompletionSourceCore<TResult>
 {
 	// Struct Size: TResult + (8 + 2 + 1 + 1 + 8 + 8)
 
@@ -104,11 +104,11 @@ public struct GDTaskCompletionSourceCore<TResult>
 			{
 				if (error is OperationCanceledException oc)
 				{
-					GDTaskScheduler.PublishUnobservedTaskException(oc);
+					GdTaskScheduler.PublishUnobservedTaskException(oc);
 				}
 				else if (error is ExceptionHolder e)
 				{
-					GDTaskScheduler.PublishUnobservedTaskException(e.GetException().SourceException);
+					GdTaskScheduler.PublishUnobservedTaskException(e.GetException().SourceException);
 				}
 			}
 			catch
@@ -132,7 +132,7 @@ public struct GDTaskCompletionSourceCore<TResult>
 			// setup result
 			this.result = result;
 
-			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
+			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
 			{
 				continuation(continuationState);
 				return true;
@@ -160,7 +160,7 @@ public struct GDTaskCompletionSourceCore<TResult>
 				this.error = new ExceptionHolder(ExceptionDispatchInfo.Capture(error));
 			}
 
-			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
+			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
 			{
 				continuation(continuationState);
 				return true;
@@ -179,7 +179,7 @@ public struct GDTaskCompletionSourceCore<TResult>
 			this.hasUnhandledError = true;
 			this.error = new OperationCanceledException(cancellationToken);
 
-			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GDTaskCompletionSourceCoreShared.s_sentinel, null) != null)
+			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
 			{
 				continuation(continuationState);
 				return true;
@@ -194,31 +194,31 @@ public struct GDTaskCompletionSourceCore<TResult>
 	public short Version => version;
 
 	/// <summary>Gets the status of the operation.</summary>
-	/// <param name="token">Opaque value that was provided to the <see cref="GDTask"/>'s constructor.</param>
+	/// <param name="token">Opaque value that was provided to the <see cref="GdTask"/>'s constructor.</param>
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
 		ValidateToken(token);
-		return (continuation == null || (completedCount == 0)) ? GDTaskStatus.Pending
-			: (error == null) ? GDTaskStatus.Succeeded
-			: (error is OperationCanceledException) ? GDTaskStatus.Canceled
-			: GDTaskStatus.Faulted;
+		return (continuation == null || (completedCount == 0)) ? GdTaskStatus.Pending
+			: (error == null) ? GdTaskStatus.Succeeded
+			: (error is OperationCanceledException) ? GdTaskStatus.Canceled
+			: GdTaskStatus.Faulted;
 	}
 
 	/// <summary>Gets the status of the operation without token validation.</summary>
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return (continuation == null || (completedCount == 0)) ? GDTaskStatus.Pending
-			: (error == null) ? GDTaskStatus.Succeeded
-			: (error is OperationCanceledException) ? GDTaskStatus.Canceled
-			: GDTaskStatus.Faulted;
+		return (continuation == null || (completedCount == 0)) ? GdTaskStatus.Pending
+			: (error == null) ? GdTaskStatus.Succeeded
+			: (error is OperationCanceledException) ? GdTaskStatus.Canceled
+			: GdTaskStatus.Faulted;
 	}
 
 	/// <summary>Gets the result of the operation.</summary>
-	/// <param name="token">Opaque value that was provided to the <see cref="GDTask"/>'s constructor.</param>
+	/// <param name="token">Opaque value that was provided to the <see cref="GdTask"/>'s constructor.</param>
 	// [StackTraceHidden]
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -251,7 +251,7 @@ public struct GDTaskCompletionSourceCore<TResult>
 	/// <summary>Schedules the continuation action for this operation.</summary>
 	/// <param name="continuation">The continuation to invoke when the operation has completed.</param>
 	/// <param name="state">The state object to pass to <paramref name="continuation"/> when it's invoked.</param>
-	/// <param name="token">Opaque value that was provided to the <see cref="GDTask"/>'s constructor.</param>
+	/// <param name="token">Opaque value that was provided to the <see cref="GdTask"/>'s constructor.</param>
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public void OnCompleted(Action<object> continuation, object state, short token /*, ValueTaskSourceOnCompletedFlags flags */)
@@ -284,7 +284,7 @@ public struct GDTaskCompletionSourceCore<TResult>
 		{
 			// already running continuation in TrySet.
 			// It will cause call OnCompleted multiple time, invalid.
-			if (!ReferenceEquals(oldContinuation, GDTaskCompletionSourceCoreShared.s_sentinel))
+			if (!ReferenceEquals(oldContinuation, GdTaskCompletionSourceCoreShared.SSentinel))
 			{
 				throw new InvalidOperationException("Already continuation registered, can not await twice or get Status after await.");
 			}
@@ -304,9 +304,9 @@ public struct GDTaskCompletionSourceCore<TResult>
 	}
 }
 
-internal static class GDTaskCompletionSourceCoreShared // separated out of generic to avoid unnecessary duplication
+internal static class GdTaskCompletionSourceCoreShared // separated out of generic to avoid unnecessary duplication
 {
-	internal static readonly Action<object> s_sentinel = CompletionSentinel;
+	internal static readonly Action<object> SSentinel = CompletionSentinel;
 
 	private static void CompletionSentinel(object _) // named method to aid debugging
 	{
@@ -314,86 +314,86 @@ internal static class GDTaskCompletionSourceCoreShared // separated out of gener
 	}
 }
 
-public partial class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolNode<AutoResetGDTaskCompletionSource>, IPromise
+public partial class AutoResetGdTaskCompletionSource : IGdTaskSource, ITaskPoolNode<AutoResetGdTaskCompletionSource>, IPromise
 {
-	private static TaskPool<AutoResetGDTaskCompletionSource> pool;
-	private AutoResetGDTaskCompletionSource nextNode;
-	public ref AutoResetGDTaskCompletionSource NextNode => ref nextNode;
+	private static TaskPool<AutoResetGdTaskCompletionSource> _pool;
+	private AutoResetGdTaskCompletionSource _nextNode;
+	public ref AutoResetGdTaskCompletionSource NextNode => ref _nextNode;
 
-	static AutoResetGDTaskCompletionSource()
+	static AutoResetGdTaskCompletionSource()
 	{
-		TaskPool.RegisterSizeGetter(typeof(AutoResetGDTaskCompletionSource), () => pool.Size);
+		TaskPool.RegisterSizeGetter(typeof(AutoResetGdTaskCompletionSource), () => _pool.Size);
 	}
 
-	private GDTaskCompletionSourceCore<AsyncUnit> core;
+	private GdTaskCompletionSourceCore<AsyncUnit> _core;
 
-	private AutoResetGDTaskCompletionSource()
+	private AutoResetGdTaskCompletionSource()
 	{
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource Create()
+	public static AutoResetGdTaskCompletionSource Create()
 	{
-		if (!pool.TryPop(out var result))
+		if (!_pool.TryPop(out var result))
 		{
-			result = new AutoResetGDTaskCompletionSource();
+			result = new AutoResetGdTaskCompletionSource();
 		}
 		TaskTracker.TrackActiveTask(result, 2);
 		return result;
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource CreateFromCanceled(CancellationToken cancellationToken, out short token)
+	public static AutoResetGdTaskCompletionSource CreateFromCanceled(CancellationToken cancellationToken, out short token)
 	{
 		var source = Create();
 		source.TrySetCanceled(cancellationToken);
-		token = source.core.Version;
+		token = source._core.Version;
 		return source;
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource CreateFromException(Exception exception, out short token)
+	public static AutoResetGdTaskCompletionSource CreateFromException(Exception exception, out short token)
 	{
 		var source = Create();
 		source.TrySetException(exception);
-		token = source.core.Version;
+		token = source._core.Version;
 		return source;
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource CreateCompleted(out short token)
+	public static AutoResetGdTaskCompletionSource CreateCompleted(out short token)
 	{
 		var source = Create();
 		source.TrySetResult();
-		token = source.core.Version;
+		token = source._core.Version;
 		return source;
 	}
 
-	public GDTask Task
+	public GdTask Task
 	{
 		[DebuggerHidden]
 		get
 		{
-			return new GDTask(this, core.Version);
+			return new GdTask(this, _core.Version);
 		}
 	}
 
 	[DebuggerHidden]
 	public bool TrySetResult()
 	{
-		return core.TrySetResult(AsyncUnit.Default);
+		return _core.TrySetResult(AsyncUnit.Default);
 	}
 
 	[DebuggerHidden]
 	public bool TrySetCanceled(CancellationToken cancellationToken = default)
 	{
-		return core.TrySetCanceled(cancellationToken);
+		return _core.TrySetCanceled(cancellationToken);
 	}
 
 	[DebuggerHidden]
 	public bool TrySetException(Exception exception)
 	{
-		return core.TrySetException(exception);
+		return _core.TrySetException(exception);
 	}
 
 	[DebuggerHidden]
@@ -401,7 +401,7 @@ public partial class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolN
 	{
 		try
 		{
-			core.GetResult(token);
+			_core.GetResult(token);
 		}
 		finally
 		{
@@ -411,112 +411,112 @@ public partial class AutoResetGDTaskCompletionSource : IGDTaskSource, ITaskPoolN
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return core.GetStatus(token);
+		return _core.GetStatus(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return core.UnsafeGetStatus();
+		return _core.UnsafeGetStatus();
 	}
 
 	[DebuggerHidden]
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		core.OnCompleted(continuation, state, token);
+		_core.OnCompleted(continuation, state, token);
 	}
 
 	[DebuggerHidden]
 	private bool TryReturn()
 	{
 		TaskTracker.RemoveTracking(this);
-		core.Reset();
-		return pool.TryPush(this);
+		_core.Reset();
+		return _pool.TryPush(this);
 	}
 }
 
-public partial class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITaskPoolNode<AutoResetGDTaskCompletionSource<T>>, IPromise<T>
+public partial class AutoResetGdTaskCompletionSource<T> : IGdTaskSource<T>, ITaskPoolNode<AutoResetGdTaskCompletionSource<T>>, IPromise<T>
 {
-	private static TaskPool<AutoResetGDTaskCompletionSource<T>> pool;
-	private AutoResetGDTaskCompletionSource<T> nextNode;
-	public ref AutoResetGDTaskCompletionSource<T> NextNode => ref nextNode;
+	private static TaskPool<AutoResetGdTaskCompletionSource<T>> _pool;
+	private AutoResetGdTaskCompletionSource<T> _nextNode;
+	public ref AutoResetGdTaskCompletionSource<T> NextNode => ref _nextNode;
 
-	static AutoResetGDTaskCompletionSource()
+	static AutoResetGdTaskCompletionSource()
 	{
-		TaskPool.RegisterSizeGetter(typeof(AutoResetGDTaskCompletionSource<T>), () => pool.Size);
+		TaskPool.RegisterSizeGetter(typeof(AutoResetGdTaskCompletionSource<T>), () => _pool.Size);
 	}
 
-	private GDTaskCompletionSourceCore<T> core;
+	private GdTaskCompletionSourceCore<T> _core;
 
-	private AutoResetGDTaskCompletionSource()
+	private AutoResetGdTaskCompletionSource()
 	{
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource<T> Create()
+	public static AutoResetGdTaskCompletionSource<T> Create()
 	{
-		if (!pool.TryPop(out var result))
+		if (!_pool.TryPop(out var result))
 		{
-			result = new AutoResetGDTaskCompletionSource<T>();
+			result = new AutoResetGdTaskCompletionSource<T>();
 		}
 		TaskTracker.TrackActiveTask(result, 2);
 		return result;
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource<T> CreateFromCanceled(CancellationToken cancellationToken, out short token)
+	public static AutoResetGdTaskCompletionSource<T> CreateFromCanceled(CancellationToken cancellationToken, out short token)
 	{
 		var source = Create();
 		source.TrySetCanceled(cancellationToken);
-		token = source.core.Version;
+		token = source._core.Version;
 		return source;
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource<T> CreateFromException(Exception exception, out short token)
+	public static AutoResetGdTaskCompletionSource<T> CreateFromException(Exception exception, out short token)
 	{
 		var source = Create();
 		source.TrySetException(exception);
-		token = source.core.Version;
+		token = source._core.Version;
 		return source;
 	}
 
 	[DebuggerHidden]
-	public static AutoResetGDTaskCompletionSource<T> CreateFromResult(T result, out short token)
+	public static AutoResetGdTaskCompletionSource<T> CreateFromResult(T result, out short token)
 	{
 		var source = Create();
 		source.TrySetResult(result);
-		token = source.core.Version;
+		token = source._core.Version;
 		return source;
 	}
 
-	public GDTask<T> Task
+	public GdTask<T> Task
 	{
 		[DebuggerHidden]
 		get
 		{
-			return new GDTask<T>(this, core.Version);
+			return new GdTask<T>(this, _core.Version);
 		}
 	}
 
 	[DebuggerHidden]
 	public bool TrySetResult(T result)
 	{
-		return core.TrySetResult(result);
+		return _core.TrySetResult(result);
 	}
 
 	[DebuggerHidden]
 	public bool TrySetCanceled(CancellationToken cancellationToken = default)
 	{
-		return core.TrySetCanceled(cancellationToken);
+		return _core.TrySetCanceled(cancellationToken);
 	}
 
 	[DebuggerHidden]
 	public bool TrySetException(Exception exception)
 	{
-		return core.TrySetException(exception);
+		return _core.TrySetException(exception);
 	}
 
 	[DebuggerHidden]
@@ -524,7 +524,7 @@ public partial class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITas
 	{
 		try
 		{
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 		finally
 		{
@@ -533,51 +533,51 @@ public partial class AutoResetGDTaskCompletionSource<T> : IGDTaskSource<T>, ITas
 	}
 
 	[DebuggerHidden]
-	void IGDTaskSource.GetResult(short token)
+	void IGdTaskSource.GetResult(short token)
 	{
 		GetResult(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return core.GetStatus(token);
+		return _core.GetStatus(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return core.UnsafeGetStatus();
+		return _core.UnsafeGetStatus();
 	}
 
 	[DebuggerHidden]
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		core.OnCompleted(continuation, state, token);
+		_core.OnCompleted(continuation, state, token);
 	}
 
 	[DebuggerHidden]
 	private bool TryReturn()
 	{
 		TaskTracker.RemoveTracking(this);
-		core.Reset();
-		return pool.TryPush(this);
+		_core.Reset();
+		return _pool.TryPush(this);
 	}
 }
 
-public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
+public partial class GdTaskCompletionSource : IGdTaskSource, IPromise
 {
-	private CancellationToken cancellationToken;
-	private ExceptionHolder exception;
-	private object gate;
-	private Action<object> singleContinuation;
-	private object singleState;
-	private List<(Action<object>, object)> secondaryContinuationList;
+	private CancellationToken _cancellationToken;
+	private ExceptionHolder _exception;
+	private object _gate;
+	private Action<object> _singleContinuation;
+	private object _singleState;
+	private List<(Action<object>, object)> _secondaryContinuationList;
 
-	private int intStatus; // GDTaskStatus
-	private bool handled = false;
+	private int _intStatus; // GDTaskStatus
+	private bool _handled = false;
 
-	public GDTaskCompletionSource()
+	public GdTaskCompletionSource()
 	{
 		TaskTracker.TrackActiveTask(this, 2);
 	}
@@ -585,35 +585,35 @@ public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
 	[DebuggerHidden]
 	internal void MarkHandled()
 	{
-		if (!handled)
+		if (!_handled)
 		{
-			handled = true;
+			_handled = true;
 			TaskTracker.RemoveTracking(this);
 		}
 	}
 
-	public GDTask Task
+	public GdTask Task
 	{
 		[DebuggerHidden]
 		get
 		{
-			return new GDTask(this, 0);
+			return new GdTask(this, 0);
 		}
 	}
 
 	[DebuggerHidden]
 	public bool TrySetResult()
 	{
-		return TrySignalCompletion(GDTaskStatus.Succeeded);
+		return TrySignalCompletion(GdTaskStatus.Succeeded);
 	}
 
 	[DebuggerHidden]
 	public bool TrySetCanceled(CancellationToken cancellationToken = default)
 	{
-		if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
+		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this.cancellationToken = cancellationToken;
-		return TrySignalCompletion(GDTaskStatus.Canceled);
+		this._cancellationToken = cancellationToken;
+		return TrySignalCompletion(GdTaskStatus.Canceled);
 	}
 
 	[DebuggerHidden]
@@ -624,10 +624,10 @@ public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
 			return TrySetCanceled(oce.CancellationToken);
 		}
 
-		if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
+		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this.exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
-		return TrySignalCompletion(GDTaskStatus.Faulted);
+		this._exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
+		return TrySignalCompletion(GdTaskStatus.Faulted);
 	}
 
 	[DebuggerHidden]
@@ -635,95 +635,95 @@ public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
 	{
 		MarkHandled();
 
-		var status = (GDTaskStatus)intStatus;
+		var status = (GdTaskStatus)_intStatus;
 		switch (status)
 		{
-			case GDTaskStatus.Succeeded:
+			case GdTaskStatus.Succeeded:
 				return;
-			case GDTaskStatus.Faulted:
-				exception.GetException().Throw();
+			case GdTaskStatus.Faulted:
+				_exception.GetException().Throw();
 				return;
-			case GDTaskStatus.Canceled:
-				throw new OperationCanceledException(cancellationToken);
+			case GdTaskStatus.Canceled:
+				throw new OperationCanceledException(_cancellationToken);
 			default:
-			case GDTaskStatus.Pending:
+			case GdTaskStatus.Pending:
 				throw new InvalidOperationException("not yet completed.");
 		}
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return (GDTaskStatus)intStatus;
+		return (GdTaskStatus)_intStatus;
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return (GDTaskStatus)intStatus;
+		return (GdTaskStatus)_intStatus;
 	}
 
 	[DebuggerHidden]
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		if (gate == null)
+		if (_gate == null)
 		{
-			Interlocked.CompareExchange(ref gate, new object(), null);
+			Interlocked.CompareExchange(ref _gate, new object(), null);
 		}
 
-		var lockGate = Thread.VolatileRead(ref gate);
+		var lockGate = Thread.VolatileRead(ref _gate);
 		lock (lockGate) // wait TrySignalCompletion, after status is not pending.
 		{
-			if ((GDTaskStatus)intStatus != GDTaskStatus.Pending)
+			if ((GdTaskStatus)_intStatus != GdTaskStatus.Pending)
 			{
 				continuation(state);
 				return;
 			}
 
-			if (singleContinuation == null)
+			if (_singleContinuation == null)
 			{
-				singleContinuation = continuation;
-				singleState = state;
+				_singleContinuation = continuation;
+				_singleState = state;
 			}
 			else
 			{
-				if (secondaryContinuationList == null)
+				if (_secondaryContinuationList == null)
 				{
-					secondaryContinuationList = new List<(Action<object>, object)>();
+					_secondaryContinuationList = new List<(Action<object>, object)>();
 				}
-				secondaryContinuationList.Add((continuation, state));
+				_secondaryContinuationList.Add((continuation, state));
 			}
 		}
 	}
 
 	[DebuggerHidden]
-	private bool TrySignalCompletion(GDTaskStatus status)
+	private bool TrySignalCompletion(GdTaskStatus status)
 	{
-		if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)GDTaskStatus.Pending) == (int)GDTaskStatus.Pending)
+		if (Interlocked.CompareExchange(ref _intStatus, (int)status, (int)GdTaskStatus.Pending) == (int)GdTaskStatus.Pending)
 		{
-			if (gate == null)
+			if (_gate == null)
 			{
-				Interlocked.CompareExchange(ref gate, new object(), null);
+				Interlocked.CompareExchange(ref _gate, new object(), null);
 			}
 
-			var lockGate = Thread.VolatileRead(ref gate);
+			var lockGate = Thread.VolatileRead(ref _gate);
 			lock (lockGate) // wait OnCompleted.
 			{
-				if (singleContinuation != null)
+				if (_singleContinuation != null)
 				{
 					try
 					{
-						singleContinuation(singleState);
+						_singleContinuation(_singleState);
 					}
 					catch (Exception ex)
 					{
-						GDTaskScheduler.PublishUnobservedTaskException(ex);
+						GdTaskScheduler.PublishUnobservedTaskException(ex);
 					}
 				}
 
-				if (secondaryContinuationList != null)
+				if (_secondaryContinuationList != null)
 				{
-					foreach (var (c, state) in secondaryContinuationList)
+					foreach (var (c, state) in _secondaryContinuationList)
 					{
 						try
 						{
@@ -731,14 +731,14 @@ public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
 						}
 						catch (Exception ex)
 						{
-							GDTaskScheduler.PublishUnobservedTaskException(ex);
+							GdTaskScheduler.PublishUnobservedTaskException(ex);
 						}
 					}
 				}
 
-				singleContinuation = null;
-				singleState = null;
-				secondaryContinuationList = null;
+				_singleContinuation = null;
+				_singleState = null;
+				_secondaryContinuationList = null;
 			}
 			return true;
 		}
@@ -746,20 +746,20 @@ public partial class GDTaskCompletionSource : IGDTaskSource, IPromise
 	}
 }
 
-public partial class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
+public partial class GdTaskCompletionSource<T> : IGdTaskSource<T>, IPromise<T>
 {
-	private CancellationToken cancellationToken;
-	private T result;
-	private ExceptionHolder exception;
-	private object gate;
-	private Action<object> singleContinuation;
-	private object singleState;
-	private List<(Action<object>, object)> secondaryContinuationList;
+	private CancellationToken _cancellationToken;
+	private T _result;
+	private ExceptionHolder _exception;
+	private object _gate;
+	private Action<object> _singleContinuation;
+	private object _singleState;
+	private List<(Action<object>, object)> _secondaryContinuationList;
 
-	private int intStatus; // GDTaskStatus
-	private bool handled = false;
+	private int _intStatus; // GDTaskStatus
+	private bool _handled = false;
 
-	public GDTaskCompletionSource()
+	public GdTaskCompletionSource()
 	{
 		TaskTracker.TrackActiveTask(this, 2);
 	}
@@ -767,38 +767,38 @@ public partial class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
 	[DebuggerHidden]
 	internal void MarkHandled()
 	{
-		if (!handled)
+		if (!_handled)
 		{
-			handled = true;
+			_handled = true;
 			TaskTracker.RemoveTracking(this);
 		}
 	}
 
-	public GDTask<T> Task
+	public GdTask<T> Task
 	{
 		[DebuggerHidden]
 		get
 		{
-			return new GDTask<T>(this, 0);
+			return new GdTask<T>(this, 0);
 		}
 	}
 
 	[DebuggerHidden]
 	public bool TrySetResult(T result)
 	{
-		if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
+		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this.result = result;
-		return TrySignalCompletion(GDTaskStatus.Succeeded);
+		this._result = result;
+		return TrySignalCompletion(GdTaskStatus.Succeeded);
 	}
 
 	[DebuggerHidden]
 	public bool TrySetCanceled(CancellationToken cancellationToken = default)
 	{
-		if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
+		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this.cancellationToken = cancellationToken;
-		return TrySignalCompletion(GDTaskStatus.Canceled);
+		this._cancellationToken = cancellationToken;
+		return TrySignalCompletion(GdTaskStatus.Canceled);
 	}
 
 	[DebuggerHidden]
@@ -809,10 +809,10 @@ public partial class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
 			return TrySetCanceled(oce.CancellationToken);
 		}
 
-		if (UnsafeGetStatus() != GDTaskStatus.Pending) return false;
+		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this.exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
-		return TrySignalCompletion(GDTaskStatus.Faulted);
+		this._exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
+		return TrySignalCompletion(GdTaskStatus.Faulted);
 	}
 
 	[DebuggerHidden]
@@ -820,101 +820,101 @@ public partial class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
 	{
 		MarkHandled();
 
-		var status = (GDTaskStatus)intStatus;
+		var status = (GdTaskStatus)_intStatus;
 		switch (status)
 		{
-			case GDTaskStatus.Succeeded:
-				return result;
-			case GDTaskStatus.Faulted:
-				exception.GetException().Throw();
+			case GdTaskStatus.Succeeded:
+				return _result;
+			case GdTaskStatus.Faulted:
+				_exception.GetException().Throw();
 				return default;
-			case GDTaskStatus.Canceled:
-				throw new OperationCanceledException(cancellationToken);
+			case GdTaskStatus.Canceled:
+				throw new OperationCanceledException(_cancellationToken);
 			default:
-			case GDTaskStatus.Pending:
+			case GdTaskStatus.Pending:
 				throw new InvalidOperationException("not yet completed.");
 		}
 	}
 
 	[DebuggerHidden]
-	void IGDTaskSource.GetResult(short token)
+	void IGdTaskSource.GetResult(short token)
 	{
 		GetResult(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return (GDTaskStatus)intStatus;
+		return (GdTaskStatus)_intStatus;
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return (GDTaskStatus)intStatus;
+		return (GdTaskStatus)_intStatus;
 	}
 
 	[DebuggerHidden]
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		if (gate == null)
+		if (_gate == null)
 		{
-			Interlocked.CompareExchange(ref gate, new object(), null);
+			Interlocked.CompareExchange(ref _gate, new object(), null);
 		}
 
-		var lockGate = Thread.VolatileRead(ref gate);
+		var lockGate = Thread.VolatileRead(ref _gate);
 		lock (lockGate) // wait TrySignalCompletion, after status is not pending.
 		{
-			if ((GDTaskStatus)intStatus != GDTaskStatus.Pending)
+			if ((GdTaskStatus)_intStatus != GdTaskStatus.Pending)
 			{
 				continuation(state);
 				return;
 			}
 
-			if (singleContinuation == null)
+			if (_singleContinuation == null)
 			{
-				singleContinuation = continuation;
-				singleState = state;
+				_singleContinuation = continuation;
+				_singleState = state;
 			}
 			else
 			{
-				if (secondaryContinuationList == null)
+				if (_secondaryContinuationList == null)
 				{
-					secondaryContinuationList = new List<(Action<object>, object)>();
+					_secondaryContinuationList = new List<(Action<object>, object)>();
 				}
-				secondaryContinuationList.Add((continuation, state));
+				_secondaryContinuationList.Add((continuation, state));
 			}
 		}
 	}
 
 	[DebuggerHidden]
-	private bool TrySignalCompletion(GDTaskStatus status)
+	private bool TrySignalCompletion(GdTaskStatus status)
 	{
-		if (Interlocked.CompareExchange(ref intStatus, (int)status, (int)GDTaskStatus.Pending) == (int)GDTaskStatus.Pending)
+		if (Interlocked.CompareExchange(ref _intStatus, (int)status, (int)GdTaskStatus.Pending) == (int)GdTaskStatus.Pending)
 		{
-			if (gate == null)
+			if (_gate == null)
 			{
-				Interlocked.CompareExchange(ref gate, new object(), null);
+				Interlocked.CompareExchange(ref _gate, new object(), null);
 			}
 
-			var lockGate = Thread.VolatileRead(ref gate);
+			var lockGate = Thread.VolatileRead(ref _gate);
 			lock (lockGate) // wait OnCompleted.
 			{
-				if (singleContinuation != null)
+				if (_singleContinuation != null)
 				{
 					try
 					{
-						singleContinuation(singleState);
+						_singleContinuation(_singleState);
 					}
 					catch (Exception ex)
 					{
-						GDTaskScheduler.PublishUnobservedTaskException(ex);
+						GdTaskScheduler.PublishUnobservedTaskException(ex);
 					}
 				}
 
-				if (secondaryContinuationList != null)
+				if (_secondaryContinuationList != null)
 				{
-					foreach (var (c, state) in secondaryContinuationList)
+					foreach (var (c, state) in _secondaryContinuationList)
 					{
 						try
 						{
@@ -922,14 +922,14 @@ public partial class GDTaskCompletionSource<T> : IGDTaskSource<T>, IPromise<T>
 						}
 						catch (Exception ex)
 						{
-							GDTaskScheduler.PublishUnobservedTaskException(ex);
+							GdTaskScheduler.PublishUnobservedTaskException(ex);
 						}
 					}
 				}
 
-				singleContinuation = null;
-				singleState = null;
-				secondaryContinuationList = null;
+				_singleContinuation = null;
+				_singleState = null;
+				_secondaryContinuationList = null;
 			}
 			return true;
 		}

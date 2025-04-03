@@ -13,18 +13,18 @@ internal sealed class ArrayPool<T>
 
 	public static readonly ArrayPool<T> Shared = new ArrayPool<T>();
 
-	private readonly MinimumQueue<T[]>[] buckets;
-	private readonly SpinLock[] locks;
+	private readonly MinimumQueue<T[]>[] _buckets;
+	private readonly SpinLock[] _locks;
 
 	private ArrayPool()
 	{
 		// see: GetQueueIndex
-		buckets = new MinimumQueue<T[]>[18];
-		locks = new SpinLock[18];
-		for (int i = 0; i < buckets.Length; i++)
+		_buckets = new MinimumQueue<T[]>[18];
+		_locks = new SpinLock[18];
+		for (int i = 0; i < _buckets.Length; i++)
 		{
-			buckets[i] = new MinimumQueue<T[]>(4);
-			locks[i] = new SpinLock(false);
+			_buckets[i] = new MinimumQueue<T[]>(4);
+			_locks[i] = new SpinLock(false);
 		}
 	}
 
@@ -43,11 +43,11 @@ internal sealed class ArrayPool<T>
 		var index = GetQueueIndex(size);
 		if (index != -1)
 		{
-			var q = buckets[index];
+			var q = _buckets[index];
 			var lockTaken = false;
 			try
 			{
-				locks[index].Enter(ref lockTaken);
+				_locks[index].Enter(ref lockTaken);
 
 				if (q.Count != 0)
 				{
@@ -56,7 +56,7 @@ internal sealed class ArrayPool<T>
 			}
 			finally
 			{
-				if (lockTaken) locks[index].Exit(false);
+				if (lockTaken) _locks[index].Exit(false);
 			}
 		}
 
@@ -78,12 +78,12 @@ internal sealed class ArrayPool<T>
 				Array.Clear(array, 0, array.Length);
 			}
 
-			var q = buckets[index];
+			var q = _buckets[index];
 			var lockTaken = false;
 
 			try
 			{
-				locks[index].Enter(ref lockTaken);
+				_locks[index].Enter(ref lockTaken);
 
 				if (q.Count > DefaultMaxNumberOfArraysPerBucket)
 				{
@@ -94,7 +94,7 @@ internal sealed class ArrayPool<T>
 			}
 			finally
 			{
-				if (lockTaken) locks[index].Exit(false);
+				if (lockTaken) _locks[index].Exit(false);
 			}
 		}
 	}

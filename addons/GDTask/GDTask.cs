@@ -23,28 +23,28 @@ internal static class AwaiterActions
 /// <summary>
 /// Lightweight Godot specific task-like object with a void return value.
 /// </summary>
-[AsyncMethodBuilder(typeof(AsyncGDTaskMethodBuilder))]
+[AsyncMethodBuilder(typeof(AsyncGdTaskMethodBuilder))]
 [StructLayout(LayoutKind.Auto)]
-public readonly partial struct GDTask
+public readonly partial struct GdTask
 {
-	private readonly IGDTaskSource source;
+	private readonly IGdTaskSource source;
 	private readonly short token;
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public GDTask(IGDTaskSource source, short token)
+	public GdTask(IGdTaskSource source, short token)
 	{
 		this.source = source;
 		this.token = token;
 	}
 
-	public GDTaskStatus Status
+	public GdTaskStatus Status
 	{
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		get
 		{
-			if (source == null) return GDTaskStatus.Succeeded;
+			if (source == null) return GdTaskStatus.Succeeded;
 			return source.GetStatus(token);
 		}
 	}
@@ -59,12 +59,12 @@ public readonly partial struct GDTask
 	/// <summary>
 	/// returns (bool IsCanceled) instead of throws OperationCanceledException.
 	/// </summary>
-	public GDTask<bool> SuppressCancellationThrow()
+	public GdTask<bool> SuppressCancellationThrow()
 	{
 		var status = Status;
-		if (status == GDTaskStatus.Succeeded) return CompletedTasks.False;
-		if (status == GDTaskStatus.Canceled) return CompletedTasks.True;
-		return new GDTask<bool>(new IsCanceledSource(source), token);
+		if (status == GdTaskStatus.Succeeded) return CompletedTasks.False;
+		if (status == GdTaskStatus.Canceled) return CompletedTasks.True;
+		return new GdTask<bool>(new IsCanceledSource(source), token);
 	}
 	public override string ToString()
 	{
@@ -75,7 +75,7 @@ public readonly partial struct GDTask
 	/// <summary>
 	/// Memoizing inner IValueTaskSource. The result GDTask can await multiple.
 	/// </summary>
-	public GDTask Preserve()
+	public GdTask Preserve()
 	{
 		if (source == null)
 		{
@@ -83,11 +83,11 @@ public readonly partial struct GDTask
 		}
 		else
 		{
-			return new GDTask(new MemoizeSource(source), token);
+			return new GdTask(new MemoizeSource(source), token);
 		}
 	}
 
-	public GDTask<AsyncUnit> AsAsyncUnitGDTask()
+	public GdTask<AsyncUnit> AsAsyncUnitGdTask()
 	{
 		if (this.source == null) return CompletedTasks.AsyncUnit;
 
@@ -97,180 +97,180 @@ public readonly partial struct GDTask
 			this.source.GetResult(this.token);
 			return CompletedTasks.AsyncUnit;
 		}
-		else if (this.source is IGDTaskSource<AsyncUnit> asyncUnitSource)
+		else if (this.source is IGdTaskSource<AsyncUnit> asyncUnitSource)
 		{
-			return new GDTask<AsyncUnit>(asyncUnitSource, this.token);
+			return new GdTask<AsyncUnit>(asyncUnitSource, this.token);
 		}
 
-		return new GDTask<AsyncUnit>(new AsyncUnitSource(this.source), this.token);
+		return new GdTask<AsyncUnit>(new AsyncUnitSource(this.source), this.token);
 	}
 
-	private sealed class AsyncUnitSource : IGDTaskSource<AsyncUnit>
+	private sealed class AsyncUnitSource : IGdTaskSource<AsyncUnit>
 	{
-		private readonly IGDTaskSource source;
+		private readonly IGdTaskSource _source;
 
-		public AsyncUnitSource(IGDTaskSource source)
+		public AsyncUnitSource(IGdTaskSource source)
 		{
-			this.source = source;
+			this._source = source;
 		}
 
 		public AsyncUnit GetResult(short token)
 		{
-			source.GetResult(token);
+			_source.GetResult(token);
 			return AsyncUnit.Default;
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return source.GetStatus(token);
+			return _source.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			source.OnCompleted(continuation, state, token);
+			_source.OnCompleted(continuation, state, token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return source.UnsafeGetStatus();
+			return _source.UnsafeGetStatus();
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 	}
 
-	private sealed class IsCanceledSource : IGDTaskSource<bool>
+	private sealed class IsCanceledSource : IGdTaskSource<bool>
 	{
-		private readonly IGDTaskSource source;
+		private readonly IGdTaskSource _source;
 
-		public IsCanceledSource(IGDTaskSource source)
+		public IsCanceledSource(IGdTaskSource source)
 		{
-			this.source = source;
+			this._source = source;
 		}
 
 		public bool GetResult(short token)
 		{
-			if (source.GetStatus(token) == GDTaskStatus.Canceled)
+			if (_source.GetStatus(token) == GdTaskStatus.Canceled)
 			{
 				return true;
 			}
 
-			source.GetResult(token);
+			_source.GetResult(token);
 			return false;
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return source.GetStatus(token);
+			return _source.GetStatus(token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return source.UnsafeGetStatus();
+			return _source.UnsafeGetStatus();
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			source.OnCompleted(continuation, state, token);
+			_source.OnCompleted(continuation, state, token);
 		}
 	}
 
-	private sealed class MemoizeSource : IGDTaskSource
+	private sealed class MemoizeSource : IGdTaskSource
 	{
-		private IGDTaskSource source;
-		private ExceptionDispatchInfo exception;
-		private GDTaskStatus status;
+		private IGdTaskSource _source;
+		private ExceptionDispatchInfo _exception;
+		private GdTaskStatus _status;
 
-		public MemoizeSource(IGDTaskSource source)
+		public MemoizeSource(IGdTaskSource source)
 		{
-			this.source = source;
+			this._source = source;
 		}
 
 		public void GetResult(short token)
 		{
-			if (source == null)
+			if (_source == null)
 			{
-				if (exception != null)
+				if (_exception != null)
 				{
-					exception.Throw();
+					_exception.Throw();
 				}
 			}
 			else
 			{
 				try
 				{
-					source.GetResult(token);
-					status = GDTaskStatus.Succeeded;
+					_source.GetResult(token);
+					_status = GdTaskStatus.Succeeded;
 				}
 				catch (Exception ex)
 				{
-					exception = ExceptionDispatchInfo.Capture(ex);
+					_exception = ExceptionDispatchInfo.Capture(ex);
 					if (ex is OperationCanceledException)
 					{
-						status = GDTaskStatus.Canceled;
+						_status = GdTaskStatus.Canceled;
 					}
 					else
 					{
-						status = GDTaskStatus.Faulted;
+						_status = GdTaskStatus.Faulted;
 					}
 					throw;
 				}
 				finally
 				{
-					source = null;
+					_source = null;
 				}
 			}
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			if (source == null)
+			if (_source == null)
 			{
-				return status;
+				return _status;
 			}
 
-			return source.GetStatus(token);
+			return _source.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			if (source == null)
+			if (_source == null)
 			{
 				continuation(state);
 			}
 			else
 			{
-				source.OnCompleted(continuation, state, token);
+				_source.OnCompleted(continuation, state, token);
 			}
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			if (source == null)
+			if (_source == null)
 			{
-				return status;
+				return _status;
 			}
 
-			return source.UnsafeGetStatus();
+			return _source.UnsafeGetStatus();
 		}
 	}
 
 	public readonly struct Awaiter : ICriticalNotifyCompletion
 	{
-		private readonly GDTask task;
+		private readonly GdTask _task;
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Awaiter(in GDTask task)
+		public Awaiter(in GdTask task)
 		{
-			this.task = task;
+			this._task = task;
 		}
 
 		public bool IsCompleted
@@ -279,7 +279,7 @@ public readonly partial struct GDTask
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				return task.Status.IsCompleted();
+				return _task.Status.IsCompleted();
 			}
 		}
 
@@ -287,21 +287,21 @@ public readonly partial struct GDTask
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void GetResult()
 		{
-			if (task.source == null) return;
-			task.source.GetResult(task.token);
+			if (_task.source == null) return;
+			_task.source.GetResult(_task.token);
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void OnCompleted(Action continuation)
 		{
-			if (task.source == null)
+			if (_task.source == null)
 			{
 				continuation();
 			}
 			else
 			{
-				task.source.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, task.token);
+				_task.source.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, _task.token);
 			}
 		}
 
@@ -309,13 +309,13 @@ public readonly partial struct GDTask
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			if (task.source == null)
+			if (_task.source == null)
 			{
 				continuation();
 			}
 			else
 			{
-				task.source.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, task.token);
+				_task.source.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, _task.token);
 			}
 		}
 
@@ -326,13 +326,13 @@ public readonly partial struct GDTask
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SourceOnCompleted(Action<object> continuation, object state)
 		{
-			if (task.source == null)
+			if (_task.source == null)
 			{
 				continuation(state);
 			}
 			else
 			{
-				task.source.OnCompleted(continuation, state, task.token);
+				_task.source.OnCompleted(continuation, state, _task.token);
 			}
 		}
 	}
@@ -342,17 +342,17 @@ public readonly partial struct GDTask
 /// Lightweight Godot specified task-like object with a return value.
 /// </summary>
 /// <typeparam name="T">Return value of the task</typeparam>
-[AsyncMethodBuilder(typeof(AsyncGDTaskMethodBuilder<>))]
+[AsyncMethodBuilder(typeof(AsyncGdTaskMethodBuilder<>))]
 [StructLayout(LayoutKind.Auto)]
-public readonly struct GDTask<T>
+public readonly struct GdTask<T>
 {
-	private readonly IGDTaskSource<T> source;
+	private readonly IGdTaskSource<T> source;
 	private readonly T result;
 	private readonly short token;
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public GDTask(T result)
+	public GdTask(T result)
 	{
 		this.source = default;
 		this.token = default;
@@ -361,20 +361,20 @@ public readonly struct GDTask<T>
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public GDTask(IGDTaskSource<T> source, short token)
+	public GdTask(IGdTaskSource<T> source, short token)
 	{
 		this.source = source;
 		this.token = token;
 		this.result = default;
 	}
 
-	public GDTaskStatus Status
+	public GdTaskStatus Status
 	{
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		get
 		{
-			return (source == null) ? GDTaskStatus.Succeeded : source.GetStatus(token);
+			return (source == null) ? GdTaskStatus.Succeeded : source.GetStatus(token);
 		}
 	}
 
@@ -388,7 +388,7 @@ public readonly struct GDTask<T>
 	/// <summary>
 	/// Memoizing inner IValueTaskSource. The result GDTask can await multiple.
 	/// </summary>
-	public GDTask<T> Preserve()
+	public GdTask<T> Preserve()
 	{
 		if (source == null)
 		{
@@ -396,41 +396,41 @@ public readonly struct GDTask<T>
 		}
 		else
 		{
-			return new GDTask<T>(new MemoizeSource(source), token);
+			return new GdTask<T>(new MemoizeSource(source), token);
 		}
 	}
 
-	public GDTask AsGDTask()
+	public GdTask AsGdTask()
 	{
-		if (this.source == null) return GDTask.CompletedTask;
+		if (this.source == null) return GdTask.CompletedTask;
 
 		var status = this.source.GetStatus(this.token);
 		if (status.IsCompletedSuccessfully())
 		{
 			this.source.GetResult(this.token);
-			return GDTask.CompletedTask;
+			return GdTask.CompletedTask;
 		}
 
 		// Converting GDTask<T> -> GDTask is zero overhead.
-		return new GDTask(this.source, this.token);
+		return new GdTask(this.source, this.token);
 	}
 
-	public static implicit operator GDTask(GDTask<T> self)
+	public static implicit operator GdTask(GdTask<T> self)
 	{
-		return self.AsGDTask();
+		return self.AsGdTask();
 	}
 
 	/// <summary>
 	/// returns (bool IsCanceled, T Result) instead of throws OperationCanceledException.
 	/// </summary>
-	public GDTask<(bool IsCanceled, T Result)> SuppressCancellationThrow()
+	public GdTask<(bool IsCanceled, T Result)> SuppressCancellationThrow()
 	{
 		if (source == null)
 		{
-			return new GDTask<(bool IsCanceled, T Result)>((false, result));
+			return new GdTask<(bool IsCanceled, T Result)>((false, result));
 		}
 
-		return new GDTask<(bool, T)>(new IsCanceledSource(source), token);
+		return new GdTask<(bool, T)>(new IsCanceledSource(source), token);
 	}
 
 	public override string ToString()
@@ -439,156 +439,156 @@ public readonly struct GDTask<T>
 			: "(" + this.source.UnsafeGetStatus() + ")";
 	}
 
-	private sealed class IsCanceledSource : IGDTaskSource<(bool, T)>
+	private sealed class IsCanceledSource : IGdTaskSource<(bool, T)>
 	{
-		private readonly IGDTaskSource<T> source;
+		private readonly IGdTaskSource<T> _source;
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IsCanceledSource(IGDTaskSource<T> source)
+		public IsCanceledSource(IGdTaskSource<T> source)
 		{
-			this.source = source;
+			this._source = source;
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public (bool, T) GetResult(short token)
 		{
-			if (source.GetStatus(token) == GDTaskStatus.Canceled)
+			if (_source.GetStatus(token) == GdTaskStatus.Canceled)
 			{
 				return (true, default);
 			}
 
-			var result = source.GetResult(token);
+			var result = _source.GetResult(token);
 			return (false, result);
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return source.GetStatus(token);
+			return _source.GetStatus(token);
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return source.UnsafeGetStatus();
+			return _source.UnsafeGetStatus();
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			source.OnCompleted(continuation, state, token);
+			_source.OnCompleted(continuation, state, token);
 		}
 	}
 
-	private sealed class MemoizeSource : IGDTaskSource<T>
+	private sealed class MemoizeSource : IGdTaskSource<T>
 	{
-		private IGDTaskSource<T> source;
-		private T result;
-		private ExceptionDispatchInfo exception;
-		private GDTaskStatus status;
+		private IGdTaskSource<T> _source;
+		private T _result;
+		private ExceptionDispatchInfo _exception;
+		private GdTaskStatus _status;
 
-		public MemoizeSource(IGDTaskSource<T> source)
+		public MemoizeSource(IGdTaskSource<T> source)
 		{
-			this.source = source;
+			this._source = source;
 		}
 
 		public T GetResult(short token)
 		{
-			if (source == null)
+			if (_source == null)
 			{
-				if (exception != null)
+				if (_exception != null)
 				{
-					exception.Throw();
+					_exception.Throw();
 				}
-				return result;
+				return _result;
 			}
 			else
 			{
 				try
 				{
-					result = source.GetResult(token);
-					status = GDTaskStatus.Succeeded;
-					return result;
+					_result = _source.GetResult(token);
+					_status = GdTaskStatus.Succeeded;
+					return _result;
 				}
 				catch (Exception ex)
 				{
-					exception = ExceptionDispatchInfo.Capture(ex);
+					_exception = ExceptionDispatchInfo.Capture(ex);
 					if (ex is OperationCanceledException)
 					{
-						status = GDTaskStatus.Canceled;
+						_status = GdTaskStatus.Canceled;
 					}
 					else
 					{
-						status = GDTaskStatus.Faulted;
+						_status = GdTaskStatus.Faulted;
 					}
 					throw;
 				}
 				finally
 				{
-					source = null;
+					_source = null;
 				}
 			}
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
 			GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			if (source == null)
+			if (_source == null)
 			{
-				return status;
+				return _status;
 			}
 
-			return source.GetStatus(token);
+			return _source.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			if (source == null)
+			if (_source == null)
 			{
 				continuation(state);
 			}
 			else
 			{
-				source.OnCompleted(continuation, state, token);
+				_source.OnCompleted(continuation, state, token);
 			}
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			if (source == null)
+			if (_source == null)
 			{
-				return status;
+				return _status;
 			}
 
-			return source.UnsafeGetStatus();
+			return _source.UnsafeGetStatus();
 		}
 	}
 
 	public readonly struct Awaiter : ICriticalNotifyCompletion
 	{
-		private readonly GDTask<T> task;
+		private readonly GdTask<T> _task;
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Awaiter(in GDTask<T> task)
+		public Awaiter(in GdTask<T> task)
 		{
-			this.task = task;
+			this._task = task;
 		}
 
 		public bool IsCompleted
@@ -597,7 +597,7 @@ public readonly struct GDTask<T>
 			[MethodImpl(MethodImplOptions.AggressiveInlining)]
 			get
 			{
-				return task.Status.IsCompleted();
+				return _task.Status.IsCompleted();
 			}
 		}
 
@@ -605,14 +605,14 @@ public readonly struct GDTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public T GetResult()
 		{
-			var s = task.source;
+			var s = _task.source;
 			if (s == null)
 			{
-				return task.result;
+				return _task.result;
 			}
 			else
 			{
-				return s.GetResult(task.token);
+				return s.GetResult(_task.token);
 			}
 		}
 
@@ -620,14 +620,14 @@ public readonly struct GDTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void OnCompleted(Action continuation)
 		{
-			var s = task.source;
+			var s = _task.source;
 			if (s == null)
 			{
 				continuation();
 			}
 			else
 			{
-				s.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, task.token);
+				s.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, _task.token);
 			}
 		}
 
@@ -635,14 +635,14 @@ public readonly struct GDTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			var s = task.source;
+			var s = _task.source;
 			if (s == null)
 			{
 				continuation();
 			}
 			else
 			{
-				s.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, task.token);
+				s.OnCompleted(AwaiterActions.InvokeContinuationDelegate, continuation, _task.token);
 			}
 		}
 
@@ -653,14 +653,14 @@ public readonly struct GDTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void SourceOnCompleted(Action<object> continuation, object state)
 		{
-			var s = task.source;
+			var s = _task.source;
 			if (s == null)
 			{
 				continuation(state);
 			}
 			else
 			{
-				s.OnCompleted(continuation, state, task.token);
+				s.OnCompleted(continuation, state, _task.token);
 			}
 		}
 	}

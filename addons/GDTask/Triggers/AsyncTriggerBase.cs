@@ -6,14 +6,14 @@ namespace Fractural.Tasks.Triggers;
 
 public abstract partial class AsyncTriggerBase<T> : Node
 {
-	private TriggerEvent<T> triggerEvent;
+	private TriggerEvent<T> _triggerEvent;
 
-	internal protected bool calledEnterTree;
-	internal protected bool calledDestroy;
+	internal protected bool CalledEnterTree;
+	internal protected bool CalledDestroy;
 
 	public override void _EnterTree()
 	{
-		calledEnterTree = true;
+		CalledEnterTree = true;
 	}
 
 	public override void _Notification(int what)
@@ -24,72 +24,72 @@ public abstract partial class AsyncTriggerBase<T> : Node
 
 	private void OnDestroy()
 	{
-		if (calledDestroy) return;
-		calledDestroy = true;
+		if (CalledDestroy) return;
+		CalledDestroy = true;
 
-		triggerEvent.SetCompleted();
+		_triggerEvent.SetCompleted();
 	}
 
 	internal void AddHandler(ITriggerHandler<T> handler)
 	{
-		triggerEvent.Add(handler);
+		_triggerEvent.Add(handler);
 	}
 
 	internal void RemoveHandler(ITriggerHandler<T> handler)
 	{
-		triggerEvent.Remove(handler);
+		_triggerEvent.Remove(handler);
 	}
 
 	protected void RaiseEvent(T value)
 	{
-		triggerEvent.SetResult(value);
+		_triggerEvent.SetResult(value);
 	}
 }
 
 public interface IAsyncOneShotTrigger
 {
-	GDTask OneShotAsync();
+	GdTask OneShotAsync();
 }
 
 public partial class AsyncTriggerHandler<T> : IAsyncOneShotTrigger
 {
-	GDTask IAsyncOneShotTrigger.OneShotAsync()
+	GdTask IAsyncOneShotTrigger.OneShotAsync()
 	{
-		core.Reset();
-		return new GDTask((IGDTaskSource)this, core.Version);
+		_core.Reset();
+		return new GdTask((IGdTaskSource)this, _core.Version);
 	}
 }
 
-public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerHandler<T>, IDisposable
+public sealed partial class AsyncTriggerHandler<T> : IGdTaskSource<T>, ITriggerHandler<T>, IDisposable
 {
-	private static Action<object> cancellationCallback = CancellationCallback;
+	private static Action<object> _cancellationCallback = CancellationCallback;
 
-	private readonly AsyncTriggerBase<T> trigger;
+	private readonly AsyncTriggerBase<T> _trigger;
 
-	private CancellationToken cancellationToken;
-	private CancellationTokenRegistration registration;
-	private bool isDisposed;
-	private bool callOnce;
+	private CancellationToken _cancellationToken;
+	private CancellationTokenRegistration _registration;
+	private bool _isDisposed;
+	private bool _callOnce;
 
-	private GDTaskCompletionSourceCore<T> core;
+	private GdTaskCompletionSourceCore<T> _core;
 
-	internal CancellationToken CancellationToken => cancellationToken;
+	internal CancellationToken CancellationToken => _cancellationToken;
 
 	ITriggerHandler<T> ITriggerHandler<T>.Prev { get; set; }
 	ITriggerHandler<T> ITriggerHandler<T>.Next { get; set; }
 
 	internal AsyncTriggerHandler(AsyncTriggerBase<T> trigger, bool callOnce)
 	{
-		if (cancellationToken.IsCancellationRequested)
+		if (_cancellationToken.IsCancellationRequested)
 		{
-			isDisposed = true;
+			_isDisposed = true;
 			return;
 		}
 
-		this.trigger = trigger;
-		this.cancellationToken = default;
-		this.registration = default;
-		this.callOnce = callOnce;
+		this._trigger = trigger;
+		this._cancellationToken = default;
+		this._registration = default;
+		this._callOnce = callOnce;
 
 		trigger.AddHandler(this);
 
@@ -100,19 +100,19 @@ public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerH
 	{
 		if (cancellationToken.IsCancellationRequested)
 		{
-			isDisposed = true;
+			_isDisposed = true;
 			return;
 		}
 
-		this.trigger = trigger;
-		this.cancellationToken = cancellationToken;
-		this.callOnce = callOnce;
+		this._trigger = trigger;
+		this._cancellationToken = cancellationToken;
+		this._callOnce = callOnce;
 
 		trigger.AddHandler(this);
 
 		if (cancellationToken.CanBeCanceled)
 		{
-			registration = cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallback, this);
+			_registration = cancellationToken.RegisterWithoutCaptureExecutionContext(_cancellationCallback, this);
 		}
 
 		TaskTracker.TrackActiveTask(this, 3);
@@ -123,29 +123,29 @@ public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerH
 		var self = (AsyncTriggerHandler<T>)state;
 		self.Dispose();
 
-		self.core.TrySetCanceled(self.cancellationToken);
+		self._core.TrySetCanceled(self._cancellationToken);
 	}
 
 	public void Dispose()
 	{
-		if (!isDisposed)
+		if (!_isDisposed)
 		{
-			isDisposed = true;
+			_isDisposed = true;
 			TaskTracker.RemoveTracking(this);
-			registration.Dispose();
-			trigger.RemoveHandler(this);
+			_registration.Dispose();
+			_trigger.RemoveHandler(this);
 		}
 	}
 
-	T IGDTaskSource<T>.GetResult(short token)
+	T IGdTaskSource<T>.GetResult(short token)
 	{
 		try
 		{
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 		finally
 		{
-			if (callOnce)
+			if (_callOnce)
 			{
 				Dispose();
 			}
@@ -154,41 +154,41 @@ public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerH
 
 	void ITriggerHandler<T>.OnNext(T value)
 	{
-		core.TrySetResult(value);
+		_core.TrySetResult(value);
 	}
 
 	void ITriggerHandler<T>.OnCanceled(CancellationToken cancellationToken)
 	{
-		core.TrySetCanceled(cancellationToken);
+		_core.TrySetCanceled(cancellationToken);
 	}
 
 	void ITriggerHandler<T>.OnCompleted()
 	{
-		core.TrySetCanceled(CancellationToken.None);
+		_core.TrySetCanceled(CancellationToken.None);
 	}
 
 	void ITriggerHandler<T>.OnError(Exception ex)
 	{
-		core.TrySetException(ex);
+		_core.TrySetException(ex);
 	}
 
-	void IGDTaskSource.GetResult(short token)
+	void IGdTaskSource.GetResult(short token)
 	{
-		((IGDTaskSource<T>)this).GetResult(token);
+		((IGdTaskSource<T>)this).GetResult(token);
 	}
 
-	GDTaskStatus IGDTaskSource.GetStatus(short token)
+	GdTaskStatus IGdTaskSource.GetStatus(short token)
 	{
-		return core.GetStatus(token);
+		return _core.GetStatus(token);
 	}
 
-	GDTaskStatus IGDTaskSource.UnsafeGetStatus()
+	GdTaskStatus IGdTaskSource.UnsafeGetStatus()
 	{
-		return core.UnsafeGetStatus();
+		return _core.UnsafeGetStatus();
 	}
 
-	void IGDTaskSource.OnCompleted(Action<object> continuation, object state, short token)
+	void IGdTaskSource.OnCompleted(Action<object> continuation, object state, short token)
 	{
-		core.OnCompleted(continuation, state, token);
+		_core.OnCompleted(continuation, state, token);
 	}
 }

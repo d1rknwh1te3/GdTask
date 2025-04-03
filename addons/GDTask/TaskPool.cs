@@ -13,10 +13,10 @@ namespace Fractural.Tasks;
 // Holds static data about all task pools. Right now this is just the size of each pool.
 public static class TaskPool
 {
-	internal static int MaxPoolSize;
+	internal static int maxPoolSize;
 
 	// Avoid to use ConcurrentDictionary for safety of WebGL build.
-	private static Dictionary<Type, Func<int>> sizes = new Dictionary<Type, Func<int>>();
+	private static Dictionary<Type, Func<int>> _sizes = new Dictionary<Type, Func<int>>();
 
 	static TaskPool()
 	{
@@ -29,27 +29,27 @@ public static class TaskPool
 			{
 				if (int.TryParse(value, out var size))
 				{
-					MaxPoolSize = size;
+					maxPoolSize = size;
 					return;
 				}
 			}
 		}
 		catch { }
 
-		MaxPoolSize = int.MaxValue;
+		maxPoolSize = int.MaxValue;
 	}
 
 	public static void SetMaxPoolSize(int maxPoolSize)
 	{
-		MaxPoolSize = maxPoolSize;
+		TaskPool.maxPoolSize = maxPoolSize;
 	}
 
 	public static IEnumerable<(Type, int)> GetCacheSizeInfo()
 	{
 		// Making calls thread safe
-		lock (sizes)
+		lock (_sizes)
 		{
-			foreach (var item in sizes)
+			foreach (var item in _sizes)
 			{
 				yield return (item.Key, item.Value());
 			}
@@ -59,9 +59,9 @@ public static class TaskPool
 	public static void RegisterSizeGetter(Type type, Func<int> getSize)
 	{
 		// Making calls thread safe
-		lock (sizes)
+		lock (_sizes)
 		{
-			sizes[type] = getSize;
+			_sizes[type] = getSize;
 		}
 	}
 }
@@ -149,7 +149,7 @@ public struct TaskPool<T>
 	{
 		if (Interlocked.CompareExchange(ref gate, 1, 0) == 0)
 		{
-			if (size < TaskPool.MaxPoolSize)
+			if (size < TaskPool.maxPoolSize)
 			{
 				// Push to start of linked list O(1) time
 				item.NextNode = root;

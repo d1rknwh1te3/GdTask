@@ -8,20 +8,20 @@ using System.Security;
 namespace Fractural.Tasks.CompilerServices;
 
 [StructLayout(LayoutKind.Auto)]
-public struct AsyncGDTaskVoidMethodBuilder
+public struct AsyncGdTaskVoidMethodBuilder
 {
 	private IStateMachineRunner runner;
 
 	// 1. Static Create method.
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public static AsyncGDTaskVoidMethodBuilder Create()
+	public static AsyncGdTaskVoidMethodBuilder Create()
 	{
 		return default;
 	}
 
 	// 2. TaskLike Task property(void)
-	public GDTaskVoid Task
+	public GdTaskVoid Task
 	{
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -43,7 +43,7 @@ public struct AsyncGDTaskVoidMethodBuilder
 			runner = null;
 		}
 
-		GDTaskScheduler.PublishUnobservedTaskException(exception);
+		GdTaskScheduler.PublishUnobservedTaskException(exception);
 	}
 
 	// 4. SetResult
@@ -68,7 +68,7 @@ public struct AsyncGDTaskVoidMethodBuilder
 	{
 		if (runner == null)
 		{
-			AsyncGDTaskVoid<TStateMachine>.SetStateMachine(ref stateMachine, ref runner);
+			AsyncGdTaskVoid<TStateMachine>.SetStateMachine(ref stateMachine, ref runner);
 		}
 
 		awaiter.OnCompleted(runner.MoveNext);
@@ -84,7 +84,7 @@ public struct AsyncGDTaskVoidMethodBuilder
 	{
 		if (runner == null)
 		{
-			AsyncGDTaskVoid<TStateMachine>.SetStateMachine(ref stateMachine, ref runner);
+			AsyncGdTaskVoid<TStateMachine>.SetStateMachine(ref stateMachine, ref runner);
 		}
 
 		awaiter.UnsafeOnCompleted(runner.MoveNext);

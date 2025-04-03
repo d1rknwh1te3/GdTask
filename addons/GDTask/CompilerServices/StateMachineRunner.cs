@@ -15,18 +15,18 @@ internal interface IStateMachineRunner
 	Action ReturnAction { get; }
 }
 
-internal interface IStateMachineRunnerPromise : IGDTaskSource
+internal interface IStateMachineRunnerPromise : IGdTaskSource
 {
 	Action MoveNext { get; }
-	GDTask Task { get; }
+	GdTask Task { get; }
 	void SetResult();
 	void SetException(Exception exception);
 }
 
-internal interface IStateMachineRunnerPromise<T> : IGDTaskSource<T>
+internal interface IStateMachineRunnerPromise<T> : IGdTaskSource<T>
 {
 	Action MoveNext { get; }
-	GDTask<T> Task { get; }
+	GdTask<T> Task { get; }
 	void SetResult(T result);
 	void SetException(Exception exception);
 }
@@ -42,153 +42,153 @@ internal static class StateMachineUtility
 	}
 }
 
-internal sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITaskPoolNode<AsyncGDTaskVoid<TStateMachine>>, IGDTaskSource
+internal sealed class AsyncGdTaskVoid<TStateMachine> : IStateMachineRunner, ITaskPoolNode<AsyncGdTaskVoid<TStateMachine>>, IGdTaskSource
 	where TStateMachine : IAsyncStateMachine
 {
-	private static TaskPool<AsyncGDTaskVoid<TStateMachine>> pool;
+	private static TaskPool<AsyncGdTaskVoid<TStateMachine>> _pool;
 
 	public Action ReturnAction { get; }
 
-	private TStateMachine stateMachine;
+	private TStateMachine _stateMachine;
 
 	public Action MoveNext { get; }
 
-	public AsyncGDTaskVoid()
+	public AsyncGdTaskVoid()
 	{
 		MoveNext = Run;
 	}
 
 	public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunner runnerFieldRef)
 	{
-		if (!pool.TryPop(out var result))
+		if (!_pool.TryPop(out var result))
 		{
-			result = new AsyncGDTaskVoid<TStateMachine>();
+			result = new AsyncGdTaskVoid<TStateMachine>();
 		}
 		TaskTracker.TrackActiveTask(result, 3);
 
 		runnerFieldRef = result; // set runner before copied.
-		result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
+		result._stateMachine = stateMachine; // copy struct StateMachine(in release build).
 	}
 
-	static AsyncGDTaskVoid()
+	static AsyncGdTaskVoid()
 	{
-		TaskPool.RegisterSizeGetter(typeof(AsyncGDTaskVoid<TStateMachine>), () => pool.Size);
+		TaskPool.RegisterSizeGetter(typeof(AsyncGdTaskVoid<TStateMachine>), () => _pool.Size);
 	}
 
-	private AsyncGDTaskVoid<TStateMachine> nextNode;
-	public ref AsyncGDTaskVoid<TStateMachine> NextNode => ref nextNode;
+	private AsyncGdTaskVoid<TStateMachine> _nextNode;
+	public ref AsyncGdTaskVoid<TStateMachine> NextNode => ref _nextNode;
 
 	public void Return()
 	{
 		TaskTracker.RemoveTracking(this);
-		stateMachine = default;
-		pool.TryPush(this);
+		_stateMachine = default;
+		_pool.TryPush(this);
 	}
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void Run()
 	{
-		stateMachine.MoveNext();
+		_stateMachine.MoveNext();
 	}
 
 	// dummy interface implementation for TaskTracker.
 
-	GDTaskStatus IGDTaskSource.GetStatus(short token)
+	GdTaskStatus IGdTaskSource.GetStatus(short token)
 	{
-		return GDTaskStatus.Pending;
+		return GdTaskStatus.Pending;
 	}
 
-	GDTaskStatus IGDTaskSource.UnsafeGetStatus()
+	GdTaskStatus IGdTaskSource.UnsafeGetStatus()
 	{
-		return GDTaskStatus.Pending;
+		return GdTaskStatus.Pending;
 	}
 
-	void IGDTaskSource.OnCompleted(Action<object> continuation, object state, short token)
+	void IGdTaskSource.OnCompleted(Action<object> continuation, object state, short token)
 	{
 	}
 
-	void IGDTaskSource.GetResult(short token)
+	void IGdTaskSource.GetResult(short token)
 	{
 	}
 }
 
-internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, IGDTaskSource, ITaskPoolNode<AsyncGDTask<TStateMachine>>
+internal sealed class AsyncGdTask<TStateMachine> : IStateMachineRunnerPromise, IGdTaskSource, ITaskPoolNode<AsyncGdTask<TStateMachine>>
 	where TStateMachine : IAsyncStateMachine
 {
-	private static TaskPool<AsyncGDTask<TStateMachine>> pool;
+	private static TaskPool<AsyncGdTask<TStateMachine>> _pool;
 	public Action MoveNext { get; }
 
-	private TStateMachine stateMachine;
-	private GDTaskCompletionSourceCore<AsyncUnit> core;
+	private TStateMachine _stateMachine;
+	private GdTaskCompletionSourceCore<AsyncUnit> _core;
 
-	private AsyncGDTask()
+	private AsyncGdTask()
 	{
 		MoveNext = Run;
 	}
 
 	public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunnerPromise runnerPromiseFieldRef)
 	{
-		if (!pool.TryPop(out var result))
+		if (!_pool.TryPop(out var result))
 		{
-			result = new AsyncGDTask<TStateMachine>();
+			result = new AsyncGdTask<TStateMachine>();
 		}
 		TaskTracker.TrackActiveTask(result, 3);
 
 		runnerPromiseFieldRef = result; // set runner before copied.
-		result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
+		result._stateMachine = stateMachine; // copy struct StateMachine(in release build).
 	}
 
-	private AsyncGDTask<TStateMachine> nextNode;
-	public ref AsyncGDTask<TStateMachine> NextNode => ref nextNode;
+	private AsyncGdTask<TStateMachine> _nextNode;
+	public ref AsyncGdTask<TStateMachine> NextNode => ref _nextNode;
 
-	static AsyncGDTask()
+	static AsyncGdTask()
 	{
-		TaskPool.RegisterSizeGetter(typeof(AsyncGDTask<TStateMachine>), () => pool.Size);
+		TaskPool.RegisterSizeGetter(typeof(AsyncGdTask<TStateMachine>), () => _pool.Size);
 	}
 
 	private void Return()
 	{
 		TaskTracker.RemoveTracking(this);
-		core.Reset();
-		stateMachine = default;
-		pool.TryPush(this);
+		_core.Reset();
+		_stateMachine = default;
+		_pool.TryPush(this);
 	}
 
 	private bool TryReturn()
 	{
 		TaskTracker.RemoveTracking(this);
-		core.Reset();
-		stateMachine = default;
-		return pool.TryPush(this);
+		_core.Reset();
+		_stateMachine = default;
+		return _pool.TryPush(this);
 	}
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void Run()
 	{
-		stateMachine.MoveNext();
+		_stateMachine.MoveNext();
 	}
 
-	public GDTask Task
+	public GdTask Task
 	{
 		[DebuggerHidden]
 		get
 		{
-			return new GDTask(this, core.Version);
+			return new GdTask(this, _core.Version);
 		}
 	}
 
 	[DebuggerHidden]
 	public void SetResult()
 	{
-		core.TrySetResult(AsyncUnit.Default);
+		_core.TrySetResult(AsyncUnit.Default);
 	}
 
 	[DebuggerHidden]
 	public void SetException(Exception exception)
 	{
-		core.TrySetException(exception);
+		_core.TrySetException(exception);
 	}
 
 	[DebuggerHidden]
@@ -196,7 +196,7 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 	{
 		try
 		{
-			core.GetResult(token);
+			_core.GetResult(token);
 		}
 		finally
 		{
@@ -205,101 +205,101 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return core.GetStatus(token);
+		return _core.GetStatus(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return core.UnsafeGetStatus();
+		return _core.UnsafeGetStatus();
 	}
 
 	[DebuggerHidden]
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		core.OnCompleted(continuation, state, token);
+		_core.OnCompleted(continuation, state, token);
 	}
 }
 
-internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IGDTaskSource<T>, ITaskPoolNode<AsyncGDTask<TStateMachine, T>>
+internal sealed class AsyncGdTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IGdTaskSource<T>, ITaskPoolNode<AsyncGdTask<TStateMachine, T>>
 	where TStateMachine : IAsyncStateMachine
 {
-	private static TaskPool<AsyncGDTask<TStateMachine, T>> pool;
+	private static TaskPool<AsyncGdTask<TStateMachine, T>> _pool;
 
 	public Action MoveNext { get; }
 
-	private TStateMachine stateMachine;
-	private GDTaskCompletionSourceCore<T> core;
+	private TStateMachine _stateMachine;
+	private GdTaskCompletionSourceCore<T> _core;
 
-	private AsyncGDTask()
+	private AsyncGdTask()
 	{
 		MoveNext = Run;
 	}
 
 	public static void SetStateMachine(ref TStateMachine stateMachine, ref IStateMachineRunnerPromise<T> runnerPromiseFieldRef)
 	{
-		if (!pool.TryPop(out var result))
+		if (!_pool.TryPop(out var result))
 		{
-			result = new AsyncGDTask<TStateMachine, T>();
+			result = new AsyncGdTask<TStateMachine, T>();
 		}
 		TaskTracker.TrackActiveTask(result, 3);
 
 		runnerPromiseFieldRef = result; // set runner before copied.
-		result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
+		result._stateMachine = stateMachine; // copy struct StateMachine(in release build).
 	}
 
-	private AsyncGDTask<TStateMachine, T> nextNode;
-	public ref AsyncGDTask<TStateMachine, T> NextNode => ref nextNode;
+	private AsyncGdTask<TStateMachine, T> _nextNode;
+	public ref AsyncGdTask<TStateMachine, T> NextNode => ref _nextNode;
 
-	static AsyncGDTask()
+	static AsyncGdTask()
 	{
-		TaskPool.RegisterSizeGetter(typeof(AsyncGDTask<TStateMachine, T>), () => pool.Size);
+		TaskPool.RegisterSizeGetter(typeof(AsyncGdTask<TStateMachine, T>), () => _pool.Size);
 	}
 
 	private void Return()
 	{
 		TaskTracker.RemoveTracking(this);
-		core.Reset();
-		stateMachine = default;
-		pool.TryPush(this);
+		_core.Reset();
+		_stateMachine = default;
+		_pool.TryPush(this);
 	}
 
 	private bool TryReturn()
 	{
 		TaskTracker.RemoveTracking(this);
-		core.Reset();
-		stateMachine = default;
-		return pool.TryPush(this);
+		_core.Reset();
+		_stateMachine = default;
+		return _pool.TryPush(this);
 	}
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void Run()
 	{
-		stateMachine.MoveNext();
+		_stateMachine.MoveNext();
 	}
 
-	public GDTask<T> Task
+	public GdTask<T> Task
 	{
 		[DebuggerHidden]
 		get
 		{
-			return new GDTask<T>(this, core.Version);
+			return new GdTask<T>(this, _core.Version);
 		}
 	}
 
 	[DebuggerHidden]
 	public void SetResult(T result)
 	{
-		core.TrySetResult(result);
+		_core.TrySetResult(result);
 	}
 
 	[DebuggerHidden]
 	public void SetException(Exception exception)
 	{
-		core.TrySetException(exception);
+		_core.TrySetException(exception);
 	}
 
 	[DebuggerHidden]
@@ -307,7 +307,7 @@ internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise
 	{
 		try
 		{
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 		finally
 		{
@@ -316,26 +316,26 @@ internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise
 	}
 
 	[DebuggerHidden]
-	void IGDTaskSource.GetResult(short token)
+	void IGdTaskSource.GetResult(short token)
 	{
 		GetResult(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus GetStatus(short token)
+	public GdTaskStatus GetStatus(short token)
 	{
-		return core.GetStatus(token);
+		return _core.GetStatus(token);
 	}
 
 	[DebuggerHidden]
-	public GDTaskStatus UnsafeGetStatus()
+	public GdTaskStatus UnsafeGetStatus()
 	{
-		return core.UnsafeGetStatus();
+		return _core.UnsafeGetStatus();
 	}
 
 	[DebuggerHidden]
 	public void OnCompleted(Action<object> continuation, object state, short token)
 	{
-		core.OnCompleted(continuation, state, token);
+		_core.OnCompleted(continuation, state, token);
 	}
 }

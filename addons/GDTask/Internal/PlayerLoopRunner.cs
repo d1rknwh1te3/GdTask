@@ -8,63 +8,63 @@ internal sealed class PlayerLoopRunner
 {
 	private const int InitialSize = 16;
 
-	private readonly PlayerLoopTiming timing;
-	private readonly object runningAndQueueLock = new object();
-	private readonly object arrayLock = new object();
-	private readonly Action<Exception> unhandledExceptionCallback;
+	private readonly PlayerLoopTiming _timing;
+	private readonly object _runningAndQueueLock = new object();
+	private readonly object _arrayLock = new object();
+	private readonly Action<Exception> _unhandledExceptionCallback;
 
-	private int tail = 0;
-	private bool running = false;
-	private IPlayerLoopItem[] loopItems = new IPlayerLoopItem[InitialSize];
-	private MinimumQueue<IPlayerLoopItem> waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
+	private int _tail = 0;
+	private bool _running = false;
+	private IPlayerLoopItem[] _loopItems = new IPlayerLoopItem[InitialSize];
+	private MinimumQueue<IPlayerLoopItem> _waitQueue = new MinimumQueue<IPlayerLoopItem>(InitialSize);
 
 
 
 	public PlayerLoopRunner(PlayerLoopTiming timing)
 	{
-		this.unhandledExceptionCallback = ex => GD.PrintErr(ex);
-		this.timing = timing;
+		this._unhandledExceptionCallback = ex => GD.PrintErr(ex);
+		this._timing = timing;
 	}
 
 	public void AddAction(IPlayerLoopItem item)
 	{
-		lock (runningAndQueueLock)
+		lock (_runningAndQueueLock)
 		{
-			if (running)
+			if (_running)
 			{
-				waitQueue.Enqueue(item);
+				_waitQueue.Enqueue(item);
 				return;
 			}
 		}
 
-		lock (arrayLock)
+		lock (_arrayLock)
 		{
 			// Ensure Capacity
-			if (loopItems.Length == tail)
+			if (_loopItems.Length == _tail)
 			{
-				Array.Resize(ref loopItems, checked(tail * 2));
+				Array.Resize(ref _loopItems, checked(_tail * 2));
 			}
-			loopItems[tail++] = item;
+			_loopItems[_tail++] = item;
 		}
 	}
 
 	public int Clear()
 	{
-		lock (arrayLock)
+		lock (_arrayLock)
 		{
 			var rest = 0;
 
-			for (var index = 0; index < loopItems.Length; index++)
+			for (var index = 0; index < _loopItems.Length; index++)
 			{
-				if (loopItems[index] != null)
+				if (_loopItems[index] != null)
 				{
 					rest++;
 				}
 
-				loopItems[index] = null;
+				_loopItems[index] = null;
 			}
 
-			tail = 0;
+			_tail = 0;
 			return rest;
 		}
 	}
@@ -74,7 +74,7 @@ internal sealed class PlayerLoopRunner
 	{
 		// for debugging, create named stacktrace.
 #if DEBUG
-		switch (timing)
+		switch (_timing)
 		{
 			case PlayerLoopTiming.PhysicsProcess:
 				PhysicsProcess();
@@ -103,25 +103,25 @@ internal sealed class PlayerLoopRunner
 	[System.Diagnostics.DebuggerHidden]
 	private void RunCore()
 	{
-		lock (runningAndQueueLock)
+		lock (_runningAndQueueLock)
 		{
-			running = true;
+			_running = true;
 		}
 
-		lock (arrayLock)
+		lock (_arrayLock)
 		{
-			var j = tail - 1;
+			var j = _tail - 1;
 
-			for (int i = 0; i < loopItems.Length; i++)
+			for (int i = 0; i < _loopItems.Length; i++)
 			{
-				var action = loopItems[i];
+				var action = _loopItems[i];
 				if (action != null)
 				{
 					try
 					{
 						if (!action.MoveNext())
 						{
-							loopItems[i] = null;
+							_loopItems[i] = null;
 						}
 						else
 						{
@@ -130,10 +130,10 @@ internal sealed class PlayerLoopRunner
 					}
 					catch (Exception ex)
 					{
-						loopItems[i] = null;
+						_loopItems[i] = null;
 						try
 						{
-							unhandledExceptionCallback(ex);
+							_unhandledExceptionCallback(ex);
 						}
 						catch { }
 					}
@@ -142,33 +142,33 @@ internal sealed class PlayerLoopRunner
 				// find null, loop from tail
 				while (i < j)
 				{
-					var fromTail = loopItems[j];
+					var fromTail = _loopItems[j];
 					if (fromTail != null)
 					{
 						try
 						{
 							if (!fromTail.MoveNext())
 							{
-								loopItems[j] = null;
+								_loopItems[j] = null;
 								j--;
 								continue; // next j
 							}
 							else
 							{
 								// swap
-								loopItems[i] = fromTail;
-								loopItems[j] = null;
+								_loopItems[i] = fromTail;
+								_loopItems[j] = null;
 								j--;
 								goto NEXT_LOOP; // next i
 							}
 						}
 						catch (Exception ex)
 						{
-							loopItems[j] = null;
+							_loopItems[j] = null;
 							j--;
 							try
 							{
-								unhandledExceptionCallback(ex);
+								_unhandledExceptionCallback(ex);
 							}
 							catch { }
 							continue; // next j
@@ -180,7 +180,7 @@ internal sealed class PlayerLoopRunner
 					}
 				}
 
-				tail = i; // loop end
+				_tail = i; // loop end
 				break; // LOOP END
 
 				NEXT_LOOP:
@@ -188,16 +188,16 @@ internal sealed class PlayerLoopRunner
 			}
 
 
-			lock (runningAndQueueLock)
+			lock (_runningAndQueueLock)
 			{
-				running = false;
-				while (waitQueue.Count != 0)
+				_running = false;
+				while (_waitQueue.Count != 0)
 				{
-					if (loopItems.Length == tail)
+					if (_loopItems.Length == _tail)
 					{
-						Array.Resize(ref loopItems, checked(tail * 2));
+						Array.Resize(ref _loopItems, checked(_tail * 2));
 					}
-					loopItems[tail++] = waitQueue.Dequeue();
+					_loopItems[_tail++] = _waitQueue.Dequeue();
 				}
 			}
 		}

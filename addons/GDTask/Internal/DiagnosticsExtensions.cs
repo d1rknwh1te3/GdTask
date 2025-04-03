@@ -17,11 +17,11 @@ namespace Fractural.Tasks.Internal;
 
 internal static class DiagnosticsExtensions
 {
-	private static bool displayFilenames = true;
+	private static bool _displayFilenames = true;
 
-	private static readonly Regex typeBeautifyRegex = new Regex("`.+$", RegexOptions.Compiled);
+	private static readonly Regex TypeBeautifyRegex = new Regex("`.+$", RegexOptions.Compiled);
 
-	private static readonly Dictionary<Type, string> builtInTypeNames = new Dictionary<Type, string>
+	private static readonly Dictionary<Type, string> BuiltInTypeNames = new Dictionary<Type, string>
 	{
 		{ typeof(void), "void" },
 		{ typeof(bool), "bool" },
@@ -40,8 +40,8 @@ internal static class DiagnosticsExtensions
 		{ typeof(ulong), "ulong" },
 		{ typeof(ushort), "ushort" },
 		{ typeof(Task), "Task" },
-		{ typeof(GDTask), "GDTask" },
-		{ typeof(GDTaskVoid), "GDTaskVoid" }
+		{ typeof(GdTask), "GDTask" },
+		{ typeof(GdTaskVoid), "GDTaskVoid" }
 	};
 
 	[RequiresUnreferencedCode("Calls System.Diagnostics.StackFrame.GetMethod()")]
@@ -93,7 +93,7 @@ internal static class DiagnosticsExtensions
 			sb.Append(")");
 
 			// file name
-			if (displayFilenames && (sf.GetILOffset() != -1))
+			if (_displayFilenames && (sf.GetILOffset() != -1))
 			{
 				String fileName = null;
 
@@ -103,11 +103,11 @@ internal static class DiagnosticsExtensions
 				}
 				catch (NotSupportedException)
 				{
-					displayFilenames = false;
+					_displayFilenames = false;
 				}
 				catch (SecurityException)
 				{
-					displayFilenames = false;
+					_displayFilenames = false;
 				}
 
 				if (fileName != null)
@@ -172,7 +172,7 @@ internal static class DiagnosticsExtensions
 
 	private static string BeautifyType(Type t, bool shortName)
 	{
-		if (builtInTypeNames.TryGetValue(t, out var builtin))
+		if (BuiltInTypeNames.TryGetValue(t, out var builtin))
 		{
 			return builtin;
 		}
@@ -192,7 +192,7 @@ internal static class DiagnosticsExtensions
 			genericType = "Task";
 		}
 
-		return typeBeautifyRegex.Replace(genericType, "").Replace("GDTask.Triggers.", "").Replace("GDTask.Internal.", "").Replace("GDTask.", "") + "<" + innerFormat + ">";
+		return TypeBeautifyRegex.Replace(genericType, "").Replace("GDTask.Triggers.", "").Replace("GDTask.Internal.", "").Replace("GDTask.", "") + "<" + innerFormat + ">";
 	}
 
 	private static bool IgnoreLine(MethodBase methodInfo)

@@ -37,46 +37,46 @@ public static class Progress
 
 	private sealed class AnonymousProgress<T> : IProgress<T>
 	{
-		private readonly Action<T> action;
+		private readonly Action<T> _action;
 
 		public AnonymousProgress(Action<T> action)
 		{
-			this.action = action;
+			this._action = action;
 		}
 
 		public void Report(T value)
 		{
-			action(value);
+			_action(value);
 		}
 	}
 
 	private sealed class OnlyValueChangedProgress<T> : IProgress<T>
 	{
-		private readonly Action<T> action;
-		private readonly IEqualityComparer<T> comparer;
-		private bool isFirstCall;
-		private T latestValue;
+		private readonly Action<T> _action;
+		private readonly IEqualityComparer<T> _comparer;
+		private bool _isFirstCall;
+		private T _latestValue;
 
 		public OnlyValueChangedProgress(Action<T> action, IEqualityComparer<T> comparer)
 		{
-			this.action = action;
-			this.comparer = comparer;
-			this.isFirstCall = true;
+			this._action = action;
+			this._comparer = comparer;
+			this._isFirstCall = true;
 		}
 
 		public void Report(T value)
 		{
-			if (isFirstCall)
+			if (_isFirstCall)
 			{
-				isFirstCall = false;
+				_isFirstCall = false;
 			}
-			else if (comparer.Equals(value, latestValue))
+			else if (_comparer.Equals(value, _latestValue))
 			{
 				return;
 			}
 
-			latestValue = value;
-			action(value);
+			_latestValue = value;
+			_action(value);
 		}
 	}
 }

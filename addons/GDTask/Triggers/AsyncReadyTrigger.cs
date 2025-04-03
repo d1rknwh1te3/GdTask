@@ -12,18 +12,18 @@ public static partial class AsyncTriggerExtensions
 
 public sealed partial class AsyncReadyTrigger : AsyncTriggerBase<AsyncUnit>
 {
-	private bool called;
+	private bool _called;
 
 	public override void _Ready()
 	{
 		base._Ready();
-		called = true;
+		_called = true;
 		RaiseEvent(AsyncUnit.Default);
 	}
 
-	public GDTask ReadyAsync()
+	public GdTask ReadyAsync()
 	{
-		if (called) return GDTask.CompletedTask;
+		if (_called) return GdTask.CompletedTask;
 
 		return ((IAsyncOneShotTrigger)new AsyncTriggerHandler<AsyncUnit>(this, true)).OneShotAsync();
 	}

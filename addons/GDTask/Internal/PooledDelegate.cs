@@ -5,44 +5,44 @@ namespace Fractural.Tasks.Internal;
 
 internal sealed class PooledDelegate<T> : ITaskPoolNode<PooledDelegate<T>>
 {
-	private static TaskPool<PooledDelegate<T>> pool;
+	private static TaskPool<PooledDelegate<T>> _pool;
 
-	private PooledDelegate<T> nextNode;
-	public ref PooledDelegate<T> NextNode => ref nextNode;
+	private PooledDelegate<T> _nextNode;
+	public ref PooledDelegate<T> NextNode => ref _nextNode;
 
 	static PooledDelegate()
 	{
-		TaskPool.RegisterSizeGetter(typeof(PooledDelegate<T>), () => pool.Size);
+		TaskPool.RegisterSizeGetter(typeof(PooledDelegate<T>), () => _pool.Size);
 	}
 
-	private readonly Action<T> runDelegate;
-	private Action continuation;
+	private readonly Action<T> _runDelegate;
+	private Action _continuation;
 
 	private PooledDelegate()
 	{
-		runDelegate = Run;
+		_runDelegate = Run;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static Action<T> Create(Action continuation)
 	{
-		if (!pool.TryPop(out var item))
+		if (!_pool.TryPop(out var item))
 		{
 			item = new PooledDelegate<T>();
 		}
 
-		item.continuation = continuation;
-		return item.runDelegate;
+		item._continuation = continuation;
+		return item._runDelegate;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	private void Run(T _)
 	{
-		var call = continuation;
-		continuation = null;
+		var call = _continuation;
+		_continuation = null;
 		if (call != null)
 		{
-			pool.TryPush(this);
+			_pool.TryPush(this);
 			call.Invoke();
 		}
 	}

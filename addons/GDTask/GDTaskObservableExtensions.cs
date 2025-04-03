@@ -5,16 +5,16 @@ using Fractural.Tasks.Internal;
 
 namespace Fractural.Tasks
 {
-    public static class GDTaskObservableExtensions
+    public static class GdTaskObservableExtensions
     {
-        public static GDTask<T> ToGDTask<T>(this IObservable<T> source, bool useFirstValue = false, CancellationToken cancellationToken = default)
+        public static GdTask<T> ToGdTask<T>(this IObservable<T> source, bool useFirstValue = false, CancellationToken cancellationToken = default)
         {
-            var promise = new GDTaskCompletionSource<T>();
+            var promise = new GdTaskCompletionSource<T>();
             var disposable = new SingleAssignmentDisposable();
 
             var observer = useFirstValue
-                ? (IObserver<T>)new FirstValueToGDTaskObserver<T>(promise, disposable, cancellationToken)
-                : (IObserver<T>)new ToGDTaskObserver<T>(promise, disposable, cancellationToken);
+                ? (IObserver<T>)new FirstValueToGdTaskObserver<T>(promise, disposable, cancellationToken)
+                : (IObserver<T>)new ToGdTaskObserver<T>(promise, disposable, cancellationToken);
 
             try
             {
@@ -28,7 +28,7 @@ namespace Fractural.Tasks
             return promise.Task;
         }
 
-        public static IObservable<T> ToObservable<T>(this GDTask<T> task)
+        public static IObservable<T> ToObservable<T>(this GdTask<T> task)
         {
             if (task.Status.IsCompleted())
             {
@@ -50,7 +50,7 @@ namespace Fractural.Tasks
         /// <summary>
         /// Ideally returns IObservabl[Unit] is best but GDTask does not have Unit so return AsyncUnit instead.
         /// </summary>
-        public static IObservable<AsyncUnit> ToObservable(this GDTask task)
+        public static IObservable<AsyncUnit> ToObservable(this GdTask task)
         {
             if (task.Status.IsCompleted())
             {
@@ -70,7 +70,7 @@ namespace Fractural.Tasks
             return subject;
         }
 
-        private static async GDTaskVoid Fire<T>(AsyncSubject<T> subject, GDTask<T> task)
+        private static async GdTaskVoid Fire<T>(AsyncSubject<T> subject, GdTask<T> task)
         {
             T value;
             try
@@ -87,7 +87,7 @@ namespace Fractural.Tasks
             subject.OnCompleted();
         }
 
-        private static async GDTaskVoid Fire(AsyncSubject<AsyncUnit> subject, GDTask task)
+        private static async GdTaskVoid Fire(AsyncSubject<AsyncUnit> subject, GdTask task)
         {
             try
             {
@@ -103,53 +103,53 @@ namespace Fractural.Tasks
             subject.OnCompleted();
         }
 
-        private class ToGDTaskObserver<T> : IObserver<T>
+        private class ToGdTaskObserver<T> : IObserver<T>
         {
-	        private static readonly Action<object> callback = OnCanceled;
+	        private static readonly Action<object> Callback = OnCanceled;
 
-	        private readonly GDTaskCompletionSource<T> promise;
-	        private readonly SingleAssignmentDisposable disposable;
-	        private readonly CancellationToken cancellationToken;
-	        private readonly CancellationTokenRegistration registration;
+	        private readonly GdTaskCompletionSource<T> _promise;
+	        private readonly SingleAssignmentDisposable _disposable;
+	        private readonly CancellationToken _cancellationToken;
+	        private readonly CancellationTokenRegistration _registration;
 
-	        private bool hasValue;
-	        private T latestValue;
+	        private bool _hasValue;
+	        private T _latestValue;
 
-            public ToGDTaskObserver(GDTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
+            public ToGdTaskObserver(GdTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
             {
-                this.promise = promise;
-                this.disposable = disposable;
-                this.cancellationToken = cancellationToken;
+                this._promise = promise;
+                this._disposable = disposable;
+                this._cancellationToken = cancellationToken;
 
-                if (this.cancellationToken.CanBeCanceled)
+                if (this._cancellationToken.CanBeCanceled)
                 {
-                    this.registration = this.cancellationToken.RegisterWithoutCaptureExecutionContext(callback, this);
+                    this._registration = this._cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, this);
                 }
             }
 
             private static void OnCanceled(object state)
             {
-                var self = (ToGDTaskObserver<T>)state;
-                self.disposable.Dispose();
-                self.promise.TrySetCanceled(self.cancellationToken);
+                var self = (ToGdTaskObserver<T>)state;
+                self._disposable.Dispose();
+                self._promise.TrySetCanceled(self._cancellationToken);
             }
 
             public void OnNext(T value)
             {
-                hasValue = true;
-                latestValue = value;
+                _hasValue = true;
+                _latestValue = value;
             }
 
             public void OnError(Exception error)
             {
                 try
                 {
-                    promise.TrySetException(error);
+                    _promise.TrySetException(error);
                 }
                 finally
                 {
-                    registration.Dispose();
-                    disposable.Dispose();
+                    _registration.Dispose();
+                    _disposable.Dispose();
                 }
             }
 
@@ -157,64 +157,64 @@ namespace Fractural.Tasks
             {
                 try
                 {
-                    if (hasValue)
+                    if (_hasValue)
                     {
-                        promise.TrySetResult(latestValue);
+                        _promise.TrySetResult(_latestValue);
                     }
                     else
                     {
-                        promise.TrySetException(new InvalidOperationException("Sequence has no elements"));
+                        _promise.TrySetException(new InvalidOperationException("Sequence has no elements"));
                     }
                 }
                 finally
                 {
-                    registration.Dispose();
-                    disposable.Dispose();
+                    _registration.Dispose();
+                    _disposable.Dispose();
                 }
             }
         }
 
-        private class FirstValueToGDTaskObserver<T> : IObserver<T>
+        private class FirstValueToGdTaskObserver<T> : IObserver<T>
         {
-	        private static readonly Action<object> callback = OnCanceled;
+	        private static readonly Action<object> Callback = OnCanceled;
 
-	        private readonly GDTaskCompletionSource<T> promise;
-	        private readonly SingleAssignmentDisposable disposable;
-	        private readonly CancellationToken cancellationToken;
-	        private readonly CancellationTokenRegistration registration;
+	        private readonly GdTaskCompletionSource<T> _promise;
+	        private readonly SingleAssignmentDisposable _disposable;
+	        private readonly CancellationToken _cancellationToken;
+	        private readonly CancellationTokenRegistration _registration;
 
-	        private bool hasValue;
+	        private bool _hasValue;
 
-            public FirstValueToGDTaskObserver(GDTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
+            public FirstValueToGdTaskObserver(GdTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
             {
-                this.promise = promise;
-                this.disposable = disposable;
-                this.cancellationToken = cancellationToken;
+                this._promise = promise;
+                this._disposable = disposable;
+                this._cancellationToken = cancellationToken;
 
-                if (this.cancellationToken.CanBeCanceled)
+                if (this._cancellationToken.CanBeCanceled)
                 {
-                    this.registration = this.cancellationToken.RegisterWithoutCaptureExecutionContext(callback, this);
+                    this._registration = this._cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, this);
                 }
             }
 
             private static void OnCanceled(object state)
             {
-                var self = (FirstValueToGDTaskObserver<T>)state;
-                self.disposable.Dispose();
-                self.promise.TrySetCanceled(self.cancellationToken);
+                var self = (FirstValueToGdTaskObserver<T>)state;
+                self._disposable.Dispose();
+                self._promise.TrySetCanceled(self._cancellationToken);
             }
 
             public void OnNext(T value)
             {
-                hasValue = true;
+                _hasValue = true;
                 try
                 {
-                    promise.TrySetResult(value);
+                    _promise.TrySetResult(value);
                 }
                 finally
                 {
-                    registration.Dispose();
-                    disposable.Dispose();
+                    _registration.Dispose();
+                    _disposable.Dispose();
                 }
             }
 
@@ -222,12 +222,12 @@ namespace Fractural.Tasks
             {
                 try
                 {
-                    promise.TrySetException(error);
+                    _promise.TrySetException(error);
                 }
                 finally
                 {
-                    registration.Dispose();
-                    disposable.Dispose();
+                    _registration.Dispose();
+                    _disposable.Dispose();
                 }
             }
 
@@ -235,49 +235,49 @@ namespace Fractural.Tasks
             {
                 try
                 {
-                    if (!hasValue)
+                    if (!_hasValue)
                     {
-                        promise.TrySetException(new InvalidOperationException("Sequence has no elements"));
+                        _promise.TrySetException(new InvalidOperationException("Sequence has no elements"));
                     }
                 }
                 finally
                 {
-                    registration.Dispose();
-                    disposable.Dispose();
+                    _registration.Dispose();
+                    _disposable.Dispose();
                 }
             }
         }
 
         private class ReturnObservable<T> : IObservable<T>
         {
-	        private readonly T value;
+	        private readonly T _value;
 
             public ReturnObservable(T value)
             {
-                this.value = value;
+                this._value = value;
             }
 
             public IDisposable Subscribe(IObserver<T> observer)
             {
-                observer.OnNext(value);
+                observer.OnNext(_value);
                 observer.OnCompleted();
-                return EmptyDisposable.Instance;
+                return EmptyDisposable.instance;
             }
         }
 
         private class ThrowObservable<T> : IObservable<T>
         {
-	        private readonly Exception value;
+	        private readonly Exception _value;
 
             public ThrowObservable(Exception value)
             {
-                this.value = value;
+                this._value = value;
             }
 
             public IDisposable Subscribe(IObserver<T> observer)
             {
-                observer.OnError(value);
-                return EmptyDisposable.Instance;
+                observer.OnError(_value);
+                return EmptyDisposable.instance;
             }
         }
     }
@@ -289,7 +289,7 @@ namespace Fractural.Tasks.Internal
 
     internal class EmptyDisposable : IDisposable
     {
-        public static EmptyDisposable Instance = new EmptyDisposable();
+        public static EmptyDisposable instance = new EmptyDisposable();
 
         private EmptyDisposable()
         {
@@ -303,30 +303,30 @@ namespace Fractural.Tasks.Internal
 
     internal sealed class SingleAssignmentDisposable : IDisposable
     {
-	    private readonly object gate = new object();
-	    private IDisposable current;
-	    private bool disposed;
+	    private readonly object _gate = new object();
+	    private IDisposable _current;
+	    private bool _disposed;
 
-        public bool IsDisposed { get { lock (gate) { return disposed; } } }
+        public bool IsDisposed { get { lock (_gate) { return _disposed; } } }
 
         public IDisposable Disposable
         {
             get
             {
-                return current;
+                return _current;
             }
             set
             {
                 var old = default(IDisposable);
                 bool alreadyDisposed;
-                lock (gate)
+                lock (_gate)
                 {
-                    alreadyDisposed = disposed;
-                    old = current;
+                    alreadyDisposed = _disposed;
+                    old = _current;
                     if (!alreadyDisposed)
                     {
                         if (value == null) return;
-                        current = value;
+                        _current = value;
                     }
                 }
 
@@ -345,13 +345,13 @@ namespace Fractural.Tasks.Internal
         {
             IDisposable old = null;
 
-            lock (gate)
+            lock (_gate)
             {
-                if (!disposed)
+                if (!_disposed)
                 {
-                    disposed = true;
-                    old = current;
-                    current = null;
+                    _disposed = true;
+                    old = _current;
+                    _current = null;
                 }
             }
 
@@ -361,23 +361,23 @@ namespace Fractural.Tasks.Internal
 
     internal sealed class AsyncSubject<T> : IObservable<T>, IObserver<T>
     {
-	    private object observerLock = new object();
+	    private object _observerLock = new object();
 
-	    private T lastValue;
-	    private bool hasValue;
-	    private bool isStopped;
-	    private bool isDisposed;
-	    private Exception lastError;
-	    private IObserver<T> outObserver = EmptyObserver<T>.Instance;
+	    private T _lastValue;
+	    private bool _hasValue;
+	    private bool _isStopped;
+	    private bool _isDisposed;
+	    private Exception _lastError;
+	    private IObserver<T> _outObserver = EmptyObserver<T>.Instance;
 
         public T Value
         {
             get
             {
                 ThrowIfDisposed();
-                if (!isStopped) throw new InvalidOperationException("AsyncSubject is not completed yet");
-                if (lastError != null) ExceptionDispatchInfo.Capture(lastError).Throw();
-                return lastValue;
+                if (!_isStopped) throw new InvalidOperationException("AsyncSubject is not completed yet");
+                if (_lastError != null) ExceptionDispatchInfo.Capture(_lastError).Throw();
+                return _lastValue;
             }
         }
 
@@ -385,27 +385,27 @@ namespace Fractural.Tasks.Internal
         {
             get
             {
-                return !(outObserver is EmptyObserver<T>) && !isStopped && !isDisposed;
+                return !(_outObserver is EmptyObserver<T>) && !_isStopped && !_isDisposed;
             }
         }
 
-        public bool IsCompleted { get { return isStopped; } }
+        public bool IsCompleted { get { return _isStopped; } }
 
         public void OnCompleted()
         {
             IObserver<T> old;
             T v;
             bool hv;
-            lock (observerLock)
+            lock (_observerLock)
             {
                 ThrowIfDisposed();
-                if (isStopped) return;
+                if (_isStopped) return;
 
-                old = outObserver;
-                outObserver = EmptyObserver<T>.Instance;
-                isStopped = true;
-                v = lastValue;
-                hv = hasValue;
+                old = _outObserver;
+                _outObserver = EmptyObserver<T>.Instance;
+                _isStopped = true;
+                v = _lastValue;
+                hv = _hasValue;
             }
 
             if (hv)
@@ -424,15 +424,15 @@ namespace Fractural.Tasks.Internal
             if (error == null) throw new ArgumentNullException("error");
 
             IObserver<T> old;
-            lock (observerLock)
+            lock (_observerLock)
             {
                 ThrowIfDisposed();
-                if (isStopped) return;
+                if (_isStopped) return;
 
-                old = outObserver;
-                outObserver = EmptyObserver<T>.Instance;
-                isStopped = true;
-                lastError = error;
+                old = _outObserver;
+                _outObserver = EmptyObserver<T>.Instance;
+                _isStopped = true;
+                _lastError = error;
             }
 
             old.OnError(error);
@@ -440,13 +440,13 @@ namespace Fractural.Tasks.Internal
 
         public void OnNext(T value)
         {
-            lock (observerLock)
+            lock (_observerLock)
             {
                 ThrowIfDisposed();
-                if (isStopped) return;
+                if (_isStopped) return;
 
-                this.hasValue = true;
-                this.lastValue = value;
+                this._hasValue = true;
+                this._lastValue = value;
             }
         }
 
@@ -458,35 +458,35 @@ namespace Fractural.Tasks.Internal
             var v = default(T);
             var hv = false;
 
-            lock (observerLock)
+            lock (_observerLock)
             {
                 ThrowIfDisposed();
-                if (!isStopped)
+                if (!_isStopped)
                 {
-                    var listObserver = outObserver as ListObserver<T>;
+                    var listObserver = _outObserver as ListObserver<T>;
                     if (listObserver != null)
                     {
-                        outObserver = listObserver.Add(observer);
+                        _outObserver = listObserver.Add(observer);
                     }
                     else
                     {
-                        var current = outObserver;
+                        var current = _outObserver;
                         if (current is EmptyObserver<T>)
                         {
-                            outObserver = observer;
+                            _outObserver = observer;
                         }
                         else
                         {
-                            outObserver = new ListObserver<T>(new ImmutableList<IObserver<T>>(new[] { current, observer }));
+                            _outObserver = new ListObserver<T>(new ImmutableList<IObserver<T>>(new[] { current, observer }));
                         }
                     }
 
                     return new Subscription(this, observer);
                 }
 
-                ex = lastError;
-                v = lastValue;
-                hv = hasValue;
+                ex = _lastError;
+                v = _lastValue;
+                hv = _hasValue;
             }
 
             if (ex != null)
@@ -503,57 +503,57 @@ namespace Fractural.Tasks.Internal
                 observer.OnCompleted();
             }
 
-            return EmptyDisposable.Instance;
+            return EmptyDisposable.instance;
         }
 
         public void Dispose()
         {
-            lock (observerLock)
+            lock (_observerLock)
             {
-                isDisposed = true;
-                outObserver = DisposedObserver<T>.Instance;
-                lastError = null;
-                lastValue = default(T);
+                _isDisposed = true;
+                _outObserver = DisposedObserver<T>.Instance;
+                _lastError = null;
+                _lastValue = default(T);
             }
         }
 
         private void ThrowIfDisposed()
         {
-            if (isDisposed) throw new ObjectDisposedException("");
+            if (_isDisposed) throw new ObjectDisposedException("");
         }
 
         private class Subscription : IDisposable
         {
-	        private readonly object gate = new object();
-	        private AsyncSubject<T> parent;
-	        private IObserver<T> unsubscribeTarget;
+	        private readonly object _gate = new object();
+	        private AsyncSubject<T> _parent;
+	        private IObserver<T> _unsubscribeTarget;
 
             public Subscription(AsyncSubject<T> parent, IObserver<T> unsubscribeTarget)
             {
-                this.parent = parent;
-                this.unsubscribeTarget = unsubscribeTarget;
+                this._parent = parent;
+                this._unsubscribeTarget = unsubscribeTarget;
             }
 
             public void Dispose()
             {
-                lock (gate)
+                lock (_gate)
                 {
-                    if (parent != null)
+                    if (_parent != null)
                     {
-                        lock (parent.observerLock)
+                        lock (_parent._observerLock)
                         {
-                            var listObserver = parent.outObserver as ListObserver<T>;
+                            var listObserver = _parent._outObserver as ListObserver<T>;
                             if (listObserver != null)
                             {
-                                parent.outObserver = listObserver.Remove(unsubscribeTarget);
+                                _parent._outObserver = listObserver.Remove(_unsubscribeTarget);
                             }
                             else
                             {
-                                parent.outObserver = EmptyObserver<T>.Instance;
+                                _parent._outObserver = EmptyObserver<T>.Instance;
                             }
 
-                            unsubscribeTarget = null;
-                            parent = null;
+                            _unsubscribeTarget = null;
+                            _parent = null;
                         }
                     }
                 }
@@ -693,28 +693,28 @@ namespace Fractural.Tasks.Internal
     {
         public static readonly ImmutableList<T> Empty = new ImmutableList<T>();
 
-        private T[] data;
+        private T[] _data;
 
         public T[] Data
         {
-            get { return data; }
+            get { return _data; }
         }
 
         private ImmutableList()
         {
-            data = new T[0];
+            _data = new T[0];
         }
 
         public ImmutableList(T[] data)
         {
-            this.data = data;
+            this._data = data;
         }
 
         public ImmutableList<T> Add(T value)
         {
-            var newData = new T[data.Length + 1];
-            Array.Copy(data, newData, data.Length);
-            newData[data.Length] = value;
+            var newData = new T[_data.Length + 1];
+            Array.Copy(_data, newData, _data.Length);
+            newData[_data.Length] = value;
             return new ImmutableList<T>(newData);
         }
 
@@ -723,23 +723,23 @@ namespace Fractural.Tasks.Internal
             var i = IndexOf(value);
             if (i < 0) return this;
 
-            var length = data.Length;
+            var length = _data.Length;
             if (length == 1) return Empty;
 
             var newData = new T[length - 1];
 
-            Array.Copy(data, 0, newData, 0, i);
-            Array.Copy(data, i + 1, newData, i, length - i - 1);
+            Array.Copy(_data, 0, newData, 0, i);
+            Array.Copy(_data, i + 1, newData, i, length - i - 1);
 
             return new ImmutableList<T>(newData);
         }
 
         public int IndexOf(T value)
         {
-            for (var i = 0; i < data.Length; ++i)
+            for (var i = 0; i < _data.Length; ++i)
             {
                 // ImmutableList only use for IObserver(no worry for boxed)
-                if (object.Equals(data[i], value)) return i;
+                if (object.Equals(_data[i], value)) return i;
             }
             return -1;
         }

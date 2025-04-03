@@ -39,12 +39,12 @@ internal class StateTuple<T1> : IDisposable
 
 internal static class StatePool<T1>
 {
-	private static readonly ConcurrentQueue<StateTuple<T1>> queue = new ConcurrentQueue<StateTuple<T1>>();
+	private static readonly ConcurrentQueue<StateTuple<T1>> Queue = new ConcurrentQueue<StateTuple<T1>>();
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static StateTuple<T1> Create(T1 item1)
 	{
-		if (queue.TryDequeue(out var value))
+		if (Queue.TryDequeue(out var value))
 		{
 			value.Item1 = item1;
 			return value;
@@ -57,7 +57,7 @@ internal static class StatePool<T1>
 	public static void Return(StateTuple<T1> tuple)
 	{
 		tuple.Item1 = default;
-		queue.Enqueue(tuple);
+		Queue.Enqueue(tuple);
 	}
 }
 
@@ -80,12 +80,12 @@ internal class StateTuple<T1, T2> : IDisposable
 
 internal static class StatePool<T1, T2>
 {
-	private static readonly ConcurrentQueue<StateTuple<T1, T2>> queue = new ConcurrentQueue<StateTuple<T1, T2>>();
+	private static readonly ConcurrentQueue<StateTuple<T1, T2>> Queue = new ConcurrentQueue<StateTuple<T1, T2>>();
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static StateTuple<T1, T2> Create(T1 item1, T2 item2)
 	{
-		if (queue.TryDequeue(out var value))
+		if (Queue.TryDequeue(out var value))
 		{
 			value.Item1 = item1;
 			value.Item2 = item2;
@@ -100,7 +100,7 @@ internal static class StatePool<T1, T2>
 	{
 		tuple.Item1 = default;
 		tuple.Item2 = default;
-		queue.Enqueue(tuple);
+		Queue.Enqueue(tuple);
 	}
 }
 
@@ -125,12 +125,12 @@ internal class StateTuple<T1, T2, T3> : IDisposable
 
 internal static class StatePool<T1, T2, T3>
 {
-	private static readonly ConcurrentQueue<StateTuple<T1, T2, T3>> queue = new ConcurrentQueue<StateTuple<T1, T2, T3>>();
+	private static readonly ConcurrentQueue<StateTuple<T1, T2, T3>> Queue = new ConcurrentQueue<StateTuple<T1, T2, T3>>();
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public static StateTuple<T1, T2, T3> Create(T1 item1, T2 item2, T3 item3)
 	{
-		if (queue.TryDequeue(out var value))
+		if (Queue.TryDequeue(out var value))
 		{
 			value.Item1 = item1;
 			value.Item2 = item2;
@@ -147,6 +147,6 @@ internal static class StatePool<T1, T2, T3>
 		tuple.Item1 = default;
 		tuple.Item2 = default;
 		tuple.Item3 = default;
-		queue.Enqueue(tuple);
+		Queue.Enqueue(tuple);
 	}
 }

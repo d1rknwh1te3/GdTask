@@ -6,51 +6,51 @@ using System.Threading;
 
 namespace Fractural.Tasks;
 
-public partial struct GDTask
+public partial struct GdTask
 {
-	private static readonly GDTask CanceledGDTask = new Func<GDTask>(() =>
+	private static readonly GdTask CanceledGDTask = new Func<GdTask>(() =>
 	{
-		return new GDTask(new CanceledResultSource(CancellationToken.None), 0);
+		return new GdTask(new CanceledResultSource(CancellationToken.None), 0);
 	})();
 
-	private static class CanceledGDTaskCache<T>
+	private static class CanceledGdTaskCache<T>
 	{
-		public static readonly GDTask<T> Task;
+		public static readonly GdTask<T> Task;
 
-		static CanceledGDTaskCache()
+		static CanceledGdTaskCache()
 		{
-			Task = new GDTask<T>(new CanceledResultSource<T>(CancellationToken.None), 0);
+			Task = new GdTask<T>(new CanceledResultSource<T>(CancellationToken.None), 0);
 		}
 	}
 
-	public static readonly GDTask CompletedTask = new GDTask();
+	public static readonly GdTask CompletedTask = new GdTask();
 
-	public static GDTask FromException(Exception ex)
+	public static GdTask FromException(Exception ex)
 	{
 		if (ex is OperationCanceledException oce)
 		{
 			return FromCanceled(oce.CancellationToken);
 		}
 
-		return new GDTask(new ExceptionResultSource(ex), 0);
+		return new GdTask(new ExceptionResultSource(ex), 0);
 	}
 
-	public static GDTask<T> FromException<T>(Exception ex)
+	public static GdTask<T> FromException<T>(Exception ex)
 	{
 		if (ex is OperationCanceledException oce)
 		{
 			return FromCanceled<T>(oce.CancellationToken);
 		}
 
-		return new GDTask<T>(new ExceptionResultSource<T>(ex), 0);
+		return new GdTask<T>(new ExceptionResultSource<T>(ex), 0);
 	}
 
-	public static GDTask<T> FromResult<T>(T value)
+	public static GdTask<T> FromResult<T>(T value)
 	{
-		return new GDTask<T>(value);
+		return new GdTask<T>(value);
 	}
 
-	public static GDTask FromCanceled(CancellationToken cancellationToken = default)
+	public static GdTask FromCanceled(CancellationToken cancellationToken = default)
 	{
 		if (cancellationToken == CancellationToken.None)
 		{
@@ -58,38 +58,38 @@ public partial struct GDTask
 		}
 		else
 		{
-			return new GDTask(new CanceledResultSource(cancellationToken), 0);
+			return new GdTask(new CanceledResultSource(cancellationToken), 0);
 		}
 	}
 
-	public static GDTask<T> FromCanceled<T>(CancellationToken cancellationToken = default)
+	public static GdTask<T> FromCanceled<T>(CancellationToken cancellationToken = default)
 	{
 		if (cancellationToken == CancellationToken.None)
 		{
-			return CanceledGDTaskCache<T>.Task;
+			return CanceledGdTaskCache<T>.Task;
 		}
 		else
 		{
-			return new GDTask<T>(new CanceledResultSource<T>(cancellationToken), 0);
+			return new GdTask<T>(new CanceledResultSource<T>(cancellationToken), 0);
 		}
 	}
 
-	public static GDTask Create(Func<GDTask> factory)
+	public static GdTask Create(Func<GdTask> factory)
 	{
 		return factory();
 	}
 
-	public static GDTask<T> Create<T>(Func<GDTask<T>> factory)
+	public static GdTask<T> Create<T>(Func<GdTask<T>> factory)
 	{
 		return factory();
 	}
 
-	public static AsyncLazy Lazy(Func<GDTask> factory)
+	public static AsyncLazy Lazy(Func<GdTask> factory)
 	{
 		return new AsyncLazy(factory);
 	}
 
-	public static AsyncLazy<T> Lazy<T>(Func<GDTask<T>> factory)
+	public static AsyncLazy<T> Lazy<T>(Func<GdTask<T>> factory)
 	{
 		return new AsyncLazy<T>(factory);
 	}
@@ -97,7 +97,7 @@ public partial struct GDTask
 	/// <summary>
 	/// helper of fire and forget void action.
 	/// </summary>
-	public static void Void(Func<GDTaskVoid> asyncAction)
+	public static void Void(Func<GdTaskVoid> asyncAction)
 	{
 		asyncAction().Forget();
 	}
@@ -105,7 +105,7 @@ public partial struct GDTask
 	/// <summary>
 	/// helper of fire and forget void action.
 	/// </summary>
-	public static void Void(Func<CancellationToken, GDTaskVoid> asyncAction, CancellationToken cancellationToken)
+	public static void Void(Func<CancellationToken, GdTaskVoid> asyncAction, CancellationToken cancellationToken)
 	{
 		asyncAction(cancellationToken).Forget();
 	}
@@ -113,7 +113,7 @@ public partial struct GDTask
 	/// <summary>
 	/// helper of fire and forget void action.
 	/// </summary>
-	public static void Void<T>(Func<T, GDTaskVoid> asyncAction, T state)
+	public static void Void<T>(Func<T, GdTaskVoid> asyncAction, T state)
 	{
 		asyncAction(state).Forget();
 	}
@@ -122,7 +122,7 @@ public partial struct GDTask
 	/// helper of create add GDTaskVoid to delegate.
 	/// For example: FooAction = GDTask.Action(async () => { /* */ })
 	/// </summary>
-	public static Action Action(Func<GDTaskVoid> asyncAction)
+	public static Action Action(Func<GdTaskVoid> asyncAction)
 	{
 		return () => asyncAction().Forget();
 	}
@@ -130,7 +130,7 @@ public partial struct GDTask
 	/// <summary>
 	/// helper of create add GDTaskVoid to delegate.
 	/// </summary>
-	public static Action Action(Func<CancellationToken, GDTaskVoid> asyncAction, CancellationToken cancellationToken)
+	public static Action Action(Func<CancellationToken, GdTaskVoid> asyncAction, CancellationToken cancellationToken)
 	{
 		return () => asyncAction(cancellationToken).Forget();
 	}
@@ -138,63 +138,63 @@ public partial struct GDTask
 	/// <summary>
 	/// Defer the task creation just before call await.
 	/// </summary>
-	public static GDTask Defer(Func<GDTask> factory)
+	public static GdTask Defer(Func<GdTask> factory)
 	{
-		return new GDTask(new DeferPromise(factory), 0);
+		return new GdTask(new DeferPromise(factory), 0);
 	}
 
 	/// <summary>
 	/// Defer the task creation just before call await.
 	/// </summary>
-	public static GDTask<T> Defer<T>(Func<GDTask<T>> factory)
+	public static GdTask<T> Defer<T>(Func<GdTask<T>> factory)
 	{
-		return new GDTask<T>(new DeferPromise<T>(factory), 0);
+		return new GdTask<T>(new DeferPromise<T>(factory), 0);
 	}
 
 	/// <summary>
 	/// Never complete.
 	/// </summary>
-	public static GDTask Never(CancellationToken cancellationToken)
+	public static GdTask Never(CancellationToken cancellationToken)
 	{
-		return new GDTask<AsyncUnit>(new NeverPromise<AsyncUnit>(cancellationToken), 0);
+		return new GdTask<AsyncUnit>(new NeverPromise<AsyncUnit>(cancellationToken), 0);
 	}
 
 	/// <summary>
 	/// Never complete.
 	/// </summary>
-	public static GDTask<T> Never<T>(CancellationToken cancellationToken)
+	public static GdTask<T> Never<T>(CancellationToken cancellationToken)
 	{
-		return new GDTask<T>(new NeverPromise<T>(cancellationToken), 0);
+		return new GdTask<T>(new NeverPromise<T>(cancellationToken), 0);
 	}
 
-	private sealed class ExceptionResultSource : IGDTaskSource
+	private sealed class ExceptionResultSource : IGdTaskSource
 	{
-		private readonly ExceptionDispatchInfo exception;
-		private bool calledGet;
+		private readonly ExceptionDispatchInfo _exception;
+		private bool _calledGet;
 
 		public ExceptionResultSource(Exception exception)
 		{
-			this.exception = ExceptionDispatchInfo.Capture(exception);
+			this._exception = ExceptionDispatchInfo.Capture(exception);
 		}
 
 		public void GetResult(short token)
 		{
-			if (!calledGet)
+			if (!_calledGet)
 			{
-				calledGet = true;
+				_calledGet = true;
 				GC.SuppressFinalize(this);
 			}
-			exception.Throw();
+			_exception.Throw();
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return GDTaskStatus.Faulted;
+			return GdTaskStatus.Faulted;
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return GDTaskStatus.Faulted;
+			return GdTaskStatus.Faulted;
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
@@ -204,52 +204,52 @@ public partial struct GDTask
 
 		~ExceptionResultSource()
 		{
-			if (!calledGet)
+			if (!_calledGet)
 			{
-				GDTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
+				GdTaskScheduler.PublishUnobservedTaskException(_exception.SourceException);
 			}
 		}
 	}
 
-	private sealed class ExceptionResultSource<T> : IGDTaskSource<T>
+	private sealed class ExceptionResultSource<T> : IGdTaskSource<T>
 	{
-		private readonly ExceptionDispatchInfo exception;
-		private bool calledGet;
+		private readonly ExceptionDispatchInfo _exception;
+		private bool _calledGet;
 
 		public ExceptionResultSource(Exception exception)
 		{
-			this.exception = ExceptionDispatchInfo.Capture(exception);
+			this._exception = ExceptionDispatchInfo.Capture(exception);
 		}
 
 		public T GetResult(short token)
 		{
-			if (!calledGet)
+			if (!_calledGet)
 			{
-				calledGet = true;
+				_calledGet = true;
 				GC.SuppressFinalize(this);
 			}
-			exception.Throw();
+			_exception.Throw();
 			return default;
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
-			if (!calledGet)
+			if (!_calledGet)
 			{
-				calledGet = true;
+				_calledGet = true;
 				GC.SuppressFinalize(this);
 			}
-			exception.Throw();
+			_exception.Throw();
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return GDTaskStatus.Faulted;
+			return GdTaskStatus.Faulted;
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return GDTaskStatus.Faulted;
+			return GdTaskStatus.Faulted;
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
@@ -259,35 +259,35 @@ public partial struct GDTask
 
 		~ExceptionResultSource()
 		{
-			if (!calledGet)
+			if (!_calledGet)
 			{
-				GDTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
+				GdTaskScheduler.PublishUnobservedTaskException(_exception.SourceException);
 			}
 		}
 	}
 
-	private sealed class CanceledResultSource : IGDTaskSource
+	private sealed class CanceledResultSource : IGdTaskSource
 	{
-		private readonly CancellationToken cancellationToken;
+		private readonly CancellationToken _cancellationToken;
 
 		public CanceledResultSource(CancellationToken cancellationToken)
 		{
-			this.cancellationToken = cancellationToken;
+			this._cancellationToken = cancellationToken;
 		}
 
 		public void GetResult(short token)
 		{
-			throw new OperationCanceledException(cancellationToken);
+			throw new OperationCanceledException(_cancellationToken);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return GDTaskStatus.Canceled;
+			return GdTaskStatus.Canceled;
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return GDTaskStatus.Canceled;
+			return GdTaskStatus.Canceled;
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
@@ -296,33 +296,33 @@ public partial struct GDTask
 		}
 	}
 
-	private sealed class CanceledResultSource<T> : IGDTaskSource<T>
+	private sealed class CanceledResultSource<T> : IGdTaskSource<T>
 	{
-		private readonly CancellationToken cancellationToken;
+		private readonly CancellationToken _cancellationToken;
 
 		public CanceledResultSource(CancellationToken cancellationToken)
 		{
-			this.cancellationToken = cancellationToken;
+			this._cancellationToken = cancellationToken;
 		}
 
 		public T GetResult(short token)
 		{
-			throw new OperationCanceledException(cancellationToken);
+			throw new OperationCanceledException(_cancellationToken);
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
-			throw new OperationCanceledException(cancellationToken);
+			throw new OperationCanceledException(_cancellationToken);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return GDTaskStatus.Canceled;
+			return GdTaskStatus.Canceled;
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return GDTaskStatus.Canceled;
+			return GdTaskStatus.Canceled;
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
@@ -331,144 +331,144 @@ public partial struct GDTask
 		}
 	}
 
-	private sealed class DeferPromise : IGDTaskSource
+	private sealed class DeferPromise : IGdTaskSource
 	{
-		private Func<GDTask> factory;
-		private GDTask task;
-		private GDTask.Awaiter awaiter;
+		private Func<GdTask> _factory;
+		private GdTask _task;
+		private GdTask.Awaiter _awaiter;
 
-		public DeferPromise(Func<GDTask> factory)
+		public DeferPromise(Func<GdTask> factory)
 		{
-			this.factory = factory;
+			this._factory = factory;
 		}
 
 		public void GetResult(short token)
 		{
-			awaiter.GetResult();
+			_awaiter.GetResult();
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			var f = Interlocked.Exchange(ref factory, null);
+			var f = Interlocked.Exchange(ref _factory, null);
 			if (f != null)
 			{
-				task = f();
-				awaiter = task.GetAwaiter();
+				_task = f();
+				_awaiter = _task.GetAwaiter();
 			}
 
-			return task.Status;
+			return _task.Status;
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			awaiter.SourceOnCompleted(continuation, state);
+			_awaiter.SourceOnCompleted(continuation, state);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return task.Status;
+			return _task.Status;
 		}
 	}
 
-	private sealed class DeferPromise<T> : IGDTaskSource<T>
+	private sealed class DeferPromise<T> : IGdTaskSource<T>
 	{
-		private Func<GDTask<T>> factory;
-		private GDTask<T> task;
-		private GDTask<T>.Awaiter awaiter;
+		private Func<GdTask<T>> _factory;
+		private GdTask<T> _task;
+		private GdTask<T>.Awaiter _awaiter;
 
-		public DeferPromise(Func<GDTask<T>> factory)
+		public DeferPromise(Func<GdTask<T>> factory)
 		{
-			this.factory = factory;
+			this._factory = factory;
 		}
 
 		public T GetResult(short token)
 		{
-			return awaiter.GetResult();
+			return _awaiter.GetResult();
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
-			awaiter.GetResult();
+			_awaiter.GetResult();
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			var f = Interlocked.Exchange(ref factory, null);
+			var f = Interlocked.Exchange(ref _factory, null);
 			if (f != null)
 			{
-				task = f();
-				awaiter = task.GetAwaiter();
+				_task = f();
+				_awaiter = _task.GetAwaiter();
 			}
 
-			return task.Status;
+			return _task.Status;
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			awaiter.SourceOnCompleted(continuation, state);
+			_awaiter.SourceOnCompleted(continuation, state);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return task.Status;
+			return _task.Status;
 		}
 	}
 
-	private sealed class NeverPromise<T> : IGDTaskSource<T>
+	private sealed class NeverPromise<T> : IGdTaskSource<T>
 	{
 		private static readonly Action<object> cancellationCallback = CancellationCallback;
 
-		private CancellationToken cancellationToken;
-		private GDTaskCompletionSourceCore<T> core;
+		private CancellationToken _cancellationToken;
+		private GdTaskCompletionSourceCore<T> _core;
 
 		public NeverPromise(CancellationToken cancellationToken)
 		{
-			this.cancellationToken = cancellationToken;
-			if (this.cancellationToken.CanBeCanceled)
+			this._cancellationToken = cancellationToken;
+			if (this._cancellationToken.CanBeCanceled)
 			{
-				this.cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallback, this);
+				this._cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationCallback, this);
 			}
 		}
 
 		private static void CancellationCallback(object state)
 		{
 			var self = (NeverPromise<T>)state;
-			self.core.TrySetCanceled(self.cancellationToken);
+			self._core.TrySetCanceled(self._cancellationToken);
 		}
 
 		public T GetResult(short token)
 		{
-			return core.GetResult(token);
+			return _core.GetResult(token);
 		}
 
-		public GDTaskStatus GetStatus(short token)
+		public GdTaskStatus GetStatus(short token)
 		{
-			return core.GetStatus(token);
+			return _core.GetStatus(token);
 		}
 
-		public GDTaskStatus UnsafeGetStatus()
+		public GdTaskStatus UnsafeGetStatus()
 		{
-			return core.UnsafeGetStatus();
+			return _core.UnsafeGetStatus();
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			core.OnCompleted(continuation, state, token);
+			_core.OnCompleted(continuation, state, token);
 		}
 
-		void IGDTaskSource.GetResult(short token)
+		void IGdTaskSource.GetResult(short token)
 		{
-			core.GetResult(token);
+			_core.GetResult(token);
 		}
 	}
 }
 
 internal static class CompletedTasks
 {
-	public static readonly GDTask<AsyncUnit> AsyncUnit = GDTask.FromResult(Fractural.Tasks.AsyncUnit.Default);
-	public static readonly GDTask<bool> True = GDTask.FromResult(true);
-	public static readonly GDTask<bool> False = GDTask.FromResult(false);
-	public static readonly GDTask<int> Zero = GDTask.FromResult(0);
-	public static readonly GDTask<int> MinusOne = GDTask.FromResult(-1);
-	public static readonly GDTask<int> One = GDTask.FromResult(1);
+	public static readonly GdTask<AsyncUnit> AsyncUnit = GdTask.FromResult(Fractural.Tasks.AsyncUnit.Default);
+	public static readonly GdTask<bool> True = GdTask.FromResult(true);
+	public static readonly GdTask<bool> False = GdTask.FromResult(false);
+	public static readonly GdTask<int> Zero = GdTask.FromResult(0);
+	public static readonly GdTask<int> MinusOne = GdTask.FromResult(-1);
+	public static readonly GdTask<int> One = GdTask.FromResult(1);
 }

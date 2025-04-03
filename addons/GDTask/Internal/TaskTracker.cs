@@ -13,7 +13,7 @@ public static class TaskTracker
 	// TODO: Work on task tracker after getting tasks functioning
 #if DEBUG
 
-	private static int trackingId = 0;
+	private static int _trackingId = 0;
 
 	public const string EnableAutoReloadKey = "GDTaskTrackerWindow_EnableAutoReloadKey";
 	public const string EnableTrackingKey = "GDTaskTrackerWindow_EnableTrackingKey";
@@ -21,35 +21,35 @@ public static class TaskTracker
 
 	public static class EditorEnableState
 	{
-		private static bool enableAutoReload;
+		private static bool _enableAutoReload;
 		public static bool EnableAutoReload
 		{
-			get { return enableAutoReload; }
+			get { return _enableAutoReload; }
 			set
 			{
-				enableAutoReload = value;
+				_enableAutoReload = value;
 				//UnityEditor.EditorPrefs.SetBool(EnableAutoReloadKey, value);
 			}
 		}
 
-		private static bool enableTracking;
+		private static bool _enableTracking;
 		public static bool EnableTracking
 		{
-			get { return enableTracking; }
+			get { return _enableTracking; }
 			set
 			{
-				enableTracking = value;
+				_enableTracking = value;
 				//UnityEditor.EditorPrefs.SetBool(EnableTrackingKey, value);
 			}
 		}
 
-		private static bool enableStackTrace;
+		private static bool _enableStackTrace;
 		public static bool EnableStackTrace
 		{
-			get { return enableStackTrace; }
+			get { return _enableStackTrace; }
 			set
 			{
-				enableStackTrace = value;
+				_enableStackTrace = value;
 				//UnityEditor.EditorPrefs.SetBool(EnableStackTraceKey, value);
 			}
 		}
@@ -58,15 +58,15 @@ public static class TaskTracker
 #endif
 
 
-	private static List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
+	private static List<KeyValuePair<IGdTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> _listPool = new List<KeyValuePair<IGdTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
 
-	private static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
+	private static readonly WeakDictionary<IGdTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> Tracking = new WeakDictionary<IGdTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
 
 	[Conditional("DEBUG")]
-	public static void TrackActiveTask(IGDTaskSource task, int skipFrame)
+	public static void TrackActiveTask(IGdTaskSource task, int skipFrame)
 	{
 #if DEBUG
-		dirty = true;
+		_dirty = true;
 		if (!EditorEnableState.EnableTracking) return;
 		var stackTrace = EditorEnableState.EnableStackTrace ? new StackTrace(skipFrame, true).CleanupAsyncStackTrace() : "";
 
@@ -81,46 +81,46 @@ public static class TaskTracker
 		{
 			typeName = task.GetType().Name;
 		}
-		tracking.TryAdd(task, (typeName, Interlocked.Increment(ref trackingId), DateTime.UtcNow, stackTrace));
+		Tracking.TryAdd(task, (typeName, Interlocked.Increment(ref _trackingId), DateTime.UtcNow, stackTrace));
 #endif
 	}
 
 	[Conditional("DEBUG")]
-	public static void RemoveTracking(IGDTaskSource task)
+	public static void RemoveTracking(IGdTaskSource task)
 	{
 #if DEBUG
-		dirty = true;
+		_dirty = true;
 		if (!EditorEnableState.EnableTracking) return;
-		var success = tracking.TryRemove(task);
+		var success = Tracking.TryRemove(task);
 #endif
 	}
 
-	private static bool dirty;
+	private static bool _dirty;
 
 	public static bool CheckAndResetDirty()
 	{
-		var current = dirty;
-		dirty = false;
+		var current = _dirty;
+		_dirty = false;
 		return current;
 	}
 
 	/// <summary>(trackingId, awaiterType, awaiterStatus, createdTime, stackTrace)</summary>
-	public static void ForEachActiveTask(Action<int, string, GDTaskStatus, DateTime, string> action)
+	public static void ForEachActiveTask(Action<int, string, GdTaskStatus, DateTime, string> action)
 	{
-		lock (listPool)
+		lock (_listPool)
 		{
-			var count = tracking.ToList(ref listPool, clear: false);
+			var count = Tracking.ToList(ref _listPool, clear: false);
 			try
 			{
 				for (int i = 0; i < count; i++)
 				{
-					action(listPool[i].Value.trackingId, listPool[i].Value.formattedType, listPool[i].Key.UnsafeGetStatus(), listPool[i].Value.addTime, listPool[i].Value.stackTrace);
-					listPool[i] = default;
+					action(_listPool[i].Value.trackingId, _listPool[i].Value.formattedType, _listPool[i].Key.UnsafeGetStatus(), _listPool[i].Value.addTime, _listPool[i].Value.stackTrace);
+					_listPool[i] = default;
 				}
 			}
 			catch
 			{
-				listPool.Clear();
+				_listPool.Clear();
 				throw;
 			}
 		}

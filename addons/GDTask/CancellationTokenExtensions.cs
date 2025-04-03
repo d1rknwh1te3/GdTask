@@ -6,17 +6,17 @@ namespace Fractural.Tasks;
 
 public static class CancellationTokenExtensions
 {
-	private static readonly Action<object> cancellationTokenCallback = Callback;
+	private static readonly Action<object> CancellationTokenCallback = Callback;
 	private static readonly Action<object> disposeCallback = DisposeCallback;
 
-	public static CancellationToken ToCancellationToken(this GDTask task)
+	public static CancellationToken ToCancellationToken(this GdTask task)
 	{
 		var cts = new CancellationTokenSource();
 		ToCancellationTokenCore(task, cts).Forget();
 		return cts.Token;
 	}
 
-	public static CancellationToken ToCancellationToken(this GDTask task, CancellationToken linkToken)
+	public static CancellationToken ToCancellationToken(this GdTask task, CancellationToken linkToken)
 	{
 		if (linkToken.IsCancellationRequested)
 		{
@@ -34,17 +34,17 @@ public static class CancellationTokenExtensions
 		return cts.Token;
 	}
 
-	public static CancellationToken ToCancellationToken<T>(this GDTask<T> task)
+	public static CancellationToken ToCancellationToken<T>(this GdTask<T> task)
 	{
-		return ToCancellationToken(task.AsGDTask());
+		return ToCancellationToken(task.AsGdTask());
 	}
 
-	public static CancellationToken ToCancellationToken<T>(this GDTask<T> task, CancellationToken linkToken)
+	public static CancellationToken ToCancellationToken<T>(this GdTask<T> task, CancellationToken linkToken)
 	{
-		return ToCancellationToken(task.AsGDTask(), linkToken);
+		return ToCancellationToken(task.AsGdTask(), linkToken);
 	}
 
-	private static async GDTaskVoid ToCancellationTokenCore(GDTask task, CancellationTokenSource cts)
+	private static async GdTaskVoid ToCancellationTokenCore(GdTask task, CancellationTokenSource cts)
 	{
 		try
 		{
@@ -52,26 +52,26 @@ public static class CancellationTokenExtensions
 		}
 		catch (Exception ex)
 		{
-			GDTaskScheduler.PublishUnobservedTaskException(ex);
+			GdTaskScheduler.PublishUnobservedTaskException(ex);
 		}
 		cts.Cancel();
 		cts.Dispose();
 	}
 
-	public static (GDTask, CancellationTokenRegistration) ToGDTask(this CancellationToken cancellationToken)
+	public static (GdTask, CancellationTokenRegistration) ToGdTask(this CancellationToken cancellationToken)
 	{
 		if (cancellationToken.IsCancellationRequested)
 		{
-			return (GDTask.FromCanceled(cancellationToken), default(CancellationTokenRegistration));
+			return (GdTask.FromCanceled(cancellationToken), default(CancellationTokenRegistration));
 		}
 
-		var promise = new GDTaskCompletionSource();
-		return (promise.Task, cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationTokenCallback, promise));
+		var promise = new GdTaskCompletionSource();
+		return (promise.Task, cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationTokenCallback, promise));
 	}
 
 	private static void Callback(object state)
 	{
-		var promise = (GDTaskCompletionSource)state;
+		var promise = (GdTaskCompletionSource)state;
 		promise.TrySetResult();
 	}
 
@@ -138,28 +138,28 @@ public static class CancellationTokenExtensions
 
 public struct CancellationTokenAwaitable
 {
-	private CancellationToken cancellationToken;
+	private CancellationToken _cancellationToken;
 
 	public CancellationTokenAwaitable(CancellationToken cancellationToken)
 	{
-		this.cancellationToken = cancellationToken;
+		this._cancellationToken = cancellationToken;
 	}
 
 	public Awaiter GetAwaiter()
 	{
-		return new Awaiter(cancellationToken);
+		return new Awaiter(_cancellationToken);
 	}
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		private CancellationToken cancellationToken;
+		private CancellationToken _cancellationToken;
 
 		public Awaiter(CancellationToken cancellationToken)
 		{
-			this.cancellationToken = cancellationToken;
+			this._cancellationToken = cancellationToken;
 		}
 
-		public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested;
+		public bool IsCompleted => !_cancellationToken.CanBeCanceled || _cancellationToken.IsCancellationRequested;
 
 		public void GetResult()
 		{
@@ -172,7 +172,7 @@ public struct CancellationTokenAwaitable
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
+			_cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
 		}
 	}
 }

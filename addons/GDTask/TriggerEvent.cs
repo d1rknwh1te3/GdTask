@@ -19,11 +19,11 @@ public interface ITriggerHandler<T>
 // be careful to use, itself is struct.
 public struct TriggerEvent<T>
 {
-	private ITriggerHandler<T> head; // head.prev is last
-	private ITriggerHandler<T> iteratingHead;
+	private ITriggerHandler<T> _head; // head.prev is last
+	private ITriggerHandler<T> _iteratingHead;
 
-	private bool preserveRemoveSelf;
-	private ITriggerHandler<T> iteratingNode;
+	private bool _preserveRemoveSelf;
+	private ITriggerHandler<T> _iteratingNode;
 
 	private void LogError(Exception ex)
 	{
@@ -32,15 +32,15 @@ public struct TriggerEvent<T>
 
 	public void SetResult(T value)
 	{
-		if (iteratingNode != null)
+		if (_iteratingNode != null)
 		{
 			throw new InvalidOperationException("Can not trigger itself in iterating.");
 		}
 
-		var h = head;
+		var h = _head;
 		while (h != null)
 		{
-			iteratingNode = h;
+			_iteratingNode = h;
 
 			try
 			{
@@ -52,10 +52,10 @@ public struct TriggerEvent<T>
 				Remove(h);
 			}
 
-			if (preserveRemoveSelf)
+			if (_preserveRemoveSelf)
 			{
-				preserveRemoveSelf = false;
-				iteratingNode = null;
+				_preserveRemoveSelf = false;
+				_iteratingNode = null;
 				var next = h.Next;
 				Remove(h);
 				h = next;
@@ -66,25 +66,25 @@ public struct TriggerEvent<T>
 			}
 		}
 
-		iteratingNode = null;
-		if (iteratingHead != null)
+		_iteratingNode = null;
+		if (_iteratingHead != null)
 		{
-			Add(iteratingHead);
-			iteratingHead = null;
+			Add(_iteratingHead);
+			_iteratingHead = null;
 		}
 	}
 
 	public void SetCanceled(CancellationToken cancellationToken)
 	{
-		if (iteratingNode != null)
+		if (_iteratingNode != null)
 		{
 			throw new InvalidOperationException("Can not trigger itself in iterating.");
 		}
 
-		var h = head;
+		var h = _head;
 		while (h != null)
 		{
-			iteratingNode = h;
+			_iteratingNode = h;
 			try
 			{
 				h.OnCanceled(cancellationToken);
@@ -94,32 +94,32 @@ public struct TriggerEvent<T>
 				LogError(ex);
 			}
 
-			preserveRemoveSelf = false;
-			iteratingNode = null;
+			_preserveRemoveSelf = false;
+			_iteratingNode = null;
 			var next = h.Next;
 			Remove(h);
 			h = next;
 		}
 
-		iteratingNode = null;
-		if (iteratingHead != null)
+		_iteratingNode = null;
+		if (_iteratingHead != null)
 		{
-			Add(iteratingHead);
-			iteratingHead = null;
+			Add(_iteratingHead);
+			_iteratingHead = null;
 		}
 	}
 
 	public void SetCompleted()
 	{
-		if (iteratingNode != null)
+		if (_iteratingNode != null)
 		{
 			throw new InvalidOperationException("Can not trigger itself in iterating.");
 		}
 
-		var h = head;
+		var h = _head;
 		while (h != null)
 		{
-			iteratingNode = h;
+			_iteratingNode = h;
 			try
 			{
 				h.OnCompleted();
@@ -129,32 +129,32 @@ public struct TriggerEvent<T>
 				LogError(ex);
 			}
 
-			preserveRemoveSelf = false;
-			iteratingNode = null;
+			_preserveRemoveSelf = false;
+			_iteratingNode = null;
 			var next = h.Next;
 			Remove(h);
 			h = next;
 		}
 
-		iteratingNode = null;
-		if (iteratingHead != null)
+		_iteratingNode = null;
+		if (_iteratingHead != null)
 		{
-			Add(iteratingHead);
-			iteratingHead = null;
+			Add(_iteratingHead);
+			_iteratingHead = null;
 		}
 	}
 
 	public void SetError(Exception exception)
 	{
-		if (iteratingNode != null)
+		if (_iteratingNode != null)
 		{
 			throw new InvalidOperationException("Can not trigger itself in iterating.");
 		}
 
-		var h = head;
+		var h = _head;
 		while (h != null)
 		{
-			iteratingNode = h;
+			_iteratingNode = h;
 			try
 			{
 				h.OnError(exception);
@@ -164,18 +164,18 @@ public struct TriggerEvent<T>
 				LogError(ex);
 			}
 
-			preserveRemoveSelf = false;
-			iteratingNode = null;
+			_preserveRemoveSelf = false;
+			_iteratingNode = null;
 			var next = h.Next;
 			Remove(h);
 			h = next;
 		}
 
-		iteratingNode = null;
-		if (iteratingHead != null)
+		_iteratingNode = null;
+		if (_iteratingHead != null)
 		{
-			Add(iteratingHead);
-			iteratingHead = null;
+			Add(_iteratingHead);
+			_iteratingHead = null;
 		}
 	}
 
@@ -184,50 +184,50 @@ public struct TriggerEvent<T>
 		if (handler == null) throw new ArgumentNullException(nameof(handler));
 
 		// zero node.
-		if (head == null)
+		if (_head == null)
 		{
-			head = handler;
+			_head = handler;
 			return;
 		}
 
-		if (iteratingNode != null)
+		if (_iteratingNode != null)
 		{
-			if (iteratingHead == null)
+			if (_iteratingHead == null)
 			{
-				iteratingHead = handler;
+				_iteratingHead = handler;
 				return;
 			}
 
-			var last = iteratingHead.Prev;
+			var last = _iteratingHead.Prev;
 			if (last == null)
 			{
 				// single node.
-				iteratingHead.Prev = handler;
-				iteratingHead.Next = handler;
-				handler.Prev = iteratingHead;
+				_iteratingHead.Prev = handler;
+				_iteratingHead.Next = handler;
+				handler.Prev = _iteratingHead;
 			}
 			else
 			{
 				// multi node
-				iteratingHead.Prev = handler;
+				_iteratingHead.Prev = handler;
 				last.Next = handler;
 				handler.Prev = last;
 			}
 		}
 		else
 		{
-			var last = head.Prev;
+			var last = _head.Prev;
 			if (last == null)
 			{
 				// single node.
-				head.Prev = handler;
-				head.Next = handler;
-				handler.Prev = head;
+				_head.Prev = handler;
+				_head.Next = handler;
+				handler.Prev = _head;
 			}
 			else
 			{
 				// multi node
-				head.Prev = handler;
+				_head.Prev = handler;
 				last.Next = handler;
 				handler.Prev = last;
 			}
@@ -238,10 +238,10 @@ public struct TriggerEvent<T>
 	{
 		if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-		if (iteratingNode != null && iteratingNode == handler)
+		if (_iteratingNode != null && _iteratingNode == handler)
 		{
 			// if remove self, reserve remove self after invoke completed.
-			preserveRemoveSelf = true;
+			_preserveRemoveSelf = true;
 		}
 		else
 		{
@@ -253,13 +253,13 @@ public struct TriggerEvent<T>
 				next.Prev = prev;
 			}
 
-			if (handler == head)
+			if (handler == _head)
 			{
-				head = next;
+				_head = next;
 			}
-			else if (handler == iteratingHead)
+			else if (handler == _iteratingHead)
 			{
-				iteratingHead = next;
+				_iteratingHead = next;
 			}
 			else
 			{
@@ -270,32 +270,32 @@ public struct TriggerEvent<T>
 				}
 			}
 
-			if (head != null)
+			if (_head != null)
 			{
-				if (head.Prev == handler)
+				if (_head.Prev == handler)
 				{
-					if (prev != head)
+					if (prev != _head)
 					{
-						head.Prev = prev;
+						_head.Prev = prev;
 					}
 					else
 					{
-						head.Prev = null;
+						_head.Prev = null;
 					}
 				}
 			}
 
-			if (iteratingHead != null)
+			if (_iteratingHead != null)
 			{
-				if (iteratingHead.Prev == handler)
+				if (_iteratingHead.Prev == handler)
 				{
-					if (prev != iteratingHead.Prev)
+					if (prev != _iteratingHead.Prev)
 					{
-						iteratingHead.Prev = prev;
+						_iteratingHead.Prev = prev;
 					}
 					else
 					{
-						iteratingHead.Prev = null;
+						_iteratingHead.Prev = null;
 					}
 				}
 			}

@@ -5,7 +5,7 @@ using System.Threading;
 
 namespace Fractural.Tasks
 {
-    public static class GDTaskCancellationExtensions
+    public static class GdTaskCancellationExtensions
     {
         /// <summary>This CancellationToken is canceled when the Node will be destroyed.</summary>
         public static CancellationToken GetCancellationTokenOnDestroy(this Node node)
@@ -49,17 +49,17 @@ namespace Fractural.Tasks.Triggers
         }
 
         /// <summary>This function is called when the Node will be destroyed.</summary>
-        public static GDTask OnDestroyAsync(this Node node)
+        public static GdTask OnDestroyAsync(this Node node)
         {
             return node.GetAsyncDestroyTrigger().OnDestroyAsync();
         }
 
-        public static GDTask ReadyAsync(this Node node)
+        public static GdTask ReadyAsync(this Node node)
         {
             return node.GetAsyncReadyTrigger().ReadyAsync();
         }
 
-        public static GDTask EnterTreeAsync(this Node node)
+        public static GdTask EnterTreeAsync(this Node node)
         {
             return node.GetAsyncEnterTreeTrigger().EnterTreeAsync();
         }
