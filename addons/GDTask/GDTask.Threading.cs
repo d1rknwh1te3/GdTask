@@ -80,30 +80,13 @@ public partial struct GdTask
 	}
 }
 
-public struct SwitchToMainThreadAwaitable
+public struct SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 {
-	private readonly PlayerLoopTiming _playerLoopTiming;
-	private readonly CancellationToken _cancellationToken;
+	public Awaiter GetAwaiter() => new Awaiter(playerLoopTiming, cancellationToken);
 
-	public SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+	public struct Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
+		: ICriticalNotifyCompletion
 	{
-		_playerLoopTiming = playerLoopTiming;
-		_cancellationToken = cancellationToken;
-	}
-
-	public Awaiter GetAwaiter() => new Awaiter(_playerLoopTiming, _cancellationToken);
-
-	public struct Awaiter : ICriticalNotifyCompletion
-	{
-		private readonly PlayerLoopTiming _playerLoopTiming;
-		private readonly CancellationToken _cancellationToken;
-
-		public Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
-		{
-			_playerLoopTiming = playerLoopTiming;
-			_cancellationToken = cancellationToken;
-		}
-
 		public bool IsCompleted
 		{
 			get
@@ -120,61 +103,44 @@ public struct SwitchToMainThreadAwaitable
 			}
 		}
 
-		public void GetResult() { _cancellationToken.ThrowIfCancellationRequested(); }
+		public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
 		public void OnCompleted(Action continuation)
 		{
-			GdTaskPlayerLoopAutoload.AddContinuation(_playerLoopTiming, continuation);
+			GdTaskPlayerLoopAutoload.AddContinuation(playerLoopTiming, continuation);
 		}
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			GdTaskPlayerLoopAutoload.AddContinuation(_playerLoopTiming, continuation);
+			GdTaskPlayerLoopAutoload.AddContinuation(playerLoopTiming, continuation);
 		}
 	}
 }
 
-public struct ReturnToMainThread
+public struct ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 {
-	private readonly PlayerLoopTiming _playerLoopTiming;
-	private readonly CancellationToken _cancellationToken;
-
-	public ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
-	{
-		_playerLoopTiming = playerLoopTiming;
-		_cancellationToken = cancellationToken;
-	}
-
 	public Awaiter DisposeAsync()
 	{
-		return new Awaiter(_playerLoopTiming, _cancellationToken); // run immediate.
+		return new Awaiter(playerLoopTiming, cancellationToken); // run immediate.
 	}
 
-	public readonly struct Awaiter : ICriticalNotifyCompletion
+	public readonly struct Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
+		: ICriticalNotifyCompletion
 	{
-		private readonly PlayerLoopTiming _timing;
-		private readonly CancellationToken _cancellationToken;
-
-		public Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
-		{
-			_timing = timing;
-			_cancellationToken = cancellationToken;
-		}
-
 		public Awaiter GetAwaiter() => this;
 
 		public bool IsCompleted => GdTaskPlayerLoopAutoload.MainThreadId == Thread.CurrentThread.ManagedThreadId;
 
-		public void GetResult() { _cancellationToken.ThrowIfCancellationRequested(); }
+		public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
 		public void OnCompleted(Action continuation)
 		{
-			GdTaskPlayerLoopAutoload.AddContinuation(_timing, continuation);
+			GdTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
 		}
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			GdTaskPlayerLoopAutoload.AddContinuation(_timing, continuation);
+			GdTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
 		}
 	}
 }
@@ -238,42 +204,28 @@ public struct SwitchToTaskPoolAwaitable
 	}
 }
 
-public struct SwitchToSynchronizationContextAwaitable
+public struct SwitchToSynchronizationContextAwaitable(
+	SynchronizationContext synchronizationContext,
+	CancellationToken cancellationToken)
 {
-	private readonly SynchronizationContext _synchronizationContext;
-	private readonly CancellationToken _cancellationToken;
+	public Awaiter GetAwaiter() => new Awaiter(synchronizationContext, cancellationToken);
 
-	public SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
-	{
-		_synchronizationContext = synchronizationContext;
-		_cancellationToken = cancellationToken;
-	}
-
-	public Awaiter GetAwaiter() => new Awaiter(_synchronizationContext, _cancellationToken);
-
-	public struct Awaiter : ICriticalNotifyCompletion
+	public struct Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
+		: ICriticalNotifyCompletion
 	{
 		private static readonly SendOrPostCallback SwitchToCallback = Callback;
-		private readonly SynchronizationContext _synchronizationContext;
-		private readonly CancellationToken _cancellationToken;
-
-		public Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
-		{
-			_synchronizationContext = synchronizationContext;
-			_cancellationToken = cancellationToken;
-		}
 
 		public bool IsCompleted => false;
-		public void GetResult() { _cancellationToken.ThrowIfCancellationRequested(); }
+		public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
 		public void OnCompleted(Action continuation)
 		{
-			_synchronizationContext.Post(SwitchToCallback, continuation);
+			synchronizationContext.Post(SwitchToCallback, continuation);
 		}
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			_synchronizationContext.Post(SwitchToCallback, continuation);
+			synchronizationContext.Post(SwitchToCallback, continuation);
 		}
 
 		private static void Callback(object state)
@@ -284,38 +236,23 @@ public struct SwitchToSynchronizationContextAwaitable
 	}
 }
 
-public struct ReturnToSynchronizationContext
+public struct ReturnToSynchronizationContext(
+	SynchronizationContext syncContext,
+	bool dontPostWhenSameContext,
+	CancellationToken cancellationToken)
 {
-	private readonly SynchronizationContext _syncContext;
-	private readonly bool _dontPostWhenSameContext;
-	private readonly CancellationToken _cancellationToken;
-
-	public ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
-	{
-		_syncContext = syncContext;
-		_dontPostWhenSameContext = dontPostWhenSameContext;
-		_cancellationToken = cancellationToken;
-	}
-
 	public Awaiter DisposeAsync()
 	{
-		return new Awaiter(_syncContext, _dontPostWhenSameContext, _cancellationToken);
+		return new Awaiter(syncContext, dontPostWhenSameContext, cancellationToken);
 	}
 
-	public struct Awaiter : ICriticalNotifyCompletion
+	public struct Awaiter(
+		SynchronizationContext synchronizationContext,
+		bool dontPostWhenSameContext,
+		CancellationToken cancellationToken)
+		: ICriticalNotifyCompletion
 	{
 		private static readonly SendOrPostCallback SwitchToCallback = Callback;
-
-		private readonly SynchronizationContext _synchronizationContext;
-		private readonly bool _dontPostWhenSameContext;
-		private readonly CancellationToken _cancellationToken;
-
-		public Awaiter(SynchronizationContext synchronizationContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
-		{
-			_synchronizationContext = synchronizationContext;
-			_dontPostWhenSameContext = dontPostWhenSameContext;
-			_cancellationToken = cancellationToken;
-		}
 
 		public Awaiter GetAwaiter() => this;
 
@@ -323,10 +260,10 @@ public struct ReturnToSynchronizationContext
 		{
 			get
 			{
-				if (!_dontPostWhenSameContext) return false;
+				if (!dontPostWhenSameContext) return false;
 
 				var current = SynchronizationContext.Current;
-				if (current == _synchronizationContext)
+				if (current == synchronizationContext)
 				{
 					return true;
 				}
@@ -337,16 +274,16 @@ public struct ReturnToSynchronizationContext
 			}
 		}
 
-		public void GetResult() { _cancellationToken.ThrowIfCancellationRequested(); }
+		public void GetResult() { cancellationToken.ThrowIfCancellationRequested(); }
 
 		public void OnCompleted(Action continuation)
 		{
-			_synchronizationContext.Post(SwitchToCallback, continuation);
+			synchronizationContext.Post(SwitchToCallback, continuation);
 		}
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			_synchronizationContext.Post(SwitchToCallback, continuation);
+			synchronizationContext.Post(SwitchToCallback, continuation);
 		}
 
 		private static void Callback(object state)

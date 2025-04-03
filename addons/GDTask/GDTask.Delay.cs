@@ -695,46 +695,32 @@ public partial struct GdTask
 	}
 }
 
-public readonly struct YieldAwaitable
+public readonly struct YieldAwaitable(PlayerLoopTiming timing)
 {
-	private readonly PlayerLoopTiming _timing;
-
-	public YieldAwaitable(PlayerLoopTiming timing)
-	{
-		_timing = timing;
-	}
-
 	public Awaiter GetAwaiter()
 	{
-		return new Awaiter(_timing);
+		return new Awaiter(timing);
 	}
 
 	public GdTask ToGdTask()
 	{
-		return GdTask.Yield(_timing, CancellationToken.None);
+		return GdTask.Yield(timing, CancellationToken.None);
 	}
 
-	public readonly struct Awaiter : ICriticalNotifyCompletion
+	public readonly struct Awaiter(PlayerLoopTiming timing) : ICriticalNotifyCompletion
 	{
-		private readonly PlayerLoopTiming _timing;
-
-		public Awaiter(PlayerLoopTiming timing)
-		{
-			_timing = timing;
-		}
-
 		public bool IsCompleted => false;
 
 		public void GetResult() { }
 
 		public void OnCompleted(Action continuation)
 		{
-			GdTaskPlayerLoopAutoload.AddContinuation(_timing, continuation);
+			GdTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
 		}
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			GdTaskPlayerLoopAutoload.AddContinuation(_timing, continuation);
+			GdTaskPlayerLoopAutoload.AddContinuation(timing, continuation);
 		}
 	}
 }

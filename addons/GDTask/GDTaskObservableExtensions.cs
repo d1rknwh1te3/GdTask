@@ -248,35 +248,21 @@ namespace Fractural.Tasks
             }
         }
 
-        private class ReturnObservable<T> : IObservable<T>
+        private class ReturnObservable<T>(T value) : IObservable<T>
         {
-	        private readonly T _value;
-
-            public ReturnObservable(T value)
+	        public IDisposable Subscribe(IObserver<T> observer)
             {
-                _value = value;
-            }
-
-            public IDisposable Subscribe(IObserver<T> observer)
-            {
-                observer.OnNext(_value);
+                observer.OnNext(value);
                 observer.OnCompleted();
                 return EmptyDisposable.instance;
             }
         }
 
-        private class ThrowObservable<T> : IObservable<T>
+        private class ThrowObservable<T>(Exception value) : IObservable<T>
         {
-	        private readonly Exception _value;
-
-            public ThrowObservable(Exception value)
+	        public IDisposable Subscribe(IObserver<T> observer)
             {
-                _value = value;
-            }
-
-            public IDisposable Subscribe(IObserver<T> observer)
-            {
-                observer.OnError(_value);
+                observer.OnError(value);
                 return EmptyDisposable.instance;
             }
         }
@@ -522,19 +508,13 @@ namespace Fractural.Tasks.Internal
             if (_isDisposed) throw new ObjectDisposedException("");
         }
 
-        private class Subscription : IDisposable
+        private class Subscription(AsyncSubject<T> parent, IObserver<T> unsubscribeTarget) : IDisposable
         {
 	        private readonly object _gate = new object();
-	        private AsyncSubject<T> _parent;
-	        private IObserver<T> _unsubscribeTarget;
+	        private AsyncSubject<T> _parent = parent;
+	        private IObserver<T> _unsubscribeTarget = unsubscribeTarget;
 
-            public Subscription(AsyncSubject<T> parent, IObserver<T> unsubscribeTarget)
-            {
-                _parent = parent;
-                _unsubscribeTarget = unsubscribeTarget;
-            }
-
-            public void Dispose()
+	        public void Dispose()
             {
                 lock (_gate)
                 {
@@ -561,18 +541,11 @@ namespace Fractural.Tasks.Internal
         }
     }
 
-    internal class ListObserver<T> : IObserver<T>
+    internal class ListObserver<T>(ImmutableList<IObserver<T>> observers) : IObserver<T>
     {
-        private readonly ImmutableList<IObserver<T>> _observers;
-
-        public ListObserver(ImmutableList<IObserver<T>> observers)
+	    public void OnCompleted()
         {
-            _observers = observers;
-        }
-
-        public void OnCompleted()
-        {
-            var targetObservers = _observers.Data;
+            var targetObservers = observers.Data;
             for (int i = 0; i < targetObservers.Length; i++)
             {
                 targetObservers[i].OnCompleted();
@@ -581,7 +554,7 @@ namespace Fractural.Tasks.Internal
 
         public void OnError(Exception error)
         {
-            var targetObservers = _observers.Data;
+            var targetObservers = observers.Data;
             for (int i = 0; i < targetObservers.Length; i++)
             {
                 targetObservers[i].OnError(error);
@@ -590,7 +563,7 @@ namespace Fractural.Tasks.Internal
 
         public void OnNext(T value)
         {
-            var targetObservers = _observers.Data;
+            var targetObservers = observers.Data;
             for (int i = 0; i < targetObservers.Length; i++)
             {
                 targetObservers[i].OnNext(value);
@@ -599,22 +572,22 @@ namespace Fractural.Tasks.Internal
 
         internal IObserver<T> Add(IObserver<T> observer)
         {
-            return new ListObserver<T>(_observers.Add(observer));
+            return new ListObserver<T>(observers.Add(observer));
         }
 
         internal IObserver<T> Remove(IObserver<T> observer)
         {
-            var i = Array.IndexOf(_observers.Data, observer);
+            var i = Array.IndexOf(observers.Data, observer);
             if (i < 0)
                 return this;
 
-            if (_observers.Data.Length == 2)
+            if (observers.Data.Length == 2)
             {
-                return _observers.Data[1 - i];
+                return observers.Data[1 - i];
             }
             else
             {
-                return new ListObserver<T>(_observers.Remove(observer));
+                return new ListObserver<T>(observers.Remove(observer));
             }
         }
     }
@@ -689,32 +662,24 @@ namespace Fractural.Tasks.Internal
         }
     }
 
-    internal class ImmutableList<T>
+    internal class ImmutableList<T>(T[] data)
     {
         public static readonly ImmutableList<T> Empty = new ImmutableList<T>();
 
-        private T[] _data;
-
         public T[] Data
         {
-            get { return _data; }
+            get { return data; }
         }
 
-        private ImmutableList()
+        private ImmutableList() : this(new T[0])
         {
-            _data = new T[0];
-        }
-
-        public ImmutableList(T[] data)
-        {
-            _data = data;
         }
 
         public ImmutableList<T> Add(T value)
         {
-            var newData = new T[_data.Length + 1];
-            Array.Copy(_data, newData, _data.Length);
-            newData[_data.Length] = value;
+            var newData = new T[data.Length + 1];
+            Array.Copy(data, newData, data.Length);
+            newData[data.Length] = value;
             return new ImmutableList<T>(newData);
         }
 
@@ -723,23 +688,23 @@ namespace Fractural.Tasks.Internal
             var i = IndexOf(value);
             if (i < 0) return this;
 
-            var length = _data.Length;
+            var length = data.Length;
             if (length == 1) return Empty;
 
             var newData = new T[length - 1];
 
-            Array.Copy(_data, 0, newData, 0, i);
-            Array.Copy(_data, i + 1, newData, i, length - i - 1);
+            Array.Copy(data, 0, newData, 0, i);
+            Array.Copy(data, i + 1, newData, i, length - i - 1);
 
             return new ImmutableList<T>(newData);
         }
 
         public int IndexOf(T value)
         {
-            for (var i = 0; i < _data.Length; ++i)
+            for (var i = 0; i < data.Length; ++i)
             {
                 // ImmutableList only use for IObserver(no worry for boxed)
-                if (Equals(_data[i], value)) return i;
+                if (Equals(data[i], value)) return i;
             }
             return -1;
         }

@@ -4,12 +4,10 @@ using System.Threading;
 
 namespace Fractural.Tasks.Internal;
 
-internal sealed class ContinuationQueue
+internal sealed class ContinuationQueue(PlayerLoopTiming timing)
 {
 	private const int MaxArrayLength = 0X7FEFFFFF;
 	private const int InitialSize = 16;
-
-	private readonly PlayerLoopTiming _timing;
 
 	private SpinLock _gate = new SpinLock(false);
 	private bool _dequing = false;
@@ -19,11 +17,6 @@ internal sealed class ContinuationQueue
 
 	private int _waitingListCount = 0;
 	private Action[] _waitingList = new Action[InitialSize];
-
-	public ContinuationQueue(PlayerLoopTiming timing)
-	{
-		_timing = timing;
-	}
 
 	public void Enqueue(Action continuation)
 	{
@@ -87,7 +80,7 @@ internal sealed class ContinuationQueue
 	{
 		// for debugging, create named stacktrace.
 #if DEBUG
-		switch (_timing)
+		switch (timing)
 		{
 			case PlayerLoopTiming.PhysicsProcess:
 				PhysicsProcess();

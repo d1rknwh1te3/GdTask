@@ -136,30 +136,16 @@ public static class CancellationTokenExtensions
 	}
 }
 
-public struct CancellationTokenAwaitable
+public struct CancellationTokenAwaitable(CancellationToken cancellationToken)
 {
-	private CancellationToken _cancellationToken;
-
-	public CancellationTokenAwaitable(CancellationToken cancellationToken)
-	{
-		_cancellationToken = cancellationToken;
-	}
-
 	public Awaiter GetAwaiter()
 	{
-		return new Awaiter(_cancellationToken);
+		return new Awaiter(cancellationToken);
 	}
 
-	public struct Awaiter : ICriticalNotifyCompletion
+	public struct Awaiter(CancellationToken cancellationToken) : ICriticalNotifyCompletion
 	{
-		private CancellationToken _cancellationToken;
-
-		public Awaiter(CancellationToken cancellationToken)
-		{
-			_cancellationToken = cancellationToken;
-		}
-
-		public bool IsCompleted => !_cancellationToken.CanBeCanceled || _cancellationToken.IsCancellationRequested;
+		public bool IsCompleted => !cancellationToken.CanBeCanceled || cancellationToken.IsCancellationRequested;
 
 		public void GetResult()
 		{
@@ -172,7 +158,7 @@ public struct CancellationTokenAwaitable
 
 		public void UnsafeOnCompleted(Action continuation)
 		{
-			_cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
+			cancellationToken.RegisterWithoutCaptureExecutionContext(continuation);
 		}
 	}
 }

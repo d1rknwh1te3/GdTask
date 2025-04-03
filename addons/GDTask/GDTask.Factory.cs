@@ -167,15 +167,10 @@ public partial struct GdTask
 		return new GdTask<T>(new NeverPromise<T>(cancellationToken), 0);
 	}
 
-	private sealed class ExceptionResultSource : IGdTaskSource
+	private sealed class ExceptionResultSource(Exception exception) : IGdTaskSource
 	{
-		private readonly ExceptionDispatchInfo _exception;
+		private readonly ExceptionDispatchInfo _exception = ExceptionDispatchInfo.Capture(exception);
 		private bool _calledGet;
-
-		public ExceptionResultSource(Exception exception)
-		{
-			_exception = ExceptionDispatchInfo.Capture(exception);
-		}
 
 		public void GetResult(short token)
 		{
@@ -211,15 +206,10 @@ public partial struct GdTask
 		}
 	}
 
-	private sealed class ExceptionResultSource<T> : IGdTaskSource<T>
+	private sealed class ExceptionResultSource<T>(Exception exception) : IGdTaskSource<T>
 	{
-		private readonly ExceptionDispatchInfo _exception;
+		private readonly ExceptionDispatchInfo _exception = ExceptionDispatchInfo.Capture(exception);
 		private bool _calledGet;
-
-		public ExceptionResultSource(Exception exception)
-		{
-			_exception = ExceptionDispatchInfo.Capture(exception);
-		}
 
 		public T GetResult(short token)
 		{
@@ -266,18 +256,11 @@ public partial struct GdTask
 		}
 	}
 
-	private sealed class CanceledResultSource : IGdTaskSource
+	private sealed class CanceledResultSource(CancellationToken cancellationToken) : IGdTaskSource
 	{
-		private readonly CancellationToken _cancellationToken;
-
-		public CanceledResultSource(CancellationToken cancellationToken)
-		{
-			_cancellationToken = cancellationToken;
-		}
-
 		public void GetResult(short token)
 		{
-			throw new OperationCanceledException(_cancellationToken);
+			throw new OperationCanceledException(cancellationToken);
 		}
 
 		public GdTaskStatus GetStatus(short token)
@@ -296,23 +279,16 @@ public partial struct GdTask
 		}
 	}
 
-	private sealed class CanceledResultSource<T> : IGdTaskSource<T>
+	private sealed class CanceledResultSource<T>(CancellationToken cancellationToken) : IGdTaskSource<T>
 	{
-		private readonly CancellationToken _cancellationToken;
-
-		public CanceledResultSource(CancellationToken cancellationToken)
-		{
-			_cancellationToken = cancellationToken;
-		}
-
 		public T GetResult(short token)
 		{
-			throw new OperationCanceledException(_cancellationToken);
+			throw new OperationCanceledException(cancellationToken);
 		}
 
 		void IGdTaskSource.GetResult(short token)
 		{
-			throw new OperationCanceledException(_cancellationToken);
+			throw new OperationCanceledException(cancellationToken);
 		}
 
 		public GdTaskStatus GetStatus(short token)
@@ -331,16 +307,11 @@ public partial struct GdTask
 		}
 	}
 
-	private sealed class DeferPromise : IGdTaskSource
+	private sealed class DeferPromise(Func<GdTask> factory) : IGdTaskSource
 	{
-		private Func<GdTask> _factory;
+		private Func<GdTask> _factory = factory;
 		private GdTask _task;
 		private Awaiter _awaiter;
-
-		public DeferPromise(Func<GdTask> factory)
-		{
-			_factory = factory;
-		}
 
 		public void GetResult(short token)
 		{
@@ -370,16 +341,11 @@ public partial struct GdTask
 		}
 	}
 
-	private sealed class DeferPromise<T> : IGdTaskSource<T>
+	private sealed class DeferPromise<T>(Func<GdTask<T>> factory) : IGdTaskSource<T>
 	{
-		private Func<GdTask<T>> _factory;
+		private Func<GdTask<T>> _factory = factory;
 		private GdTask<T> _task;
 		private GdTask<T>.Awaiter _awaiter;
-
-		public DeferPromise(Func<GdTask<T>> factory)
-		{
-			_factory = factory;
-		}
 
 		public T GetResult(short token)
 		{

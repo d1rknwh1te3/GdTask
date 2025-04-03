@@ -76,18 +76,11 @@ internal static class ArrayPoolUtil
 		}
 	}
 
-	public struct RentArray<T> : IDisposable
+	public struct RentArray<T>(T[] array, int length, ArrayPool<T> pool) : IDisposable
 	{
-		public readonly T[] Array;
-		public readonly int Length;
-		private ArrayPool<T> _pool;
-
-		public RentArray(T[] array, int length, ArrayPool<T> pool)
-		{
-			Array = array;
-			Length = length;
-			_pool = pool;
-		}
+		public readonly T[] Array = array;
+		public readonly int Length = length;
+		private ArrayPool<T> _pool = pool;
 
 		public void Dispose()
 		{

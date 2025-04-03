@@ -37,15 +37,9 @@ public interface IPromise : IResolvePromise, IRejectPromise, ICancelPromise
 {
 }
 
-internal class ExceptionHolder
+internal class ExceptionHolder(ExceptionDispatchInfo exception)
 {
-	private ExceptionDispatchInfo _exception;
 	private bool _calledGet = false;
-
-	public ExceptionHolder(ExceptionDispatchInfo exception)
-	{
-		_exception = exception;
-	}
 
 	public ExceptionDispatchInfo GetException()
 	{
@@ -54,14 +48,14 @@ internal class ExceptionHolder
 			_calledGet = true;
 			GC.SuppressFinalize(this);
 		}
-		return _exception;
+		return exception;
 	}
 
 	~ExceptionHolder()
 	{
 		if (!_calledGet)
 		{
-			GdTaskScheduler.PublishUnobservedTaskException(_exception.SourceException);
+			GdTaskScheduler.PublishUnobservedTaskException(exception.SourceException);
 		}
 	}
 }

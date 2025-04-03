@@ -25,18 +25,12 @@ internal static class AwaiterActions
 /// </summary>
 [AsyncMethodBuilder(typeof(AsyncGdTaskMethodBuilder))]
 [StructLayout(LayoutKind.Auto)]
-public readonly partial struct GdTask
+[method: DebuggerHidden]
+[method: MethodImpl(MethodImplOptions.AggressiveInlining)]
+public readonly partial struct GdTask(IGdTaskSource source, short token)
 {
-	private readonly IGdTaskSource source;
-	private readonly short token;
-
-	[DebuggerHidden]
-	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	public GdTask(IGdTaskSource source, short token)
-	{
-		this.source = source;
-		this.token = token;
-	}
+	private readonly IGdTaskSource source = source;
+	private readonly short token = token;
 
 	public GdTaskStatus Status
 	{
@@ -105,34 +99,27 @@ public readonly partial struct GdTask
 		return new GdTask<AsyncUnit>(new AsyncUnitSource(source), token);
 	}
 
-	private sealed class AsyncUnitSource : IGdTaskSource<AsyncUnit>
+	private sealed class AsyncUnitSource(IGdTaskSource source) : IGdTaskSource<AsyncUnit>
 	{
-		private readonly IGdTaskSource _source;
-
-		public AsyncUnitSource(IGdTaskSource source)
-		{
-			_source = source;
-		}
-
 		public AsyncUnit GetResult(short token)
 		{
-			_source.GetResult(token);
+			source.GetResult(token);
 			return AsyncUnit.Default;
 		}
 
 		public GdTaskStatus GetStatus(short token)
 		{
-			return _source.GetStatus(token);
+			return source.GetStatus(token);
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			_source.OnCompleted(continuation, state, token);
+			source.OnCompleted(continuation, state, token);
 		}
 
 		public GdTaskStatus UnsafeGetStatus()
 		{
-			return _source.UnsafeGetStatus();
+			return source.UnsafeGetStatus();
 		}
 
 		void IGdTaskSource.GetResult(short token)
@@ -141,23 +128,16 @@ public readonly partial struct GdTask
 		}
 	}
 
-	private sealed class IsCanceledSource : IGdTaskSource<bool>
+	private sealed class IsCanceledSource(IGdTaskSource source) : IGdTaskSource<bool>
 	{
-		private readonly IGdTaskSource _source;
-
-		public IsCanceledSource(IGdTaskSource source)
-		{
-			_source = source;
-		}
-
 		public bool GetResult(short token)
 		{
-			if (_source.GetStatus(token) == GdTaskStatus.Canceled)
+			if (source.GetStatus(token) == GdTaskStatus.Canceled)
 			{
 				return true;
 			}
 
-			_source.GetResult(token);
+			source.GetResult(token);
 			return false;
 		}
 
@@ -168,30 +148,25 @@ public readonly partial struct GdTask
 
 		public GdTaskStatus GetStatus(short token)
 		{
-			return _source.GetStatus(token);
+			return source.GetStatus(token);
 		}
 
 		public GdTaskStatus UnsafeGetStatus()
 		{
-			return _source.UnsafeGetStatus();
+			return source.UnsafeGetStatus();
 		}
 
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			_source.OnCompleted(continuation, state, token);
+			source.OnCompleted(continuation, state, token);
 		}
 	}
 
-	private sealed class MemoizeSource : IGdTaskSource
+	private sealed class MemoizeSource(IGdTaskSource source) : IGdTaskSource
 	{
-		private IGdTaskSource _source;
+		private IGdTaskSource _source = source;
 		private ExceptionDispatchInfo _exception;
 		private GdTaskStatus _status;
-
-		public MemoizeSource(IGdTaskSource source)
-		{
-			_source = source;
-		}
 
 		public void GetResult(short token)
 		{
@@ -262,16 +237,11 @@ public readonly partial struct GdTask
 		}
 	}
 
-	public readonly struct Awaiter : ICriticalNotifyCompletion
+	[method: DebuggerHidden]
+	[method: MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly struct Awaiter(in GdTask task) : ICriticalNotifyCompletion
 	{
-		private readonly GdTask _task;
-
-		[DebuggerHidden]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Awaiter(in GdTask task)
-		{
-			_task = task;
-		}
+		private readonly GdTask _task = task;
 
 		public bool IsCompleted
 		{
@@ -439,27 +409,20 @@ public readonly struct GdTask<T>
 			: "(" + source.UnsafeGetStatus() + ")";
 	}
 
-	private sealed class IsCanceledSource : IGdTaskSource<(bool, T)>
+	[method: DebuggerHidden]
+	[method: MethodImpl(MethodImplOptions.AggressiveInlining)]
+	private sealed class IsCanceledSource(IGdTaskSource<T> source) : IGdTaskSource<(bool, T)>
 	{
-		private readonly IGdTaskSource<T> _source;
-
-		[DebuggerHidden]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public IsCanceledSource(IGdTaskSource<T> source)
-		{
-			_source = source;
-		}
-
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public (bool, T) GetResult(short token)
 		{
-			if (_source.GetStatus(token) == GdTaskStatus.Canceled)
+			if (source.GetStatus(token) == GdTaskStatus.Canceled)
 			{
 				return (true, default);
 			}
 
-			var result = _source.GetResult(token);
+			var result = source.GetResult(token);
 			return (false, result);
 		}
 
@@ -474,35 +437,30 @@ public readonly struct GdTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public GdTaskStatus GetStatus(short token)
 		{
-			return _source.GetStatus(token);
+			return source.GetStatus(token);
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public GdTaskStatus UnsafeGetStatus()
 		{
-			return _source.UnsafeGetStatus();
+			return source.UnsafeGetStatus();
 		}
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public void OnCompleted(Action<object> continuation, object state, short token)
 		{
-			_source.OnCompleted(continuation, state, token);
+			source.OnCompleted(continuation, state, token);
 		}
 	}
 
-	private sealed class MemoizeSource : IGdTaskSource<T>
+	private sealed class MemoizeSource(IGdTaskSource<T> source) : IGdTaskSource<T>
 	{
-		private IGdTaskSource<T> _source;
+		private IGdTaskSource<T> _source = source;
 		private T _result;
 		private ExceptionDispatchInfo _exception;
 		private GdTaskStatus _status;
-
-		public MemoizeSource(IGdTaskSource<T> source)
-		{
-			_source = source;
-		}
 
 		public T GetResult(short token)
 		{
@@ -580,16 +538,11 @@ public readonly struct GdTask<T>
 		}
 	}
 
-	public readonly struct Awaiter : ICriticalNotifyCompletion
+	[method: DebuggerHidden]
+	[method: MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public readonly struct Awaiter(in GdTask<T> task) : ICriticalNotifyCompletion
 	{
-		private readonly GdTask<T> _task;
-
-		[DebuggerHidden]
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		public Awaiter(in GdTask<T> task)
-		{
-			_task = task;
-		}
+		private readonly GdTask<T> _task = task;
 
 		public bool IsCompleted
 		{
