@@ -44,7 +44,7 @@ internal class ExceptionHolder
 
 	public ExceptionHolder(ExceptionDispatchInfo exception)
 	{
-		this._exception = exception;
+		_exception = exception;
 	}
 
 	public ExceptionDispatchInfo GetException()
@@ -132,7 +132,7 @@ public struct GdTaskCompletionSourceCore<TResult>
 			// setup result
 			this.result = result;
 
-			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
+			if (continuation != null || Interlocked.CompareExchange(ref continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
 			{
 				continuation(continuationState);
 				return true;
@@ -150,7 +150,7 @@ public struct GdTaskCompletionSourceCore<TResult>
 		if (Interlocked.Increment(ref completedCount) == 1)
 		{
 			// setup result
-			this.hasUnhandledError = true;
+			hasUnhandledError = true;
 			if (error is OperationCanceledException)
 			{
 				this.error = error;
@@ -160,7 +160,7 @@ public struct GdTaskCompletionSourceCore<TResult>
 				this.error = new ExceptionHolder(ExceptionDispatchInfo.Capture(error));
 			}
 
-			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
+			if (continuation != null || Interlocked.CompareExchange(ref continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
 			{
 				continuation(continuationState);
 				return true;
@@ -176,10 +176,10 @@ public struct GdTaskCompletionSourceCore<TResult>
 		if (Interlocked.Increment(ref completedCount) == 1)
 		{
 			// setup result
-			this.hasUnhandledError = true;
-			this.error = new OperationCanceledException(cancellationToken);
+			hasUnhandledError = true;
+			error = new OperationCanceledException(cancellationToken);
 
-			if (continuation != null || Interlocked.CompareExchange(ref this.continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
+			if (continuation != null || Interlocked.CompareExchange(ref continuation, GdTaskCompletionSourceCoreShared.SSentinel, null) != null)
 			{
 				continuation(continuationState);
 				return true;
@@ -612,7 +612,7 @@ public partial class GdTaskCompletionSource : IGdTaskSource, IPromise
 	{
 		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this._cancellationToken = cancellationToken;
+		_cancellationToken = cancellationToken;
 		return TrySignalCompletion(GdTaskStatus.Canceled);
 	}
 
@@ -626,7 +626,7 @@ public partial class GdTaskCompletionSource : IGdTaskSource, IPromise
 
 		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this._exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
+		_exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
 		return TrySignalCompletion(GdTaskStatus.Faulted);
 	}
 
@@ -788,7 +788,7 @@ public partial class GdTaskCompletionSource<T> : IGdTaskSource<T>, IPromise<T>
 	{
 		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this._result = result;
+		_result = result;
 		return TrySignalCompletion(GdTaskStatus.Succeeded);
 	}
 
@@ -797,7 +797,7 @@ public partial class GdTaskCompletionSource<T> : IGdTaskSource<T>, IPromise<T>
 	{
 		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this._cancellationToken = cancellationToken;
+		_cancellationToken = cancellationToken;
 		return TrySignalCompletion(GdTaskStatus.Canceled);
 	}
 
@@ -811,7 +811,7 @@ public partial class GdTaskCompletionSource<T> : IGdTaskSource<T>, IPromise<T>
 
 		if (UnsafeGetStatus() != GdTaskStatus.Pending) return false;
 
-		this._exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
+		_exception = new ExceptionHolder(ExceptionDispatchInfo.Capture(exception));
 		return TrySignalCompletion(GdTaskStatus.Faulted);
 	}
 

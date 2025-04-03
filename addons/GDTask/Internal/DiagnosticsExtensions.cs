@@ -239,7 +239,7 @@ internal static class DiagnosticsExtensions
 		}
 		else
 		{
-			var fname = fi.FullName.Replace(System.IO.Path.DirectorySeparatorChar, '/').Replace(ProjectSettings.GlobalizePath("res://"), "");
+			var fname = fi.FullName.Replace(Path.DirectorySeparatorChar, '/').Replace(ProjectSettings.GlobalizePath("res://"), "");
 			var withAssetsPath = "Assets/" + fname;
 			return "<a href=\"" + withAssetsPath + "\" line=\"" + line + "\">" + withAssetsPath + ":" + line + "</a>";
 		}

@@ -87,8 +87,8 @@ public struct SwitchToMainThreadAwaitable
 
 	public SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 	{
-		this._playerLoopTiming = playerLoopTiming;
-		this._cancellationToken = cancellationToken;
+		_playerLoopTiming = playerLoopTiming;
+		_cancellationToken = cancellationToken;
 	}
 
 	public Awaiter GetAwaiter() => new Awaiter(_playerLoopTiming, _cancellationToken);
@@ -100,15 +100,15 @@ public struct SwitchToMainThreadAwaitable
 
 		public Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 		{
-			this._playerLoopTiming = playerLoopTiming;
-			this._cancellationToken = cancellationToken;
+			_playerLoopTiming = playerLoopTiming;
+			_cancellationToken = cancellationToken;
 		}
 
 		public bool IsCompleted
 		{
 			get
 			{
-				var currentThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
+				var currentThreadId = Thread.CurrentThread.ManagedThreadId;
 				if (GdTaskPlayerLoopAutoload.MainThreadId == currentThreadId)
 				{
 					return true; // run immediate.
@@ -141,8 +141,8 @@ public struct ReturnToMainThread
 
 	public ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 	{
-		this._playerLoopTiming = playerLoopTiming;
-		this._cancellationToken = cancellationToken;
+		_playerLoopTiming = playerLoopTiming;
+		_cancellationToken = cancellationToken;
 	}
 
 	public Awaiter DisposeAsync()
@@ -157,13 +157,13 @@ public struct ReturnToMainThread
 
 		public Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
 		{
-			this._timing = timing;
-			this._cancellationToken = cancellationToken;
+			_timing = timing;
+			_cancellationToken = cancellationToken;
 		}
 
 		public Awaiter GetAwaiter() => this;
 
-		public bool IsCompleted => GdTaskPlayerLoopAutoload.MainThreadId == System.Threading.Thread.CurrentThread.ManagedThreadId;
+		public bool IsCompleted => GdTaskPlayerLoopAutoload.MainThreadId == Thread.CurrentThread.ManagedThreadId;
 
 		public void GetResult() { _cancellationToken.ThrowIfCancellationRequested(); }
 
@@ -245,8 +245,8 @@ public struct SwitchToSynchronizationContextAwaitable
 
 	public SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
 	{
-		this._synchronizationContext = synchronizationContext;
-		this._cancellationToken = cancellationToken;
+		_synchronizationContext = synchronizationContext;
+		_cancellationToken = cancellationToken;
 	}
 
 	public Awaiter GetAwaiter() => new Awaiter(_synchronizationContext, _cancellationToken);
@@ -259,8 +259,8 @@ public struct SwitchToSynchronizationContextAwaitable
 
 		public Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
 		{
-			this._synchronizationContext = synchronizationContext;
-			this._cancellationToken = cancellationToken;
+			_synchronizationContext = synchronizationContext;
+			_cancellationToken = cancellationToken;
 		}
 
 		public bool IsCompleted => false;
@@ -292,9 +292,9 @@ public struct ReturnToSynchronizationContext
 
 	public ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
 	{
-		this._syncContext = syncContext;
-		this._dontPostWhenSameContext = dontPostWhenSameContext;
-		this._cancellationToken = cancellationToken;
+		_syncContext = syncContext;
+		_dontPostWhenSameContext = dontPostWhenSameContext;
+		_cancellationToken = cancellationToken;
 	}
 
 	public Awaiter DisposeAsync()
@@ -312,9 +312,9 @@ public struct ReturnToSynchronizationContext
 
 		public Awaiter(SynchronizationContext synchronizationContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
 		{
-			this._synchronizationContext = synchronizationContext;
-			this._dontPostWhenSameContext = dontPostWhenSameContext;
-			this._cancellationToken = cancellationToken;
+			_synchronizationContext = synchronizationContext;
+			_dontPostWhenSameContext = dontPostWhenSameContext;
+			_cancellationToken = cancellationToken;
 		}
 
 		public Awaiter GetAwaiter() => this;

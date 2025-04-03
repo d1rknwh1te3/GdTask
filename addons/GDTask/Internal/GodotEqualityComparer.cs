@@ -47,12 +47,12 @@ internal static class GodotEqualityComparer
 	{
 		var t = type.TypeHandle;
 
-		if (t.Equals(Vector2Type)) return (object)GodotEqualityComparer.Vector2;
-		if (t.Equals(Vector3Type)) return (object)GodotEqualityComparer.Vector3;
-		if (t.Equals(ColorType)) return (object)GodotEqualityComparer.Color;
-		if (t.Equals(RectType)) return (object)GodotEqualityComparer.Rect2;
-		if (t.Equals(AabbType)) return (object)GodotEqualityComparer.Aabb;
-		if (t.Equals(QuaternionType)) return (object)GodotEqualityComparer.Quaternion;
+		if (t.Equals(Vector2Type)) return (object)Vector2;
+		if (t.Equals(Vector3Type)) return (object)Vector3;
+		if (t.Equals(ColorType)) return (object)Color;
+		if (t.Equals(RectType)) return (object)Rect2;
+		if (t.Equals(AabbType)) return (object)Aabb;
+		if (t.Equals(QuaternionType)) return (object)Quaternion;
 
 		return null;
 	}

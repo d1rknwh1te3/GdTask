@@ -22,7 +22,7 @@ internal sealed class ContinuationQueue
 
 	public ContinuationQueue(PlayerLoopTiming timing)
 	{
-		this._timing = timing;
+		_timing = timing;
 	}
 
 	public void Enqueue(Action continuation)

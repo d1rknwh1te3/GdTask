@@ -51,11 +51,11 @@ internal class MinimumQueue<T>
 	{
 		if (_size == 0) ThrowForEmptyQueue();
 
-		int head = this._head;
-		T[] array = this._array;
+		int head = _head;
+		T[] array = _array;
 		T removed = array[head];
 		array[head] = default(T);
-		MoveNext(ref this._head);
+		MoveNext(ref _head);
 		_size--;
 		return removed;
 	}

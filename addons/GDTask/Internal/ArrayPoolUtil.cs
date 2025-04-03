@@ -84,9 +84,9 @@ internal static class ArrayPoolUtil
 
 		public RentArray(T[] array, int length, ArrayPool<T> pool)
 		{
-			this.Array = array;
-			this.Length = length;
-			this._pool = pool;
+			Array = array;
+			Length = length;
+			_pool = pool;
 		}
 
 		public void Dispose()

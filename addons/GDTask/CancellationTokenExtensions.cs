@@ -142,7 +142,7 @@ public struct CancellationTokenAwaitable
 
 	public CancellationTokenAwaitable(CancellationToken cancellationToken)
 	{
-		this._cancellationToken = cancellationToken;
+		_cancellationToken = cancellationToken;
 	}
 
 	public Awaiter GetAwaiter()
@@ -156,7 +156,7 @@ public struct CancellationTokenAwaitable
 
 		public Awaiter(CancellationToken cancellationToken)
 		{
-			this._cancellationToken = cancellationToken;
+			_cancellationToken = cancellationToken;
 		}
 
 		public bool IsCompleted => !_cancellationToken.CanBeCanceled || _cancellationToken.IsCancellationRequested;

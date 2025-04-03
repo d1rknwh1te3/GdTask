@@ -18,10 +18,10 @@ internal class WeakDictionary<TKey, TValue>
 	public WeakDictionary(int capacity = 4, float loadFactor = 0.75f, IEqualityComparer<TKey> keyComparer = null)
 	{
 		var tableSize = CalculateCapacity(capacity, loadFactor);
-		this._buckets = new Entry[tableSize];
-		this._loadFactor = loadFactor;
-		this._gate = new SpinLock(false);
-		this._keyEqualityComparer = keyComparer ?? EqualityComparer<TKey>.Default;
+		_buckets = new Entry[tableSize];
+		_loadFactor = loadFactor;
+		_gate = new SpinLock(false);
+		_keyEqualityComparer = keyComparer ?? EqualityComparer<TKey>.Default;
 	}
 
 	public bool TryAdd(TKey key, TValue value)

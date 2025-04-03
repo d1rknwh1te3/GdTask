@@ -11,7 +11,7 @@ public partial struct GdTask
 	{
 		if (tasks.Length == 0)
 		{
-			return GdTask.FromResult(Array.Empty<T>());
+			return FromResult(Array.Empty<T>());
 		}
 
 		return new GdTask<T[]>(new WhenAllPromise<T>(tasks, tasks.Length), 0);
@@ -30,7 +30,7 @@ public partial struct GdTask
 	{
 		if (tasks.Length == 0)
 		{
-			return GdTask.CompletedTask;
+			return CompletedTask;
 		}
 
 		return new GdTask(new WhenAllPromise(tasks, tasks.Length), 0);
@@ -55,16 +55,16 @@ public partial struct GdTask
 		{
 			TaskTracker.TrackActiveTask(this, 3);
 
-			this._completeCount = 0;
+			_completeCount = 0;
 
 			if (tasksLength == 0)
 			{
-				this._result = Array.Empty<T>();
+				_result = Array.Empty<T>();
 				_core.TrySetResult(_result);
 				return;
 			}
 
-			this._result = new T[tasksLength];
+			_result = new T[tasksLength];
 
 			for (int i = 0; i < tasksLength; i++)
 			{
@@ -152,8 +152,8 @@ public partial struct GdTask
 		{
 			TaskTracker.TrackActiveTask(this, 3);
 
-			this._tasksLength = tasksLength;
-			this._completeCount = 0;
+			_tasksLength = tasksLength;
+			_completeCount = 0;
 
 			if (tasksLength == 0)
 			{
@@ -163,7 +163,7 @@ public partial struct GdTask
 
 			for (int i = 0; i < tasksLength; i++)
 			{
-				GdTask.Awaiter awaiter;
+				Awaiter awaiter;
 				try
 				{
 					awaiter = tasks[i].GetAwaiter();
@@ -182,7 +182,7 @@ public partial struct GdTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAllPromise, GdTask.Awaiter>)state)
+						using (var t = (StateTuple<WhenAllPromise, Awaiter>)state)
 						{
 							TryInvokeContinuation(t.Item1, t.Item2);
 						}
@@ -191,7 +191,7 @@ public partial struct GdTask
 			}
 		}
 
-		private static void TryInvokeContinuation(WhenAllPromise self, in GdTask.Awaiter awaiter)
+		private static void TryInvokeContinuation(WhenAllPromise self, in Awaiter awaiter)
 		{
 			try
 			{

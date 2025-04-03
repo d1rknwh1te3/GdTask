@@ -86,10 +86,10 @@ public sealed partial class AsyncTriggerHandler<T> : IGdTaskSource<T>, ITriggerH
 			return;
 		}
 
-		this._trigger = trigger;
-		this._cancellationToken = default;
-		this._registration = default;
-		this._callOnce = callOnce;
+		_trigger = trigger;
+		_cancellationToken = default;
+		_registration = default;
+		_callOnce = callOnce;
 
 		trigger.AddHandler(this);
 
@@ -104,9 +104,9 @@ public sealed partial class AsyncTriggerHandler<T> : IGdTaskSource<T>, ITriggerH
 			return;
 		}
 
-		this._trigger = trigger;
-		this._cancellationToken = cancellationToken;
-		this._callOnce = callOnce;
+		_trigger = trigger;
+		_cancellationToken = cancellationToken;
+		_callOnce = callOnce;
 
 		trigger.AddHandler(this);
 

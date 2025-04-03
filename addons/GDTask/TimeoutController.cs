@@ -29,20 +29,20 @@ public sealed class TimeoutController : IDisposable
 
 	public TimeoutController(DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
 	{
-		this._timeoutSource = new CancellationTokenSource();
-		this._originalLinkCancellationTokenSource = null;
-		this._linkedSource = null;
-		this._delayType = delayType;
-		this._delayTiming = delayTiming;
+		_timeoutSource = new CancellationTokenSource();
+		_originalLinkCancellationTokenSource = null;
+		_linkedSource = null;
+		_delayType = delayType;
+		_delayTiming = delayTiming;
 	}
 
 	public TimeoutController(CancellationTokenSource linkCancellationTokenSource, DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
 	{
-		this._timeoutSource = new CancellationTokenSource();
-		this._originalLinkCancellationTokenSource = linkCancellationTokenSource;
-		this._linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_timeoutSource.Token, linkCancellationTokenSource.Token);
-		this._delayType = delayType;
-		this._delayTiming = delayTiming;
+		_timeoutSource = new CancellationTokenSource();
+		_originalLinkCancellationTokenSource = linkCancellationTokenSource;
+		_linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_timeoutSource.Token, linkCancellationTokenSource.Token);
+		_delayType = delayType;
+		_delayTiming = delayTiming;
 	}
 
 	public CancellationToken Timeout(int millisecondsTimeout)
@@ -64,9 +64,9 @@ public sealed class TimeoutController : IDisposable
 			_timeoutSource = new CancellationTokenSource();
 			if (_linkedSource != null)
 			{
-				this._linkedSource.Cancel();
-				this._linkedSource.Dispose();
-				this._linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_timeoutSource.Token, _originalLinkCancellationTokenSource.Token);
+				_linkedSource.Cancel();
+				_linkedSource.Dispose();
+				_linkedSource = CancellationTokenSource.CreateLinkedTokenSource(_timeoutSource.Token, _originalLinkCancellationTokenSource.Token);
 			}
 
 			_timer?.Dispose();

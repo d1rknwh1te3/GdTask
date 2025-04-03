@@ -89,20 +89,20 @@ public readonly partial struct GdTask
 
 	public GdTask<AsyncUnit> AsAsyncUnitGdTask()
 	{
-		if (this.source == null) return CompletedTasks.AsyncUnit;
+		if (source == null) return CompletedTasks.AsyncUnit;
 
-		var status = this.source.GetStatus(this.token);
+		var status = source.GetStatus(token);
 		if (status.IsCompletedSuccessfully())
 		{
-			this.source.GetResult(this.token);
+			source.GetResult(token);
 			return CompletedTasks.AsyncUnit;
 		}
-		else if (this.source is IGdTaskSource<AsyncUnit> asyncUnitSource)
+		else if (source is IGdTaskSource<AsyncUnit> asyncUnitSource)
 		{
-			return new GdTask<AsyncUnit>(asyncUnitSource, this.token);
+			return new GdTask<AsyncUnit>(asyncUnitSource, token);
 		}
 
-		return new GdTask<AsyncUnit>(new AsyncUnitSource(this.source), this.token);
+		return new GdTask<AsyncUnit>(new AsyncUnitSource(source), token);
 	}
 
 	private sealed class AsyncUnitSource : IGdTaskSource<AsyncUnit>
@@ -111,7 +111,7 @@ public readonly partial struct GdTask
 
 		public AsyncUnitSource(IGdTaskSource source)
 		{
-			this._source = source;
+			_source = source;
 		}
 
 		public AsyncUnit GetResult(short token)
@@ -147,7 +147,7 @@ public readonly partial struct GdTask
 
 		public IsCanceledSource(IGdTaskSource source)
 		{
-			this._source = source;
+			_source = source;
 		}
 
 		public bool GetResult(short token)
@@ -190,7 +190,7 @@ public readonly partial struct GdTask
 
 		public MemoizeSource(IGdTaskSource source)
 		{
-			this._source = source;
+			_source = source;
 		}
 
 		public void GetResult(short token)
@@ -270,7 +270,7 @@ public readonly partial struct GdTask
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Awaiter(in GdTask task)
 		{
-			this._task = task;
+			_task = task;
 		}
 
 		public bool IsCompleted
@@ -354,8 +354,8 @@ public readonly struct GdTask<T>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public GdTask(T result)
 	{
-		this.source = default;
-		this.token = default;
+		source = default;
+		token = default;
 		this.result = result;
 	}
 
@@ -365,7 +365,7 @@ public readonly struct GdTask<T>
 	{
 		this.source = source;
 		this.token = token;
-		this.result = default;
+		result = default;
 	}
 
 	public GdTaskStatus Status
@@ -402,17 +402,17 @@ public readonly struct GdTask<T>
 
 	public GdTask AsGdTask()
 	{
-		if (this.source == null) return GdTask.CompletedTask;
+		if (source == null) return GdTask.CompletedTask;
 
-		var status = this.source.GetStatus(this.token);
+		var status = source.GetStatus(token);
 		if (status.IsCompletedSuccessfully())
 		{
-			this.source.GetResult(this.token);
+			source.GetResult(token);
 			return GdTask.CompletedTask;
 		}
 
 		// Converting GDTask<T> -> GDTask is zero overhead.
-		return new GdTask(this.source, this.token);
+		return new GdTask(source, token);
 	}
 
 	public static implicit operator GdTask(GdTask<T> self)
@@ -435,8 +435,8 @@ public readonly struct GdTask<T>
 
 	public override string ToString()
 	{
-		return (this.source == null) ? result?.ToString()
-			: "(" + this.source.UnsafeGetStatus() + ")";
+		return (source == null) ? result?.ToString()
+			: "(" + source.UnsafeGetStatus() + ")";
 	}
 
 	private sealed class IsCanceledSource : IGdTaskSource<(bool, T)>
@@ -447,7 +447,7 @@ public readonly struct GdTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public IsCanceledSource(IGdTaskSource<T> source)
 		{
-			this._source = source;
+			_source = source;
 		}
 
 		[DebuggerHidden]
@@ -501,7 +501,7 @@ public readonly struct GdTask<T>
 
 		public MemoizeSource(IGdTaskSource<T> source)
 		{
-			this._source = source;
+			_source = source;
 		}
 
 		public T GetResult(short token)
@@ -588,7 +588,7 @@ public readonly struct GdTask<T>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
 		public Awaiter(in GdTask<T> task)
 		{
-			this._task = task;
+			_task = task;
 		}
 
 		public bool IsCompleted

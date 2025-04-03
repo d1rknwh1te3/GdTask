@@ -62,7 +62,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -74,7 +74,7 @@ public partial struct GdTask
 			}
 			finally
 			{
-				await GdTask.Yield();
+				await Yield();
 			}
 		}
 		else
@@ -90,7 +90,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -102,7 +102,7 @@ public partial struct GdTask
 			}
 			finally
 			{
-				await GdTask.Yield();
+				await Yield();
 			}
 		}
 		else
@@ -118,7 +118,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -130,7 +130,7 @@ public partial struct GdTask
 			}
 			finally
 			{
-				await GdTask.Yield();
+				await Yield();
 			}
 		}
 		else
@@ -146,7 +146,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -158,7 +158,7 @@ public partial struct GdTask
 			}
 			finally
 			{
-				await GdTask.Yield();
+				await Yield();
 			}
 		}
 		else
@@ -174,7 +174,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -186,7 +186,7 @@ public partial struct GdTask
 			}
 			finally
 			{
-				await GdTask.Yield();
+				await Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}
@@ -201,7 +201,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -214,7 +214,7 @@ public partial struct GdTask
 			finally
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				await GdTask.Yield();
+				await Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}
@@ -231,7 +231,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -243,7 +243,7 @@ public partial struct GdTask
 			}
 			finally
 			{
-				await GdTask.Yield();
+				await Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}
@@ -258,7 +258,7 @@ public partial struct GdTask
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await GdTask.SwitchToThreadPool();
+		await SwitchToThreadPool();
 
 		cancellationToken.ThrowIfCancellationRequested();
 
@@ -271,7 +271,7 @@ public partial struct GdTask
 			finally
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				await GdTask.Yield();
+				await Yield();
 				cancellationToken.ThrowIfCancellationRequested();
 			}
 		}

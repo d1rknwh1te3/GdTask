@@ -13,10 +13,10 @@ internal readonly struct ValueStopwatch
 
 	private ValueStopwatch(long startTimestamp)
 	{
-		this._startTimestamp = startTimestamp;
+		_startTimestamp = startTimestamp;
 	}
 
-	public TimeSpan Elapsed => TimeSpan.FromTicks(this.ElapsedTicks);
+	public TimeSpan Elapsed => TimeSpan.FromTicks(ElapsedTicks);
 
 	public bool IsInvalid => _startTimestamp == 0;
 

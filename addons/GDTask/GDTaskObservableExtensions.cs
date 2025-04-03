@@ -117,13 +117,13 @@ namespace Fractural.Tasks
 
             public ToGdTaskObserver(GdTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
             {
-                this._promise = promise;
-                this._disposable = disposable;
-                this._cancellationToken = cancellationToken;
+                _promise = promise;
+                _disposable = disposable;
+                _cancellationToken = cancellationToken;
 
-                if (this._cancellationToken.CanBeCanceled)
+                if (_cancellationToken.CanBeCanceled)
                 {
-                    this._registration = this._cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, this);
+                    _registration = _cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, this);
                 }
             }
 
@@ -187,13 +187,13 @@ namespace Fractural.Tasks
 
             public FirstValueToGdTaskObserver(GdTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
             {
-                this._promise = promise;
-                this._disposable = disposable;
-                this._cancellationToken = cancellationToken;
+                _promise = promise;
+                _disposable = disposable;
+                _cancellationToken = cancellationToken;
 
-                if (this._cancellationToken.CanBeCanceled)
+                if (_cancellationToken.CanBeCanceled)
                 {
-                    this._registration = this._cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, this);
+                    _registration = _cancellationToken.RegisterWithoutCaptureExecutionContext(Callback, this);
                 }
             }
 
@@ -254,7 +254,7 @@ namespace Fractural.Tasks
 
             public ReturnObservable(T value)
             {
-                this._value = value;
+                _value = value;
             }
 
             public IDisposable Subscribe(IObserver<T> observer)
@@ -271,7 +271,7 @@ namespace Fractural.Tasks
 
             public ThrowObservable(Exception value)
             {
-                this._value = value;
+                _value = value;
             }
 
             public IDisposable Subscribe(IObserver<T> observer)
@@ -445,8 +445,8 @@ namespace Fractural.Tasks.Internal
                 ThrowIfDisposed();
                 if (_isStopped) return;
 
-                this._hasValue = true;
-                this._lastValue = value;
+                _hasValue = true;
+                _lastValue = value;
             }
         }
 
@@ -530,8 +530,8 @@ namespace Fractural.Tasks.Internal
 
             public Subscription(AsyncSubject<T> parent, IObserver<T> unsubscribeTarget)
             {
-                this._parent = parent;
-                this._unsubscribeTarget = unsubscribeTarget;
+                _parent = parent;
+                _unsubscribeTarget = unsubscribeTarget;
             }
 
             public void Dispose()
@@ -707,7 +707,7 @@ namespace Fractural.Tasks.Internal
 
         public ImmutableList(T[] data)
         {
-            this._data = data;
+            _data = data;
         }
 
         public ImmutableList<T> Add(T value)
@@ -739,7 +739,7 @@ namespace Fractural.Tasks.Internal
             for (var i = 0; i < _data.Length; ++i)
             {
                 // ImmutableList only use for IObserver(no worry for boxed)
-                if (object.Equals(_data[i], value)) return i;
+                if (Equals(_data[i], value)) return i;
             }
             return -1;
         }

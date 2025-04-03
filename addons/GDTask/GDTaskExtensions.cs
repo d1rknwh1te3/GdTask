@@ -243,8 +243,8 @@ public static partial class GdTaskExtensions
 
 		public AttachExternalCancellationSource(GdTask task, CancellationToken cancellationToken)
 		{
-			this._cancellationToken = cancellationToken;
-			this._tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallbackDelegate, this);
+			_cancellationToken = cancellationToken;
+			_tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallbackDelegate, this);
 			RunTask(task).Forget();
 		}
 
@@ -302,8 +302,8 @@ public static partial class GdTaskExtensions
 
 		public AttachExternalCancellationSource(GdTask<T> task, CancellationToken cancellationToken)
 		{
-			this._cancellationToken = cancellationToken;
-			this._tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallbackDelegate, this);
+			_cancellationToken = cancellationToken;
+			_tokenRegistration = cancellationToken.RegisterWithoutCaptureExecutionContext(CancellationCallbackDelegate, this);
 			RunTask(task).Forget();
 		}
 

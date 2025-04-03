@@ -78,7 +78,7 @@ public partial struct GdTask
 			}
 			RIGHT:
 			{
-				GdTask.Awaiter awaiter;
+				Awaiter awaiter;
 				try
 				{
 					awaiter = rightTask.GetAwaiter();
@@ -97,7 +97,7 @@ public partial struct GdTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAnyLrPromise<T>, GdTask.Awaiter>)state)
+						using (var t = (StateTuple<WhenAnyLrPromise<T>, Awaiter>)state)
 						{
 							TryRightInvokeContinuation(t.Item1, t.Item2);
 						}
@@ -125,7 +125,7 @@ public partial struct GdTask
 			}
 		}
 
-		private static void TryRightInvokeContinuation(WhenAnyLrPromise<T> self, in GdTask.Awaiter awaiter)
+		private static void TryRightInvokeContinuation(WhenAnyLrPromise<T> self, in Awaiter awaiter)
 		{
 			try
 			{
@@ -279,7 +279,7 @@ public partial struct GdTask
 
 			for (int i = 0; i < tasksLength; i++)
 			{
-				GdTask.Awaiter awaiter;
+				Awaiter awaiter;
 				try
 				{
 					awaiter = tasks[i].GetAwaiter();
@@ -298,7 +298,7 @@ public partial struct GdTask
 				{
 					awaiter.SourceOnCompleted(state =>
 					{
-						using (var t = (StateTuple<WhenAnyPromise, GdTask.Awaiter, int>)state)
+						using (var t = (StateTuple<WhenAnyPromise, Awaiter, int>)state)
 						{
 							TryInvokeContinuation(t.Item1, t.Item2, t.Item3);
 						}
@@ -307,7 +307,7 @@ public partial struct GdTask
 			}
 		}
 
-		private static void TryInvokeContinuation(WhenAnyPromise self, in GdTask.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAnyPromise self, in Awaiter awaiter, int i)
 		{
 			try
 			{

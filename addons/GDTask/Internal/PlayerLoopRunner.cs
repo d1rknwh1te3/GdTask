@@ -22,8 +22,8 @@ internal sealed class PlayerLoopRunner
 
 	public PlayerLoopRunner(PlayerLoopTiming timing)
 	{
-		this._unhandledExceptionCallback = ex => GD.PrintErr(ex);
-		this._timing = timing;
+		_unhandledExceptionCallback = ex => GD.PrintErr(ex);
+		_timing = timing;
 	}
 
 	public void AddAction(IPlayerLoopItem item)

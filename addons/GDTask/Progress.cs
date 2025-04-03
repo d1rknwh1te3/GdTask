@@ -41,7 +41,7 @@ public static class Progress
 
 		public AnonymousProgress(Action<T> action)
 		{
-			this._action = action;
+			_action = action;
 		}
 
 		public void Report(T value)
@@ -59,9 +59,9 @@ public static class Progress
 
 		public OnlyValueChangedProgress(Action<T> action, IEqualityComparer<T> comparer)
 		{
-			this._action = action;
-			this._comparer = comparer;
-			this._isFirstCall = true;
+			_action = action;
+			_comparer = comparer;
+			_isFirstCall = true;
 		}
 
 		public void Report(T value)

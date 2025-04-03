@@ -72,12 +72,12 @@ public partial struct GdTask
 
 	public static YieldAwaitable WaitForEndOfFrame()
 	{
-		return GdTask.Yield(PlayerLoopTiming.Process);
+		return Yield(PlayerLoopTiming.Process);
 	}
 
 	public static GdTask WaitForEndOfFrame(CancellationToken cancellationToken)
 	{
-		return GdTask.Yield(PlayerLoopTiming.Process, cancellationToken);
+		return Yield(PlayerLoopTiming.Process, cancellationToken);
 	}
 
 	/// <summary>
@@ -85,7 +85,7 @@ public partial struct GdTask
 	/// </summary>
 	public static YieldAwaitable WaitForPhysicsProcess()
 	{
-		return GdTask.Yield(PlayerLoopTiming.PhysicsProcess);
+		return Yield(PlayerLoopTiming.PhysicsProcess);
 	}
 
 	/// <summary>
@@ -93,7 +93,7 @@ public partial struct GdTask
 	/// </summary>
 	public static GdTask WaitForPhysicsProcess(CancellationToken cancellationToken)
 	{
-		return GdTask.Yield(PlayerLoopTiming.PhysicsProcess, cancellationToken);
+		return Yield(PlayerLoopTiming.PhysicsProcess, cancellationToken);
 	}
 
 	public static GdTask DelayFrame(int delayFrameCount, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process, CancellationToken cancellationToken = default(CancellationToken))
@@ -701,7 +701,7 @@ public readonly struct YieldAwaitable
 
 	public YieldAwaitable(PlayerLoopTiming timing)
 	{
-		this._timing = timing;
+		_timing = timing;
 	}
 
 	public Awaiter GetAwaiter()
@@ -720,7 +720,7 @@ public readonly struct YieldAwaitable
 
 		public Awaiter(PlayerLoopTiming timing)
 		{
-			this._timing = timing;
+			_timing = timing;
 		}
 
 		public bool IsCompleted => false;
