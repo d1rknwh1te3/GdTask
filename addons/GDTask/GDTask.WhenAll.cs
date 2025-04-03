@@ -59,7 +59,7 @@ public partial struct GdTask
 
 			if (tasksLength == 0)
 			{
-				_result = Array.Empty<T>();
+				_result = [];
 				_core.TrySetResult(_result);
 				return;
 			}

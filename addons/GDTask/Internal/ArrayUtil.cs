@@ -51,7 +51,7 @@ internal static class ArrayUtil
 
 		if (defaultCount == 0)
 		{
-			return (Array.Empty<T>(), 0);
+			return ([], 0);
 		}
 
 		{

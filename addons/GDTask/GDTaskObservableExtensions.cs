@@ -463,7 +463,7 @@ namespace Fractural.Tasks.Internal
                         }
                         else
                         {
-                            _outObserver = new ListObserver<T>(new ImmutableList<IObserver<T>>(new[] { current, observer }));
+                            _outObserver = new ListObserver<T>(new ImmutableList<IObserver<T>>([current, observer]));
                         }
                     }
 
@@ -671,7 +671,7 @@ namespace Fractural.Tasks.Internal
             get { return data; }
         }
 
-        private ImmutableList() : this(new T[0])
+        private ImmutableList() : this([])
         {
         }
 

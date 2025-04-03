@@ -42,7 +42,7 @@ internal static class ArrayPoolUtil
 		{
 			if (coll.Count == 0)
 			{
-				return new RentArray<T>(Array.Empty<T>(), 0, null);
+				return new RentArray<T>([], 0, null);
 			}
 
 			defaultCount = coll.Count;
@@ -58,7 +58,7 @@ internal static class ArrayPoolUtil
 
 		if (defaultCount == 0)
 		{
-			return new RentArray<T>(Array.Empty<T>(), 0, null);
+			return new RentArray<T>([], 0, null);
 		}
 
 		{

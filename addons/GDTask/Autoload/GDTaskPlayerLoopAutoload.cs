@@ -96,18 +96,20 @@ public partial class GdTaskPlayerLoopAutoload : Node
 	{
 		ProcessMode = ProcessModeEnum.Pausable;
 		_mainThreadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-		_yielders = new[] {
+		_yielders =
+		[
 			new ContinuationQueue(PlayerLoopTiming.Process),
 			new ContinuationQueue(PlayerLoopTiming.PhysicsProcess),
 			new ContinuationQueue(PlayerLoopTiming.PauseProcess),
-			new ContinuationQueue(PlayerLoopTiming.PausePhysicsProcess),
-		};
-		_runners = new[] {
+			new ContinuationQueue(PlayerLoopTiming.PausePhysicsProcess)
+		];
+		_runners =
+		[
 			new PlayerLoopRunner(PlayerLoopTiming.Process),
 			new PlayerLoopRunner(PlayerLoopTiming.PhysicsProcess),
 			new PlayerLoopRunner(PlayerLoopTiming.PauseProcess),
-			new PlayerLoopRunner(PlayerLoopTiming.PausePhysicsProcess),
-		};
+			new PlayerLoopRunner(PlayerLoopTiming.PausePhysicsProcess)
+		];
 		_processListener = new ProcessListener();
 		AddChild(_processListener);
 		_processListener.ProcessMode = ProcessModeEnum.Always;

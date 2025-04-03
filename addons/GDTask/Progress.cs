@@ -35,34 +35,18 @@ public static class Progress
 		}
 	}
 
-	private sealed class AnonymousProgress<T> : IProgress<T>
+	private sealed class AnonymousProgress<T>(Action<T> action) : IProgress<T>
 	{
-		private readonly Action<T> _action;
-
-		public AnonymousProgress(Action<T> action)
-		{
-			_action = action;
-		}
-
 		public void Report(T value)
 		{
-			_action(value);
+			action(value);
 		}
 	}
 
-	private sealed class OnlyValueChangedProgress<T> : IProgress<T>
+	private sealed class OnlyValueChangedProgress<T>(Action<T> action, IEqualityComparer<T> comparer) : IProgress<T>
 	{
-		private readonly Action<T> _action;
-		private readonly IEqualityComparer<T> _comparer;
-		private bool _isFirstCall;
+		private bool _isFirstCall = true;
 		private T _latestValue;
-
-		public OnlyValueChangedProgress(Action<T> action, IEqualityComparer<T> comparer)
-		{
-			_action = action;
-			_comparer = comparer;
-			_isFirstCall = true;
-		}
 
 		public void Report(T value)
 		{
@@ -70,13 +54,13 @@ public static class Progress
 			{
 				_isFirstCall = false;
 			}
-			else if (_comparer.Equals(value, _latestValue))
+			else if (comparer.Equals(value, _latestValue))
 			{
 				return;
 			}
 
 			_latestValue = value;
-			_action(value);
+			action(value);
 		}
 	}
 }
