@@ -9,8 +9,8 @@ namespace Fractural.Tasks.CompilerServices;
 [StructLayout(LayoutKind.Auto)]
 public struct AsyncGDTaskMethodBuilder
 {
-	IStateMachineRunnerPromise runnerPromise;
-	Exception ex;
+	private IStateMachineRunnerPromise runnerPromise;
+	private Exception ex;
 
 	// 1. Static Create method.
 	[DebuggerHidden]
@@ -117,7 +117,7 @@ public struct AsyncGDTaskMethodBuilder
 
 #if DEBUG
 	// Important for IDE debugger.
-	object debuggingId;
+	private object debuggingId;
 	private object ObjectIdForDebugger
 	{
 		get
@@ -135,9 +135,9 @@ public struct AsyncGDTaskMethodBuilder
 [StructLayout(LayoutKind.Auto)]
 public struct AsyncGDTaskMethodBuilder<T>
 {
-	IStateMachineRunnerPromise<T> runnerPromise;
-	Exception ex;
-	T result;
+	private IStateMachineRunnerPromise<T> runnerPromise;
+	private Exception ex;
+	private T result;
 
 	// 1. Static Create method.
 	[DebuggerHidden]
@@ -248,7 +248,7 @@ public struct AsyncGDTaskMethodBuilder<T>
 
 #if DEBUG
 	// Important for IDE debugger.
-	object debuggingId;
+	private object debuggingId;
 	private object ObjectIdForDebugger
 	{
 		get

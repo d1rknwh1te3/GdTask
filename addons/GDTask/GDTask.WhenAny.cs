@@ -40,10 +40,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WhenAnyLRPromise<T> : IGDTaskSource<(bool, T)>
+	private sealed class WhenAnyLRPromise<T> : IGDTaskSource<(bool, T)>
 	{
-		int completedCount;
-		GDTaskCompletionSourceCore<(bool, T)> core;
+		private int completedCount;
+		private GDTaskCompletionSourceCore<(bool, T)> core;
 
 		public WhenAnyLRPromise(GDTask<T> leftTask, GDTask rightTask)
 		{
@@ -106,7 +106,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void TryLeftInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask<T>.Awaiter awaiter)
+		private static void TryLeftInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask<T>.Awaiter awaiter)
 		{
 			T result;
 			try
@@ -125,7 +125,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void TryRightInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask.Awaiter awaiter)
+		private static void TryRightInvokeContinuation(WhenAnyLRPromise<T> self, in GDTask.Awaiter awaiter)
 		{
 			try
 			{
@@ -172,10 +172,10 @@ public partial struct GDTask
 	}
 
 
-	sealed class WhenAnyPromise<T> : IGDTaskSource<(int, T)>
+	private sealed class WhenAnyPromise<T> : IGDTaskSource<(int, T)>
 	{
-		int completedCount;
-		GDTaskCompletionSourceCore<(int, T)> core;
+		private int completedCount;
+		private GDTaskCompletionSourceCore<(int, T)> core;
 
 		public WhenAnyPromise(GDTask<T>[] tasks, int tasksLength)
 		{
@@ -216,7 +216,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void TryInvokeContinuation(WhenAnyPromise<T> self, in GDTask<T>.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAnyPromise<T> self, in GDTask<T>.Awaiter awaiter, int i)
 		{
 			T result;
 			try
@@ -263,10 +263,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WhenAnyPromise : IGDTaskSource<int>
+	private sealed class WhenAnyPromise : IGDTaskSource<int>
 	{
-		int completedCount;
-		GDTaskCompletionSourceCore<int> core;
+		private int completedCount;
+		private GDTaskCompletionSourceCore<int> core;
 
 		public WhenAnyPromise(GDTask[] tasks, int tasksLength)
 		{
@@ -307,7 +307,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void TryInvokeContinuation(WhenAnyPromise self, in GDTask.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAnyPromise self, in GDTask.Awaiter awaiter, int i)
 		{
 			try
 			{

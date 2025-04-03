@@ -45,11 +45,11 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WhenAllPromise<T> : IGDTaskSource<T[]>
+	private sealed class WhenAllPromise<T> : IGDTaskSource<T[]>
 	{
-		T[] result;
-		int completeCount;
-		GDTaskCompletionSourceCore<T[]> core; // don't reset(called after GetResult, will invoke TrySetException.)
+		private T[] result;
+		private int completeCount;
+		private GDTaskCompletionSourceCore<T[]> core; // don't reset(called after GetResult, will invoke TrySetException.)
 
 		public WhenAllPromise(GDTask<T>[] tasks, int tasksLength)
 		{
@@ -96,7 +96,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void TryInvokeContinuation(WhenAllPromise<T> self, in GDTask<T>.Awaiter awaiter, int i)
+		private static void TryInvokeContinuation(WhenAllPromise<T> self, in GDTask<T>.Awaiter awaiter, int i)
 		{
 			try
 			{
@@ -142,11 +142,11 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WhenAllPromise : IGDTaskSource
+	private sealed class WhenAllPromise : IGDTaskSource
 	{
-		int completeCount;
-		int tasksLength;
-		GDTaskCompletionSourceCore<AsyncUnit> core; // don't reset(called after GetResult, will invoke TrySetException.)
+		private int completeCount;
+		private int tasksLength;
+		private GDTaskCompletionSourceCore<AsyncUnit> core; // don't reset(called after GetResult, will invoke TrySetException.)
 
 		public WhenAllPromise(GDTask[] tasks, int tasksLength)
 		{
@@ -191,7 +191,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void TryInvokeContinuation(WhenAllPromise self, in GDTask.Awaiter awaiter)
+		private static void TryInvokeContinuation(WhenAllPromise self, in GDTask.Awaiter awaiter)
 		{
 			try
 			{

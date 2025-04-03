@@ -13,7 +13,7 @@ public static class TaskTracker
 	// TODO: Work on task tracker after getting tasks functioning
 #if DEBUG
 
-	static int trackingId = 0;
+	private static int trackingId = 0;
 
 	public const string EnableAutoReloadKey = "GDTaskTrackerWindow_EnableAutoReloadKey";
 	public const string EnableTrackingKey = "GDTaskTrackerWindow_EnableTrackingKey";
@@ -21,7 +21,7 @@ public static class TaskTracker
 
 	public static class EditorEnableState
 	{
-		static bool enableAutoReload;
+		private static bool enableAutoReload;
 		public static bool EnableAutoReload
 		{
 			get { return enableAutoReload; }
@@ -32,7 +32,7 @@ public static class TaskTracker
 			}
 		}
 
-		static bool enableTracking;
+		private static bool enableTracking;
 		public static bool EnableTracking
 		{
 			get { return enableTracking; }
@@ -43,7 +43,7 @@ public static class TaskTracker
 			}
 		}
 
-		static bool enableStackTrace;
+		private static bool enableStackTrace;
 		public static bool EnableStackTrace
 		{
 			get { return enableStackTrace; }
@@ -58,9 +58,9 @@ public static class TaskTracker
 #endif
 
 
-	static List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
+	private static List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>> listPool = new List<KeyValuePair<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>>();
 
-	static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
+	private static readonly WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)> tracking = new WeakDictionary<IGDTaskSource, (string formattedType, int trackingId, DateTime addTime, string stackTrace)>();
 
 	[Conditional("DEBUG")]
 	public static void TrackActiveTask(IGDTaskSource task, int skipFrame)
@@ -95,7 +95,7 @@ public static class TaskTracker
 #endif
 	}
 
-	static bool dirty;
+	private static bool dirty;
 
 	public static bool CheckAndResetDirty()
 	{
@@ -126,7 +126,7 @@ public static class TaskTracker
 		}
 	}
 
-	static void TypeBeautify(Type type, StringBuilder sb)
+	private static void TypeBeautify(Type type, StringBuilder sb)
 	{
 		if (type.IsNested)
 		{

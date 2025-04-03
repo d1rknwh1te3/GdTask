@@ -6,7 +6,7 @@ namespace Fractural.Tasks.Triggers;
 
 public abstract partial class AsyncTriggerBase<T> : Node
 {
-	TriggerEvent<T> triggerEvent;
+	private TriggerEvent<T> triggerEvent;
 
 	internal protected bool calledEnterTree;
 	internal protected bool calledDestroy;
@@ -22,7 +22,7 @@ public abstract partial class AsyncTriggerBase<T> : Node
 			OnDestroy();
 	}
 
-	void OnDestroy()
+	private void OnDestroy()
 	{
 		if (calledDestroy) return;
 		calledDestroy = true;
@@ -62,16 +62,16 @@ public partial class AsyncTriggerHandler<T> : IAsyncOneShotTrigger
 
 public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerHandler<T>, IDisposable
 {
-	static Action<object> cancellationCallback = CancellationCallback;
+	private static Action<object> cancellationCallback = CancellationCallback;
 
-	readonly AsyncTriggerBase<T> trigger;
+	private readonly AsyncTriggerBase<T> trigger;
 
-	CancellationToken cancellationToken;
-	CancellationTokenRegistration registration;
-	bool isDisposed;
-	bool callOnce;
+	private CancellationToken cancellationToken;
+	private CancellationTokenRegistration registration;
+	private bool isDisposed;
+	private bool callOnce;
 
-	GDTaskCompletionSourceCore<T> core;
+	private GDTaskCompletionSourceCore<T> core;
 
 	internal CancellationToken CancellationToken => cancellationToken;
 
@@ -118,7 +118,7 @@ public sealed partial class AsyncTriggerHandler<T> : IGDTaskSource<T>, ITriggerH
 		TaskTracker.TrackActiveTask(this, 3);
 	}
 
-	static void CancellationCallback(object state)
+	private static void CancellationCallback(object state)
 	{
 		var self = (AsyncTriggerHandler<T>)state;
 		self.Dispose();

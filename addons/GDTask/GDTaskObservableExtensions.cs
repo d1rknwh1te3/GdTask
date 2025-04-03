@@ -70,7 +70,7 @@ namespace Fractural.Tasks
             return subject;
         }
 
-        static async GDTaskVoid Fire<T>(AsyncSubject<T> subject, GDTask<T> task)
+        private static async GDTaskVoid Fire<T>(AsyncSubject<T> subject, GDTask<T> task)
         {
             T value;
             try
@@ -87,7 +87,7 @@ namespace Fractural.Tasks
             subject.OnCompleted();
         }
 
-        static async GDTaskVoid Fire(AsyncSubject<AsyncUnit> subject, GDTask task)
+        private static async GDTaskVoid Fire(AsyncSubject<AsyncUnit> subject, GDTask task)
         {
             try
             {
@@ -103,17 +103,17 @@ namespace Fractural.Tasks
             subject.OnCompleted();
         }
 
-        class ToGDTaskObserver<T> : IObserver<T>
+        private class ToGDTaskObserver<T> : IObserver<T>
         {
-            static readonly Action<object> callback = OnCanceled;
+	        private static readonly Action<object> callback = OnCanceled;
 
-            readonly GDTaskCompletionSource<T> promise;
-            readonly SingleAssignmentDisposable disposable;
-            readonly CancellationToken cancellationToken;
-            readonly CancellationTokenRegistration registration;
+	        private readonly GDTaskCompletionSource<T> promise;
+	        private readonly SingleAssignmentDisposable disposable;
+	        private readonly CancellationToken cancellationToken;
+	        private readonly CancellationTokenRegistration registration;
 
-            bool hasValue;
-            T latestValue;
+	        private bool hasValue;
+	        private T latestValue;
 
             public ToGDTaskObserver(GDTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
             {
@@ -127,7 +127,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void OnCanceled(object state)
+            private static void OnCanceled(object state)
             {
                 var self = (ToGDTaskObserver<T>)state;
                 self.disposable.Dispose();
@@ -174,16 +174,16 @@ namespace Fractural.Tasks
             }
         }
 
-        class FirstValueToGDTaskObserver<T> : IObserver<T>
+        private class FirstValueToGDTaskObserver<T> : IObserver<T>
         {
-            static readonly Action<object> callback = OnCanceled;
+	        private static readonly Action<object> callback = OnCanceled;
 
-            readonly GDTaskCompletionSource<T> promise;
-            readonly SingleAssignmentDisposable disposable;
-            readonly CancellationToken cancellationToken;
-            readonly CancellationTokenRegistration registration;
+	        private readonly GDTaskCompletionSource<T> promise;
+	        private readonly SingleAssignmentDisposable disposable;
+	        private readonly CancellationToken cancellationToken;
+	        private readonly CancellationTokenRegistration registration;
 
-            bool hasValue;
+	        private bool hasValue;
 
             public FirstValueToGDTaskObserver(GDTaskCompletionSource<T> promise, SingleAssignmentDisposable disposable, CancellationToken cancellationToken)
             {
@@ -197,7 +197,7 @@ namespace Fractural.Tasks
                 }
             }
 
-            static void OnCanceled(object state)
+            private static void OnCanceled(object state)
             {
                 var self = (FirstValueToGDTaskObserver<T>)state;
                 self.disposable.Dispose();
@@ -248,9 +248,9 @@ namespace Fractural.Tasks
             }
         }
 
-        class ReturnObservable<T> : IObservable<T>
+        private class ReturnObservable<T> : IObservable<T>
         {
-            readonly T value;
+	        private readonly T value;
 
             public ReturnObservable(T value)
             {
@@ -265,9 +265,9 @@ namespace Fractural.Tasks
             }
         }
 
-        class ThrowObservable<T> : IObservable<T>
+        private class ThrowObservable<T> : IObservable<T>
         {
-            readonly Exception value;
+	        private readonly Exception value;
 
             public ThrowObservable(Exception value)
             {
@@ -291,7 +291,7 @@ namespace Fractural.Tasks.Internal
     {
         public static EmptyDisposable Instance = new EmptyDisposable();
 
-        EmptyDisposable()
+        private EmptyDisposable()
         {
 
         }
@@ -303,9 +303,9 @@ namespace Fractural.Tasks.Internal
 
     internal sealed class SingleAssignmentDisposable : IDisposable
     {
-        readonly object gate = new object();
-        IDisposable current;
-        bool disposed;
+	    private readonly object gate = new object();
+	    private IDisposable current;
+	    private bool disposed;
 
         public bool IsDisposed { get { lock (gate) { return disposed; } } }
 
@@ -361,14 +361,14 @@ namespace Fractural.Tasks.Internal
 
     internal sealed class AsyncSubject<T> : IObservable<T>, IObserver<T>
     {
-        object observerLock = new object();
+	    private object observerLock = new object();
 
-        T lastValue;
-        bool hasValue;
-        bool isStopped;
-        bool isDisposed;
-        Exception lastError;
-        IObserver<T> outObserver = EmptyObserver<T>.Instance;
+	    private T lastValue;
+	    private bool hasValue;
+	    private bool isStopped;
+	    private bool isDisposed;
+	    private Exception lastError;
+	    private IObserver<T> outObserver = EmptyObserver<T>.Instance;
 
         public T Value
         {
@@ -517,16 +517,16 @@ namespace Fractural.Tasks.Internal
             }
         }
 
-        void ThrowIfDisposed()
+        private void ThrowIfDisposed()
         {
             if (isDisposed) throw new ObjectDisposedException("");
         }
 
-        class Subscription : IDisposable
+        private class Subscription : IDisposable
         {
-            readonly object gate = new object();
-            AsyncSubject<T> parent;
-            IObserver<T> unsubscribeTarget;
+	        private readonly object gate = new object();
+	        private AsyncSubject<T> parent;
+	        private IObserver<T> unsubscribeTarget;
 
             public Subscription(AsyncSubject<T> parent, IObserver<T> unsubscribeTarget)
             {
@@ -623,7 +623,7 @@ namespace Fractural.Tasks.Internal
     {
         public static readonly EmptyObserver<T> Instance = new EmptyObserver<T>();
 
-        EmptyObserver()
+        private EmptyObserver()
         {
 
         }
@@ -645,7 +645,7 @@ namespace Fractural.Tasks.Internal
     {
         public static readonly ThrowObserver<T> Instance = new ThrowObserver<T>();
 
-        ThrowObserver()
+        private ThrowObserver()
         {
 
         }
@@ -668,7 +668,7 @@ namespace Fractural.Tasks.Internal
     {
         public static readonly DisposedObserver<T> Instance = new DisposedObserver<T>();
 
-        DisposedObserver()
+        private DisposedObserver()
         {
 
         }
@@ -693,14 +693,14 @@ namespace Fractural.Tasks.Internal
     {
         public static readonly ImmutableList<T> Empty = new ImmutableList<T>();
 
-        T[] data;
+        private T[] data;
 
         public T[] Data
         {
             get { return data; }
         }
 
-        ImmutableList()
+        private ImmutableList()
         {
             data = new T[0];
         }

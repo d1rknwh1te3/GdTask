@@ -8,12 +8,12 @@ namespace Fractural.Tasks;
 
 public partial struct GDTask
 {
-	static readonly GDTask CanceledGDTask = new Func<GDTask>(() =>
+	private static readonly GDTask CanceledGDTask = new Func<GDTask>(() =>
 	{
 		return new GDTask(new CanceledResultSource(CancellationToken.None), 0);
 	})();
 
-	static class CanceledGDTaskCache<T>
+	private static class CanceledGDTaskCache<T>
 	{
 		public static readonly GDTask<T> Task;
 
@@ -167,10 +167,10 @@ public partial struct GDTask
 		return new GDTask<T>(new NeverPromise<T>(cancellationToken), 0);
 	}
 
-	sealed class ExceptionResultSource : IGDTaskSource
+	private sealed class ExceptionResultSource : IGDTaskSource
 	{
-		readonly ExceptionDispatchInfo exception;
-		bool calledGet;
+		private readonly ExceptionDispatchInfo exception;
+		private bool calledGet;
 
 		public ExceptionResultSource(Exception exception)
 		{
@@ -211,10 +211,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class ExceptionResultSource<T> : IGDTaskSource<T>
+	private sealed class ExceptionResultSource<T> : IGDTaskSource<T>
 	{
-		readonly ExceptionDispatchInfo exception;
-		bool calledGet;
+		private readonly ExceptionDispatchInfo exception;
+		private bool calledGet;
 
 		public ExceptionResultSource(Exception exception)
 		{
@@ -266,9 +266,9 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class CanceledResultSource : IGDTaskSource
+	private sealed class CanceledResultSource : IGDTaskSource
 	{
-		readonly CancellationToken cancellationToken;
+		private readonly CancellationToken cancellationToken;
 
 		public CanceledResultSource(CancellationToken cancellationToken)
 		{
@@ -296,9 +296,9 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class CanceledResultSource<T> : IGDTaskSource<T>
+	private sealed class CanceledResultSource<T> : IGDTaskSource<T>
 	{
-		readonly CancellationToken cancellationToken;
+		private readonly CancellationToken cancellationToken;
 
 		public CanceledResultSource(CancellationToken cancellationToken)
 		{
@@ -331,11 +331,11 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class DeferPromise : IGDTaskSource
+	private sealed class DeferPromise : IGDTaskSource
 	{
-		Func<GDTask> factory;
-		GDTask task;
-		GDTask.Awaiter awaiter;
+		private Func<GDTask> factory;
+		private GDTask task;
+		private GDTask.Awaiter awaiter;
 
 		public DeferPromise(Func<GDTask> factory)
 		{
@@ -370,11 +370,11 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class DeferPromise<T> : IGDTaskSource<T>
+	private sealed class DeferPromise<T> : IGDTaskSource<T>
 	{
-		Func<GDTask<T>> factory;
-		GDTask<T> task;
-		GDTask<T>.Awaiter awaiter;
+		private Func<GDTask<T>> factory;
+		private GDTask<T> task;
+		private GDTask<T>.Awaiter awaiter;
 
 		public DeferPromise(Func<GDTask<T>> factory)
 		{
@@ -414,12 +414,12 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class NeverPromise<T> : IGDTaskSource<T>
+	private sealed class NeverPromise<T> : IGDTaskSource<T>
 	{
-		static readonly Action<object> cancellationCallback = CancellationCallback;
+		private static readonly Action<object> cancellationCallback = CancellationCallback;
 
-		CancellationToken cancellationToken;
-		GDTaskCompletionSourceCore<T> core;
+		private CancellationToken cancellationToken;
+		private GDTaskCompletionSourceCore<T> core;
 
 		public NeverPromise(CancellationToken cancellationToken)
 		{
@@ -430,7 +430,7 @@ public partial struct GDTask
 			}
 		}
 
-		static void CancellationCallback(object state)
+		private static void CancellationCallback(object state)
 		{
 			var self = (NeverPromise<T>)state;
 			self.core.TrySetCanceled(self.cancellationToken);

@@ -13,9 +13,9 @@ public static partial class AsyncTriggerExtensions
 
 public sealed partial class AsyncDestroyTrigger : Node
 {
-	bool enterTreeCalled = false;
-	bool called = false;
-	CancellationTokenSource cancellationTokenSource;
+	private bool enterTreeCalled = false;
+	private bool called = false;
+	private CancellationTokenSource cancellationTokenSource;
 
 	public CancellationToken CancellationToken
 	{
@@ -41,7 +41,7 @@ public sealed partial class AsyncDestroyTrigger : Node
 			OnDestroy();
 	}
 
-	void OnDestroy()
+	private void OnDestroy()
 	{
 		called = true;
 

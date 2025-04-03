@@ -6,8 +6,8 @@ namespace Fractural.Tasks;
 
 public static class CancellationTokenExtensions
 {
-	static readonly Action<object> cancellationTokenCallback = Callback;
-	static readonly Action<object> disposeCallback = DisposeCallback;
+	private static readonly Action<object> cancellationTokenCallback = Callback;
+	private static readonly Action<object> disposeCallback = DisposeCallback;
 
 	public static CancellationToken ToCancellationToken(this GDTask task)
 	{
@@ -44,7 +44,7 @@ public static class CancellationTokenExtensions
 		return ToCancellationToken(task.AsGDTask(), linkToken);
 	}
 
-	static async GDTaskVoid ToCancellationTokenCore(GDTask task, CancellationTokenSource cts)
+	private static async GDTaskVoid ToCancellationTokenCore(GDTask task, CancellationTokenSource cts)
 	{
 		try
 		{
@@ -69,7 +69,7 @@ public static class CancellationTokenExtensions
 		return (promise.Task, cancellationToken.RegisterWithoutCaptureExecutionContext(cancellationTokenCallback, promise));
 	}
 
-	static void Callback(object state)
+	private static void Callback(object state)
 	{
 		var promise = (GDTaskCompletionSource)state;
 		promise.TrySetResult();
@@ -129,7 +129,7 @@ public static class CancellationTokenExtensions
 		return cancellationToken.RegisterWithoutCaptureExecutionContext(disposeCallback, disposable);
 	}
 
-	static void DisposeCallback(object state)
+	private static void DisposeCallback(object state)
 	{
 		var d = (IDisposable)state;
 		d.Dispose();
@@ -138,7 +138,7 @@ public static class CancellationTokenExtensions
 
 public struct CancellationTokenAwaitable
 {
-	CancellationToken cancellationToken;
+	private CancellationToken cancellationToken;
 
 	public CancellationTokenAwaitable(CancellationToken cancellationToken)
 	{
@@ -152,7 +152,7 @@ public struct CancellationTokenAwaitable
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		CancellationToken cancellationToken;
+		private CancellationToken cancellationToken;
 
 		public Awaiter(CancellationToken cancellationToken)
 		{

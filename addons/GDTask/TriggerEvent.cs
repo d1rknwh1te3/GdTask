@@ -19,13 +19,13 @@ public interface ITriggerHandler<T>
 // be careful to use, itself is struct.
 public struct TriggerEvent<T>
 {
-	ITriggerHandler<T> head; // head.prev is last
-	ITriggerHandler<T> iteratingHead;
+	private ITriggerHandler<T> head; // head.prev is last
+	private ITriggerHandler<T> iteratingHead;
 
-	bool preserveRemoveSelf;
-	ITriggerHandler<T> iteratingNode;
+	private bool preserveRemoveSelf;
+	private ITriggerHandler<T> iteratingNode;
 
-	void LogError(Exception ex)
+	private void LogError(Exception ex)
 	{
 		GD.PrintErr(ex);
 	}

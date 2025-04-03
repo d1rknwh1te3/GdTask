@@ -82,8 +82,8 @@ public partial struct GDTask
 
 public struct SwitchToMainThreadAwaitable
 {
-	readonly PlayerLoopTiming playerLoopTiming;
-	readonly CancellationToken cancellationToken;
+	private readonly PlayerLoopTiming playerLoopTiming;
+	private readonly CancellationToken cancellationToken;
 
 	public SwitchToMainThreadAwaitable(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 	{
@@ -95,8 +95,8 @@ public struct SwitchToMainThreadAwaitable
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		readonly PlayerLoopTiming playerLoopTiming;
-		readonly CancellationToken cancellationToken;
+		private readonly PlayerLoopTiming playerLoopTiming;
+		private readonly CancellationToken cancellationToken;
 
 		public Awaiter(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 		{
@@ -136,8 +136,8 @@ public struct SwitchToMainThreadAwaitable
 
 public struct ReturnToMainThread
 {
-	readonly PlayerLoopTiming playerLoopTiming;
-	readonly CancellationToken cancellationToken;
+	private readonly PlayerLoopTiming playerLoopTiming;
+	private readonly CancellationToken cancellationToken;
 
 	public ReturnToMainThread(PlayerLoopTiming playerLoopTiming, CancellationToken cancellationToken)
 	{
@@ -152,8 +152,8 @@ public struct ReturnToMainThread
 
 	public readonly struct Awaiter : ICriticalNotifyCompletion
 	{
-		readonly PlayerLoopTiming timing;
-		readonly CancellationToken cancellationToken;
+		private readonly PlayerLoopTiming timing;
+		private readonly CancellationToken cancellationToken;
 
 		public Awaiter(PlayerLoopTiming timing, CancellationToken cancellationToken)
 		{
@@ -186,7 +186,7 @@ public struct SwitchToThreadPoolAwaitable
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		static readonly WaitCallback switchToCallback = Callback;
+		private static readonly WaitCallback switchToCallback = Callback;
 
 		public bool IsCompleted => false;
 		public void GetResult() { }
@@ -201,7 +201,7 @@ public struct SwitchToThreadPoolAwaitable
 			ThreadPool.UnsafeQueueUserWorkItem(switchToCallback, continuation);
 		}
 
-		static void Callback(object state)
+		private static void Callback(object state)
 		{
 			var continuation = (Action)state;
 			continuation();
@@ -215,7 +215,7 @@ public struct SwitchToTaskPoolAwaitable
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		static readonly Action<object> switchToCallback = Callback;
+		private static readonly Action<object> switchToCallback = Callback;
 
 		public bool IsCompleted => false;
 		public void GetResult() { }
@@ -230,7 +230,7 @@ public struct SwitchToTaskPoolAwaitable
 			Task.Factory.StartNew(switchToCallback, continuation, CancellationToken.None, TaskCreationOptions.DenyChildAttach, TaskScheduler.Default);
 		}
 
-		static void Callback(object state)
+		private static void Callback(object state)
 		{
 			var continuation = (Action)state;
 			continuation();
@@ -240,8 +240,8 @@ public struct SwitchToTaskPoolAwaitable
 
 public struct SwitchToSynchronizationContextAwaitable
 {
-	readonly SynchronizationContext synchronizationContext;
-	readonly CancellationToken cancellationToken;
+	private readonly SynchronizationContext synchronizationContext;
+	private readonly CancellationToken cancellationToken;
 
 	public SwitchToSynchronizationContextAwaitable(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
 	{
@@ -253,9 +253,9 @@ public struct SwitchToSynchronizationContextAwaitable
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		static readonly SendOrPostCallback switchToCallback = Callback;
-		readonly SynchronizationContext synchronizationContext;
-		readonly CancellationToken cancellationToken;
+		private static readonly SendOrPostCallback switchToCallback = Callback;
+		private readonly SynchronizationContext synchronizationContext;
+		private readonly CancellationToken cancellationToken;
 
 		public Awaiter(SynchronizationContext synchronizationContext, CancellationToken cancellationToken)
 		{
@@ -276,7 +276,7 @@ public struct SwitchToSynchronizationContextAwaitable
 			synchronizationContext.Post(switchToCallback, continuation);
 		}
 
-		static void Callback(object state)
+		private static void Callback(object state)
 		{
 			var continuation = (Action)state;
 			continuation();
@@ -286,9 +286,9 @@ public struct SwitchToSynchronizationContextAwaitable
 
 public struct ReturnToSynchronizationContext
 {
-	readonly SynchronizationContext syncContext;
-	readonly bool dontPostWhenSameContext;
-	readonly CancellationToken cancellationToken;
+	private readonly SynchronizationContext syncContext;
+	private readonly bool dontPostWhenSameContext;
+	private readonly CancellationToken cancellationToken;
 
 	public ReturnToSynchronizationContext(SynchronizationContext syncContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
 	{
@@ -304,11 +304,11 @@ public struct ReturnToSynchronizationContext
 
 	public struct Awaiter : ICriticalNotifyCompletion
 	{
-		static readonly SendOrPostCallback switchToCallback = Callback;
+		private static readonly SendOrPostCallback switchToCallback = Callback;
 
-		readonly SynchronizationContext synchronizationContext;
-		readonly bool dontPostWhenSameContext;
-		readonly CancellationToken cancellationToken;
+		private readonly SynchronizationContext synchronizationContext;
+		private readonly bool dontPostWhenSameContext;
+		private readonly CancellationToken cancellationToken;
 
 		public Awaiter(SynchronizationContext synchronizationContext, bool dontPostWhenSameContext, CancellationToken cancellationToken)
 		{
@@ -349,7 +349,7 @@ public struct ReturnToSynchronizationContext
 			synchronizationContext.Post(switchToCallback, continuation);
 		}
 
-		static void Callback(object state)
+		private static void Callback(object state)
 		{
 			var continuation = (Action)state;
 			continuation();

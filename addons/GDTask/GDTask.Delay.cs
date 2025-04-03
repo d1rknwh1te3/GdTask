@@ -151,10 +151,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class YieldPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>
+	private sealed class YieldPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<YieldPromise>
 	{
-		static TaskPool<YieldPromise> pool;
-		YieldPromise nextNode;
+		private static TaskPool<YieldPromise> pool;
+		private YieldPromise nextNode;
 		public ref YieldPromise NextNode => ref nextNode;
 
 		static YieldPromise()
@@ -162,10 +162,10 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(YieldPromise), () => pool.Size);
 		}
 
-		CancellationToken cancellationToken;
-		GDTaskCompletionSourceCore<object> core;
+		private CancellationToken cancellationToken;
+		private GDTaskCompletionSourceCore<object> core;
 
-		YieldPromise()
+		private YieldPromise()
 		{
 		}
 
@@ -231,7 +231,7 @@ public partial struct GDTask
 			return false;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -240,10 +240,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class NextFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>
+	private sealed class NextFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<NextFramePromise>
 	{
-		static TaskPool<NextFramePromise> pool;
-		NextFramePromise nextNode;
+		private static TaskPool<NextFramePromise> pool;
+		private NextFramePromise nextNode;
 		public ref NextFramePromise NextNode => ref nextNode;
 
 		static NextFramePromise()
@@ -251,12 +251,12 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(NextFramePromise), () => pool.Size);
 		}
 
-		bool isMainThread;
-		ulong frameCount;
-		CancellationToken cancellationToken;
-		GDTaskCompletionSourceCore<AsyncUnit> core;
+		private bool isMainThread;
+		private ulong frameCount;
+		private CancellationToken cancellationToken;
+		private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-		NextFramePromise()
+		private NextFramePromise()
 		{
 		}
 
@@ -329,7 +329,7 @@ public partial struct GDTask
 			return false;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -338,10 +338,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class DelayFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayFramePromise>
+	private sealed class DelayFramePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayFramePromise>
 	{
-		static TaskPool<DelayFramePromise> pool;
-		DelayFramePromise nextNode;
+		private static TaskPool<DelayFramePromise> pool;
+		private DelayFramePromise nextNode;
 		public ref DelayFramePromise NextNode => ref nextNode;
 
 		static DelayFramePromise()
@@ -349,15 +349,15 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(DelayFramePromise), () => pool.Size);
 		}
 
-		bool isMainThread;
-		ulong initialFrame;
-		int delayFrameCount;
-		CancellationToken cancellationToken;
+		private bool isMainThread;
+		private ulong initialFrame;
+		private int delayFrameCount;
+		private CancellationToken cancellationToken;
 
-		int currentFrameCount;
-		GDTaskCompletionSourceCore<AsyncUnit> core;
+		private int currentFrameCount;
+		private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-		DelayFramePromise()
+		private DelayFramePromise()
 		{
 		}
 
@@ -458,7 +458,7 @@ public partial struct GDTask
 			return true;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -469,10 +469,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class DelayPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayPromise>
+	private sealed class DelayPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayPromise>
 	{
-		static TaskPool<DelayPromise> pool;
-		DelayPromise nextNode;
+		private static TaskPool<DelayPromise> pool;
+		private DelayPromise nextNode;
 		public ref DelayPromise NextNode => ref nextNode;
 
 		static DelayPromise()
@@ -480,16 +480,16 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(DelayPromise), () => pool.Size);
 		}
 
-		bool isMainThread;
-		ulong initialFrame;
-		double delayTimeSpan;
-		double elapsed;
-		PlayerLoopTiming timing;
-		CancellationToken cancellationToken;
+		private bool isMainThread;
+		private ulong initialFrame;
+		private double delayTimeSpan;
+		private double elapsed;
+		private PlayerLoopTiming timing;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<object> core;
+		private GDTaskCompletionSourceCore<object> core;
 
-		DelayPromise()
+		private DelayPromise()
 		{
 		}
 
@@ -578,7 +578,7 @@ public partial struct GDTask
 			return true;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -589,10 +589,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class DelayRealtimePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayRealtimePromise>
+	private sealed class DelayRealtimePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<DelayRealtimePromise>
 	{
-		static TaskPool<DelayRealtimePromise> pool;
-		DelayRealtimePromise nextNode;
+		private static TaskPool<DelayRealtimePromise> pool;
+		private DelayRealtimePromise nextNode;
 		public ref DelayRealtimePromise NextNode => ref nextNode;
 
 		static DelayRealtimePromise()
@@ -600,13 +600,13 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(DelayRealtimePromise), () => pool.Size);
 		}
 
-		long delayTimeSpanTicks;
-		ValueStopwatch stopwatch;
-		CancellationToken cancellationToken;
+		private long delayTimeSpanTicks;
+		private ValueStopwatch stopwatch;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<AsyncUnit> core;
+		private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-		DelayRealtimePromise()
+		private DelayRealtimePromise()
 		{
 		}
 
@@ -684,7 +684,7 @@ public partial struct GDTask
 			return true;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -697,7 +697,7 @@ public partial struct GDTask
 
 public readonly struct YieldAwaitable
 {
-	readonly PlayerLoopTiming timing;
+	private readonly PlayerLoopTiming timing;
 
 	public YieldAwaitable(PlayerLoopTiming timing)
 	{
@@ -716,7 +716,7 @@ public readonly struct YieldAwaitable
 
 	public readonly struct Awaiter : ICriticalNotifyCompletion
 	{
-		readonly PlayerLoopTiming timing;
+		private readonly PlayerLoopTiming timing;
 
 		public Awaiter(PlayerLoopTiming timing)
 		{

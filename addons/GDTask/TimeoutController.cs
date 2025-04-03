@@ -10,22 +10,22 @@ namespace Fractural.Tasks;
 
 public sealed class TimeoutController : IDisposable
 {
-	readonly static Action<object> CancelCancellationTokenSourceStateDelegate = new Action<object>(CancelCancellationTokenSourceState);
+	private readonly static Action<object> CancelCancellationTokenSourceStateDelegate = new Action<object>(CancelCancellationTokenSourceState);
 
-	static void CancelCancellationTokenSourceState(object state)
+	private static void CancelCancellationTokenSourceState(object state)
 	{
 		var cts = (CancellationTokenSource)state;
 		cts.Cancel();
 	}
 
-	CancellationTokenSource timeoutSource;
-	CancellationTokenSource linkedSource;
-	PlayerLoopTimer timer;
-	bool isDisposed;
+	private CancellationTokenSource timeoutSource;
+	private CancellationTokenSource linkedSource;
+	private PlayerLoopTimer timer;
+	private bool isDisposed;
 
-	readonly DelayType delayType;
-	readonly PlayerLoopTiming delayTiming;
-	readonly CancellationTokenSource originalLinkCancellationTokenSource;
+	private readonly DelayType delayType;
+	private readonly PlayerLoopTiming delayTiming;
+	private readonly CancellationTokenSource originalLinkCancellationTokenSource;
 
 	public TimeoutController(DelayType delayType = DelayType.DeltaTime, PlayerLoopTiming delayTiming = PlayerLoopTiming.Process)
 	{

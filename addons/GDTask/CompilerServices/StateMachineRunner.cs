@@ -45,11 +45,11 @@ internal static class StateMachineUtility
 internal sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITaskPoolNode<AsyncGDTaskVoid<TStateMachine>>, IGDTaskSource
 	where TStateMachine : IAsyncStateMachine
 {
-	static TaskPool<AsyncGDTaskVoid<TStateMachine>> pool;
+	private static TaskPool<AsyncGDTaskVoid<TStateMachine>> pool;
 
 	public Action ReturnAction { get; }
 
-	TStateMachine stateMachine;
+	private TStateMachine stateMachine;
 
 	public Action MoveNext { get; }
 
@@ -75,7 +75,7 @@ internal sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITas
 		TaskPool.RegisterSizeGetter(typeof(AsyncGDTaskVoid<TStateMachine>), () => pool.Size);
 	}
 
-	AsyncGDTaskVoid<TStateMachine> nextNode;
+	private AsyncGDTaskVoid<TStateMachine> nextNode;
 	public ref AsyncGDTaskVoid<TStateMachine> NextNode => ref nextNode;
 
 	public void Return()
@@ -87,7 +87,7 @@ internal sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITas
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void Run()
+	private void Run()
 	{
 		stateMachine.MoveNext();
 	}
@@ -116,13 +116,13 @@ internal sealed class AsyncGDTaskVoid<TStateMachine> : IStateMachineRunner, ITas
 internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, IGDTaskSource, ITaskPoolNode<AsyncGDTask<TStateMachine>>
 	where TStateMachine : IAsyncStateMachine
 {
-	static TaskPool<AsyncGDTask<TStateMachine>> pool;
+	private static TaskPool<AsyncGDTask<TStateMachine>> pool;
 	public Action MoveNext { get; }
 
-	TStateMachine stateMachine;
-	GDTaskCompletionSourceCore<AsyncUnit> core;
+	private TStateMachine stateMachine;
+	private GDTaskCompletionSourceCore<AsyncUnit> core;
 
-	AsyncGDTask()
+	private AsyncGDTask()
 	{
 		MoveNext = Run;
 	}
@@ -139,7 +139,7 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 		result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
 	}
 
-	AsyncGDTask<TStateMachine> nextNode;
+	private AsyncGDTask<TStateMachine> nextNode;
 	public ref AsyncGDTask<TStateMachine> NextNode => ref nextNode;
 
 	static AsyncGDTask()
@@ -147,7 +147,7 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 		TaskPool.RegisterSizeGetter(typeof(AsyncGDTask<TStateMachine>), () => pool.Size);
 	}
 
-	void Return()
+	private void Return()
 	{
 		TaskTracker.RemoveTracking(this);
 		core.Reset();
@@ -155,7 +155,7 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 		pool.TryPush(this);
 	}
 
-	bool TryReturn()
+	private bool TryReturn()
 	{
 		TaskTracker.RemoveTracking(this);
 		core.Reset();
@@ -165,7 +165,7 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void Run()
+	private void Run()
 	{
 		stateMachine.MoveNext();
 	}
@@ -226,14 +226,14 @@ internal sealed class AsyncGDTask<TStateMachine> : IStateMachineRunnerPromise, I
 internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise<T>, IGDTaskSource<T>, ITaskPoolNode<AsyncGDTask<TStateMachine, T>>
 	where TStateMachine : IAsyncStateMachine
 {
-	static TaskPool<AsyncGDTask<TStateMachine, T>> pool;
+	private static TaskPool<AsyncGDTask<TStateMachine, T>> pool;
 
 	public Action MoveNext { get; }
 
-	TStateMachine stateMachine;
-	GDTaskCompletionSourceCore<T> core;
+	private TStateMachine stateMachine;
+	private GDTaskCompletionSourceCore<T> core;
 
-	AsyncGDTask()
+	private AsyncGDTask()
 	{
 		MoveNext = Run;
 	}
@@ -250,7 +250,7 @@ internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise
 		result.stateMachine = stateMachine; // copy struct StateMachine(in release build).
 	}
 
-	AsyncGDTask<TStateMachine, T> nextNode;
+	private AsyncGDTask<TStateMachine, T> nextNode;
 	public ref AsyncGDTask<TStateMachine, T> NextNode => ref nextNode;
 
 	static AsyncGDTask()
@@ -258,7 +258,7 @@ internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise
 		TaskPool.RegisterSizeGetter(typeof(AsyncGDTask<TStateMachine, T>), () => pool.Size);
 	}
 
-	void Return()
+	private void Return()
 	{
 		TaskTracker.RemoveTracking(this);
 		core.Reset();
@@ -266,7 +266,7 @@ internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise
 		pool.TryPush(this);
 	}
 
-	bool TryReturn()
+	private bool TryReturn()
 	{
 		TaskTracker.RemoveTracking(this);
 		core.Reset();
@@ -276,7 +276,7 @@ internal sealed class AsyncGDTask<TStateMachine, T> : IStateMachineRunnerPromise
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	void Run()
+	private void Run()
 	{
 		stateMachine.MoveNext();
 	}

@@ -12,7 +12,7 @@ public static partial class AsyncTriggerExtensions
 
 public sealed partial class AsyncReadyTrigger : AsyncTriggerBase<AsyncUnit>
 {
-	bool called;
+	private bool called;
 
 	public override void _Ready()
 	{

@@ -14,7 +14,7 @@ internal static class AwaiterActions
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	static void Continuation(object state)
+	private static void Continuation(object state)
 	{
 		((Action)state).Invoke();
 	}
@@ -27,8 +27,8 @@ internal static class AwaiterActions
 [StructLayout(LayoutKind.Auto)]
 public readonly partial struct GDTask
 {
-	readonly IGDTaskSource source;
-	readonly short token;
+	private readonly IGDTaskSource source;
+	private readonly short token;
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,9 +105,9 @@ public readonly partial struct GDTask
 		return new GDTask<AsyncUnit>(new AsyncUnitSource(this.source), this.token);
 	}
 
-	sealed class AsyncUnitSource : IGDTaskSource<AsyncUnit>
+	private sealed class AsyncUnitSource : IGDTaskSource<AsyncUnit>
 	{
-		readonly IGDTaskSource source;
+		private readonly IGDTaskSource source;
 
 		public AsyncUnitSource(IGDTaskSource source)
 		{
@@ -141,9 +141,9 @@ public readonly partial struct GDTask
 		}
 	}
 
-	sealed class IsCanceledSource : IGDTaskSource<bool>
+	private sealed class IsCanceledSource : IGDTaskSource<bool>
 	{
-		readonly IGDTaskSource source;
+		private readonly IGDTaskSource source;
 
 		public IsCanceledSource(IGDTaskSource source)
 		{
@@ -182,11 +182,11 @@ public readonly partial struct GDTask
 		}
 	}
 
-	sealed class MemoizeSource : IGDTaskSource
+	private sealed class MemoizeSource : IGDTaskSource
 	{
-		IGDTaskSource source;
-		ExceptionDispatchInfo exception;
-		GDTaskStatus status;
+		private IGDTaskSource source;
+		private ExceptionDispatchInfo exception;
+		private GDTaskStatus status;
 
 		public MemoizeSource(IGDTaskSource source)
 		{
@@ -264,7 +264,7 @@ public readonly partial struct GDTask
 
 	public readonly struct Awaiter : ICriticalNotifyCompletion
 	{
-		readonly GDTask task;
+		private readonly GDTask task;
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -346,9 +346,9 @@ public readonly partial struct GDTask
 [StructLayout(LayoutKind.Auto)]
 public readonly struct GDTask<T>
 {
-	readonly IGDTaskSource<T> source;
-	readonly T result;
-	readonly short token;
+	private readonly IGDTaskSource<T> source;
+	private readonly T result;
+	private readonly short token;
 
 	[DebuggerHidden]
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -439,9 +439,9 @@ public readonly struct GDTask<T>
 			: "(" + this.source.UnsafeGetStatus() + ")";
 	}
 
-	sealed class IsCanceledSource : IGDTaskSource<(bool, T)>
+	private sealed class IsCanceledSource : IGDTaskSource<(bool, T)>
 	{
-		readonly IGDTaskSource<T> source;
+		private readonly IGDTaskSource<T> source;
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -492,12 +492,12 @@ public readonly struct GDTask<T>
 		}
 	}
 
-	sealed class MemoizeSource : IGDTaskSource<T>
+	private sealed class MemoizeSource : IGDTaskSource<T>
 	{
-		IGDTaskSource<T> source;
-		T result;
-		ExceptionDispatchInfo exception;
-		GDTaskStatus status;
+		private IGDTaskSource<T> source;
+		private T result;
+		private ExceptionDispatchInfo exception;
+		private GDTaskStatus status;
 
 		public MemoizeSource(IGDTaskSource<T> source)
 		{
@@ -582,7 +582,7 @@ public readonly struct GDTask<T>
 
 	public readonly struct Awaiter : ICriticalNotifyCompletion
 	{
-		readonly GDTask<T> task;
+		private readonly GDTask<T> task;
 
 		[DebuggerHidden]
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

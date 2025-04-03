@@ -8,9 +8,9 @@ namespace Fractural.Tasks;
 
 public static partial class CancellationTokenSourceExtensions
 {
-	readonly static Action<object> CancelCancellationTokenSourceStateDelegate = new Action<object>(CancelCancellationTokenSourceState);
+	private readonly static Action<object> CancelCancellationTokenSourceStateDelegate = new Action<object>(CancelCancellationTokenSourceState);
 
-	static void CancelCancellationTokenSourceState(object state)
+	private static void CancelCancellationTokenSourceState(object state)
 	{
 		var cts = (CancellationTokenSource)state;
 		cts.Cancel();

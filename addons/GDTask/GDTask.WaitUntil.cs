@@ -43,10 +43,10 @@ public partial struct GDTask
 			: WaitUntilValueChangedStandardObjectPromise<T, U>.Create(target, monitorFunction, equalityComparer, monitorTiming, cancellationToken, out token), token);
 	}
 
-	sealed class WaitUntilPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilPromise>
+	private sealed class WaitUntilPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilPromise>
 	{
-		static TaskPool<WaitUntilPromise> pool;
-		WaitUntilPromise nextNode;
+		private static TaskPool<WaitUntilPromise> pool;
+		private WaitUntilPromise nextNode;
 		public ref WaitUntilPromise NextNode => ref nextNode;
 
 		static WaitUntilPromise()
@@ -54,13 +54,13 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(WaitUntilPromise), () => pool.Size);
 		}
 
-		GodotObject target;
-		Func<bool> predicate;
-		CancellationToken cancellationToken;
+		private GodotObject target;
+		private Func<bool> predicate;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<object> core;
+		private GDTaskCompletionSourceCore<object> core;
 
-		WaitUntilPromise()
+		private WaitUntilPromise()
 		{
 		}
 
@@ -140,7 +140,7 @@ public partial struct GDTask
 			return false;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -150,10 +150,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WaitWhilePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitWhilePromise>
+	private sealed class WaitWhilePromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitWhilePromise>
 	{
-		static TaskPool<WaitWhilePromise> pool;
-		WaitWhilePromise nextNode;
+		private static TaskPool<WaitWhilePromise> pool;
+		private WaitWhilePromise nextNode;
 		public ref WaitWhilePromise NextNode => ref nextNode;
 
 		static WaitWhilePromise()
@@ -161,13 +161,13 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(WaitWhilePromise), () => pool.Size);
 		}
 
-		GodotObject target;
-		Func<bool> predicate;
-		CancellationToken cancellationToken;
+		private GodotObject target;
+		private Func<bool> predicate;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<object> core;
+		private GDTaskCompletionSourceCore<object> core;
 
-		WaitWhilePromise()
+		private WaitWhilePromise()
 		{
 		}
 
@@ -247,7 +247,7 @@ public partial struct GDTask
 			return false;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -257,10 +257,10 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WaitUntilCanceledPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilCanceledPromise>
+	private sealed class WaitUntilCanceledPromise : IGDTaskSource, IPlayerLoopItem, ITaskPoolNode<WaitUntilCanceledPromise>
 	{
-		static TaskPool<WaitUntilCanceledPromise> pool;
-		WaitUntilCanceledPromise nextNode;
+		private static TaskPool<WaitUntilCanceledPromise> pool;
+		private WaitUntilCanceledPromise nextNode;
 		public ref WaitUntilCanceledPromise NextNode => ref nextNode;
 
 		static WaitUntilCanceledPromise()
@@ -268,12 +268,12 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(WaitUntilCanceledPromise), () => pool.Size);
 		}
 
-		GodotObject target;
-		CancellationToken cancellationToken;
+		private GodotObject target;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<object> core;
+		private GDTaskCompletionSourceCore<object> core;
 
-		WaitUntilCanceledPromise()
+		private WaitUntilCanceledPromise()
 		{
 		}
 
@@ -338,7 +338,7 @@ public partial struct GDTask
 			return true;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -348,10 +348,10 @@ public partial struct GDTask
 	}
 
 	// Cannot add `where T : GodotObject` because `WaitUntilValueChanged` doesn't have the constraint.
-	sealed class WaitUntilValueChangedGodotObjectPromise<T, U> : IGDTaskSource<U>, IPlayerLoopItem, ITaskPoolNode<WaitUntilValueChangedGodotObjectPromise<T, U>>
+	private sealed class WaitUntilValueChangedGodotObjectPromise<T, U> : IGDTaskSource<U>, IPlayerLoopItem, ITaskPoolNode<WaitUntilValueChangedGodotObjectPromise<T, U>>
 	{
-		static TaskPool<WaitUntilValueChangedGodotObjectPromise<T, U>> pool;
-		WaitUntilValueChangedGodotObjectPromise<T, U> nextNode;
+		private static TaskPool<WaitUntilValueChangedGodotObjectPromise<T, U>> pool;
+		private WaitUntilValueChangedGodotObjectPromise<T, U> nextNode;
 		public ref WaitUntilValueChangedGodotObjectPromise<T, U> NextNode => ref nextNode;
 
 		static WaitUntilValueChangedGodotObjectPromise()
@@ -359,16 +359,16 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(WaitUntilValueChangedGodotObjectPromise<T, U>), () => pool.Size);
 		}
 
-		T target;
-		GodotObject targetGodotObject;
-		U currentValue;
-		Func<T, U> monitorFunction;
-		IEqualityComparer<U> equalityComparer;
-		CancellationToken cancellationToken;
+		private T target;
+		private GodotObject targetGodotObject;
+		private U currentValue;
+		private Func<T, U> monitorFunction;
+		private IEqualityComparer<U> equalityComparer;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<U> core;
+		private GDTaskCompletionSourceCore<U> core;
 
-		WaitUntilValueChangedGodotObjectPromise()
+		private WaitUntilValueChangedGodotObjectPromise()
 		{
 		}
 
@@ -458,7 +458,7 @@ public partial struct GDTask
 			return false;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
@@ -471,11 +471,11 @@ public partial struct GDTask
 		}
 	}
 
-	sealed class WaitUntilValueChangedStandardObjectPromise<T, U> : IGDTaskSource<U>, IPlayerLoopItem, ITaskPoolNode<WaitUntilValueChangedStandardObjectPromise<T, U>>
+	private sealed class WaitUntilValueChangedStandardObjectPromise<T, U> : IGDTaskSource<U>, IPlayerLoopItem, ITaskPoolNode<WaitUntilValueChangedStandardObjectPromise<T, U>>
 		where T : class
 	{
-		static TaskPool<WaitUntilValueChangedStandardObjectPromise<T, U>> pool;
-		WaitUntilValueChangedStandardObjectPromise<T, U> nextNode;
+		private static TaskPool<WaitUntilValueChangedStandardObjectPromise<T, U>> pool;
+		private WaitUntilValueChangedStandardObjectPromise<T, U> nextNode;
 		public ref WaitUntilValueChangedStandardObjectPromise<T, U> NextNode => ref nextNode;
 
 		static WaitUntilValueChangedStandardObjectPromise()
@@ -483,15 +483,15 @@ public partial struct GDTask
 			TaskPool.RegisterSizeGetter(typeof(WaitUntilValueChangedStandardObjectPromise<T, U>), () => pool.Size);
 		}
 
-		WeakReference<T> target;
-		U currentValue;
-		Func<T, U> monitorFunction;
-		IEqualityComparer<U> equalityComparer;
-		CancellationToken cancellationToken;
+		private WeakReference<T> target;
+		private U currentValue;
+		private Func<T, U> monitorFunction;
+		private IEqualityComparer<U> equalityComparer;
+		private CancellationToken cancellationToken;
 
-		GDTaskCompletionSourceCore<U> core;
+		private GDTaskCompletionSourceCore<U> core;
 
-		WaitUntilValueChangedStandardObjectPromise()
+		private WaitUntilValueChangedStandardObjectPromise()
 		{
 		}
 
@@ -580,7 +580,7 @@ public partial struct GDTask
 			return false;
 		}
 
-		bool TryReturn()
+		private bool TryReturn()
 		{
 			TaskTracker.RemoveTracking(this);
 			core.Reset();
