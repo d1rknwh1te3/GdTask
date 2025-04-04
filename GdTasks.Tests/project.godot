@@ -23,11 +23,15 @@ Display=8
 [application]
 
 config/name="GDTask"
-run/main_scene="res://tests/manual/Test.tscn"
-config/features=PackedStringArray("4.4", "C#")
+run/main_scene="uid://cfm0u7eao06ff"
+config/features=PackedStringArray("4.5", "C#")
 boot_splash/bg_color=Color(0, 0, 0, 1)
 boot_splash/image="res://bootsplash.png"
 config/icon="res://icon.png"
+
+[autoload]
+
+AutoLoadGdTasks="*res://Scripts/AutoLoadGdTasks.cs"
 
 [dotnet]
 
