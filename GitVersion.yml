@@ -1,17 +1,19 @@
-mode: ContinuousDeployment
+workflow: GitHubFlow/v1
+tag-prefix: ''
+assembly-versioning-scheme: MajorMinorPatch
+assembly-file-versioning-scheme: MajorMinorPatch
 branches:
-  main:
-    regex: ^main$
-    increment: Minor
-    tag: ''
+  major:
+    regex: ^major$
+    increment: Major
+    label: ''
   release:
     regex: ^release$
-    increment: Patch
-    tag: beta
+    increment: Minor
+    label: ''
   feature:
-    regex: ^feature[/-]
+    regex: ^feature$
     increment: Patch
-    tag: alpha
-next-version: 1.0.0
-assembly-versioning-scheme: MajorMinorPatch
+    label: beta
+mode: ContinuousDeployment
 commit-message-incrementing: Enabled
