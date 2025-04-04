@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - release
+      - major
+      - feature
 
 permissions:
   packages: write
@@ -20,18 +22,20 @@ jobs:
             fetch-depth: 0
         
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.x.x'
 
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v1.1.1
+        uses: gittools/actions/gitversion/setup@v3.2.0
         with:
-          versionSpec: '5.x'
+          versionSpec: '6.2.x'
+          includePrerelease: true
+          preferLatestVersion: true
 
       - name: Use GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v1.1.1
+        uses: gittools/actions/gitversion/execute@v3.2.0
         with:
           useConfigFile: true
 
@@ -45,7 +49,7 @@ jobs:
         run: dotnet test --configuration ExportRelease --no-build
 
       - name: Pack project
-        run: dotnet pack --configuration ExportRelease --no-build --output ./nupkg -p:PackageVersion=${{ steps.gitversion.outputs.nuGetVersionV2 }}
+        run: dotnet pack --configuration ExportRelease --no-build --output ./nupkg -p:PackageVersion=${{ steps.gitversion.outputs.semVer }}
 
       - name: Publish to GitHub Packages
         run: dotnet nuget push ./nupkg/*.nupkg --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ github.token }} --skip-duplicate
