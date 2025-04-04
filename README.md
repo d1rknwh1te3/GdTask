@@ -6,17 +6,19 @@
 > 
 > This is a fork of [Fractural's original GDTask](https://github.com/Fractural/GDTask), created because I wasn't comfortable keeping a third-party project together all the time, so I wanted to wrap it in a NuGet package, but unfortunately I made a lot of weird changes
 
-## Breaking changes
+## Changes
 
-1. Namespaces:
+1. Changed namespaces:
 	- Fractural.GDTask => GdTasks
-2. File Structure: 
-	- Splitting multi-class files into single-class files, 
-	- Organizing files into folders according to their logical meaning
+2. Changed file Structure: 
+	- Splitting multi-class files into single-class files
+	- Organizing files into folders according to their logical meaning: structs to structs folder, 
 3. Changed the style and project
-	- Primary constructors
-	- Replace throw Exception("name") to ThrowIfNull(nameof(name))
-	- Rename
+	- Replaced ctors with primary ctors
+	- Replaced the expressions ```throw Exception("name")``` to ```ThrowIfNull(nameof(name))```
+	- Renamed properties and fields according to code-style: private => from *foo* to *_foo* or public => from *foo* to *Foo*
+	- Organized fields, properties, constructors, methods into their proper order: nested classes, constants and static fields, readonly, static сtor, public ctors, etc...
+	- Added omitted access modifiers private and so on
 4. Added a test project to the repository
 
 ## Description
@@ -26,12 +28,25 @@ Based on code from [Cysharp's UniTask library for Unity](https://github.com/Cysh
 
 ## Installation
 
-```CSharp
-
-```
+You need to install the NuGet package [GdTasks](https://www.nuget.org/packages/GdTasks) in your project, then you need to create a script with any name, for example, [AutoLoadGdTasks](https://github.com/d1rknwh1te3/GdTasks/blob/main/GdTasks.Tests/Scripts/AutoLoadGdTasks.cs) (you can take it from the test project by the way) and add the following contents to it, and then in Project => Project Settings (idk how it is in English version) => Global => and add this script there.
 
 ```CSharp
+﻿using GdTasks.AutoLoader;
+using Godot;
 
+namespace GDTask.Scripts;
+
+public partial class AutoLoadGdTasks : Node
+{
+	public static GdTaskPlayerLoopAutoload Autoload { get; set; }
+
+	public override void _Ready()
+	{
+		Autoload = new GdTaskPlayerLoopAutoload();
+
+		base._Ready();
+	}
+}
 ```
 
 ## Examples
