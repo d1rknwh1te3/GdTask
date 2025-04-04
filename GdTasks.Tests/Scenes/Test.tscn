@@ -1,12 +1,12 @@
 [gd_scene load_steps=3 format=3 uid="uid://cfm0u7eao06ff"]
 
-[ext_resource type="Script" uid="uid://p7nspvioq02b" path="res://tests/manual/Test.cs" id="1"]
+[ext_resource type="Script" uid="uid://p7nspvioq02b" path="res://Scripts/Test.cs" id="1"]
 [ext_resource type="Texture2D" uid="uid://cw01ge0bgos8m" path="res://icon.png" id="2"]
 
-[node name="Test" type="Node" node_paths=PackedStringArray("pauseLabel")]
+[node name="Test" type="Node" node_paths=PackedStringArray("_pauseLabel")]
 script = ExtResource("1")
-spritePath = NodePath("Node2D/Sprite2D")
-pauseLabel = NodePath("UI/Control/PauseLabel")
+_spritePath = NodePath("Node2D/Sprite2D")
+_pauseLabel = NodePath("UI/Control/PauseLabel")
 
 [node name="Node2D" type="Node2D" parent="."]
 

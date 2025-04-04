@@ -1,8 +1,11 @@
-using Fractural.Tasks;
-using GdTasks.Sources.Enums;
+using System;
+using System.Threading;
+using GdTasks;
+using GdTasks.Enums;
+using GdTasks.Structs;
 using Godot;
 
-namespace GdTasks.Tests.Manual;
+namespace GDTask.Scripts;
 
 public partial class Test : Node
 {
